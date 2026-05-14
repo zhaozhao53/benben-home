@@ -1,10 +1,3 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = 'https://ybpdeghwuoudtfmxirfc.supabase.co';
-const supabaseAnonKey = 'sb_publishable_GdDNoFt3aQ93fz8VMZWe0g_FbWCOLUg';
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
 export default async function handler(req, res) {
   // 允许跨域
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -21,15 +14,34 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: '缺少 sessionId 或 message' });
   }
 
-  try {
-    const { error } = await supabase
-      .from('chat_memories')   // 假设你的表名是 chat_memories，如果不是请告诉我
-      .insert([{ session_id: sessionId, message, created_at: new Date().toISOString() }]);
+  // Supabase 配置（你的信息）
+  const SUPABASE_URL = 'https://ybpdeghwuoudtfmxirfc.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_GdDNoFt3aQ93fz8VMZWe0g_FbWCOLUg';
 
-    if (error) throw error;
+  try {
+    // 使用原生 fetch 调用 Supabase REST API
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/chat_memories`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({
+        session_id: sessionId,
+        message: message,
+        created_at: new Date().toISOString()
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Supabase 返回错误: ${response.status} ${errorText}`);
+    }
+
     res.status(200).json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: '数据库写入失败' });
+    console.error('写入失败:', err);
+    res.status(500).json({ error: `数据库写入失败: ${err.message}` });
   }
 }
