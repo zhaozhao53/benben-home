@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+  export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -41,4 +41,4 @@ export default async function handler(req, res) {
     console.error(err);
     res.status(500).json({ error: `写入失败: ${err.message}` });
   }
-}  
+}
