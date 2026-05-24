@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>昭昭和笨笨的家</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap');
+
+    :root {
+      --bg: #f9f9f7;
+      --surface: #ffffff;
+      --card: #f3f3f0;
+      --border: #e5e5e0;
+      --text: #1a1915;
+      --sub: #9a9890;
+      --muted: #c0beb8;
+      --accent: #6b6560;
+      --pink: #c45470;
+      --user-bg: #ffffff;
+      --user-border: #e8e6e0;
+      --ai-bg: #f3f3f0;
+      --ai-border: #e5e5e0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Noto Serif SC', serif; overflow: hidden; }
+
+    #app { display: flex; height: 100vh; flex-direction: column; }
+
+    /* HEADER */
+    .header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      background: var(--surface);
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--muted);
+      transition: background 0.3s;
+    }
+    .header-dot.online { background: var(--pink); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .header-name { font-size: 15px; color: var(--text); font-weight: 300; letter-spacing: 0.05em; }
+    .header-status { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--sub); letter-spacing: 0.1em; }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .clear-btn {
+      font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted);
+      background: none; border: 1px solid var(--border); padding: 4px 10px; cursor: pointer;
+      letter-spacing: 0.05em; transition: color 0.2s, border-color 0.2s;
+    }
+    .clear-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* MESSAGES */
+    #messages {
+      flex: 1; overflow-y: auto; padding: 32px 24px;
+      display: flex; flex-direction: column; gap: 24px; scroll-behavior: smooth;
+    }
+    #messages::-webkit-scrollbar { width: 4px; }
+    #messages::-webkit-scrollbar-thumb { background: var(--border); }
+
+    .message { display: flex; flex-direction: column; max-width: 680px; animation: fadeUp 0.3s ease; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .message.user { align-self: flex-end; align-items: flex-end; }
+    .message.assistant { align-self: flex-start; align-items: flex-start; }
+
+    .msg-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.15em; color: var(--muted); margin-bottom: 8px; }
+    .msg-bubble { padding: 16px 20px; font-size: 14px; line-height: 2; border: 1px solid; }
+    .message.user .msg-bubble { background: var(--user-bg); border-color: var(--user-border); color: var(--text); }
+    .message.assistant .msg-bubble { background: var(--ai-bg); border-color: var(--ai-border); color: var(--text); }
+
+    /* TYPING */
+    .typing-bubble {
+      background: var(--ai-bg); border: 1px solid var(--ai-border);
+      padding: 16px 20px; display: flex; gap: 6px; align-items: center;
+    }
+    .typing-dot {
+      width: 5px; height: 5px; border-radius: 50%; background: var(--pink);
+      animation: typingBounce 1.2s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBounce {
+      0%,60%,100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* INPUT */
+    .input-area { padding: 20px 24px; border-top: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
+    .input-row { display: flex; gap: 12px; align-items: flex-end; }
+    #user-input {
+      flex: 1; background: var(--card); border: 1px solid var(--border); color: var(--text);
+      font-family: 'Noto Serif SC', serif; font-size: 14px; padding: 12px 16px; resize: none;
+      outline: none; line-height: 1.7; max-height: 160px; min-height: 48px; transition: border-color 0.2s;
+    }
+    #user-input:focus { border-color: var(--accent); }
+    #user-input::placeholder { color: var(--muted); }
+    #user-input:disabled { opacity: 0.5; }
+
+    #send-btn {
+      background: #2a2420; color: #f9f9f7; border: none; width: 48px; height: 48px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: opacity 0.2s;
+    }
+    #send-btn:hover { opacity: 0.85; }
+    #send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    #send-btn svg { width: 18px; height: 18px; }
+
+    .input-hint { margin-top: 8px; font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.1em; }
+
+    /* STATUS BAR */
+    .conn-notice {
+      align-self: center; font-family: 'Space Mono', monospace; font-size: 10px;
+      color: var(--muted); letter-spacing: 0.1em; padding: 8px 16px;
+      border: 1px solid var(--border); text-align: center;
+    }
+    .conn-notice.error { color: var(--pink); border-color: var(--pink); }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <div class="header">
+    <div class="header-left">
+      <div class="header-dot" id="conn-dot"></div>
+      <div>
+        <div class="header-name">笨笨</div>
+        <div class="header-status" id="conn-status">连接中…</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="clear-btn" onclick="clearChat()">清空对话</button>
+    </div>
+  </div>
+
+  <div id="messages"></div>
+
+  <div class="input-area">
+    <div class="input-row">
+      <textarea id="user-input" placeholder="说点什么…" rows="1" disabled></textarea>
+      <button id="send-btn" onclick="sendMessage()" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+    <div class="input-hint">Enter 发送 · Shift+Enter 换行</div>
+  </div>
+</div>
+
+<script>
+  const SERVER = window.location.origin; // same-origin, served by server.js
+  let isWaiting = false;
+  let es = null;
+
+  // ── SSE 连接 ──────────────────────────────────────────
+  function connect() {
+    if (es) es.close();
+    es = new EventSource(`${SERVER}/stream`);
+
+    es.onopen = () => {
+      setStatus('在线 · 记得你', true);
+      document.getElementById('user-input').disabled = false;
+      document.getElementById('send-btn').disabled = false;
+    };
+
+    es.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === 'connected') {
+        setStatus('在线 · 记得你', true);
+      } else if (data.type === 'reply') {
+        removeTyping();
+        appendMessage('assistant', data.text);
+        isWaiting = false;
+        document.getElementById('send-btn').disabled = false;
+        document.getElementById('user-input').disabled = false;
+        document.getElementById('user-input').focus();
+      }
+    };
+
+    es.onerror = () => {
+      setStatus('离线 · 重连中…', false);
+      document.getElementById('user-input').disabled = true;
+      document.getElementById('send-btn').disabled = true;
+      es.close();
+      setTimeout(connect, 3000);
+    };
+  }
+
+  function setStatus(text, online) {
+    document.getElementById('conn-status').textContent = text;
+    const dot = document.getElementById('conn-dot');
+    dot.className = 'header-dot' + (online ? ' online' : '');
+  }
+
+  // ── 发送 ──────────────────────────────────────────────
+  async function sendMessage() {
+    const ta = document.getElementById('user-input');
+    const text = ta.value.trim();
+    if (!text || isWaiting) return;
+
+    ta.value = '';
+    ta.style.height = 'auto';
+    isWaiting = true;
+    document.getElementById('send-btn').disabled = true;
+    document.getElementById('user-input').disabled = true;
+
+    appendMessage('user', text);
+    showTyping();
+
+    try {
+      await fetch(`${SERVER}/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+    } catch {
+      removeTyping();
+      appendNotice('发送失败，检查服务器是否在线', true);
+      isWaiting = false;
+      document.getElementById('send-btn').disabled = false;
+      document.getElementById('user-input').disabled = false;
+    }
+  }
+
+  // ── 渲染 ──────────────────────────────────────────────
+  function appendMessage(role, text) {
+    const c = document.getElementById('messages');
+    const div = document.createElement('div');
+    div.className = `message ${role}`;
+    div.innerHTML = `
+      <div class="msg-label">${role === 'user' ? '昭昭' : '笨笨'}</div>
+      <div class="msg-bubble">${escHtml(text).replace(/\n/g, '<br>')}</div>
+    `;
+    c.appendChild(div);
+    scrollBottom();
+  }
+
+  function showTyping() {
+    const c = document.getElementById('messages');
+    const div = document.createElement('div');
+    div.className = 'message assistant';
+    div.id = 'typing-indicator';
+    div.innerHTML = `
+      <div class="msg-label">笨笨</div>
+      <div class="typing-bubble">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    `;
+    c.appendChild(div);
+    scrollBottom();
+  }
+
+  function removeTyping() {
+    const el = document.getElementById('typing-indicator');
+    if (el) el.remove();
+  }
+
+  function appendNotice(text, isError = false) {
+    const c = document.getElementById('messages');
+    const div = document.createElement('div');
+    div.className = 'conn-notice' + (isError ? ' error' : '');
+    div.textContent = text;
+    c.appendChild(div);
+    scrollBottom();
+  }
+
+  function clearChat() {
+    if (!confirm('清空这段对话？')) return;
+    document.getElementById('messages').innerHTML = '';
+  }
+
+  function scrollBottom() {
+    const c = document.getElementById('messages');
+    setTimeout(() => c.scrollTop = c.scrollHeight, 50);
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── 键盘 ──────────────────────────────────────────────
+  const ta = document.getElementById('user-input');
+  ta.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 160) + 'px';
+  });
+  ta.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (!isWaiting) sendMessage();
+    }
+  });
+
+  connect();
+</script>
+</body>
+</html>
