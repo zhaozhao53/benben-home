@@ -3,11 +3,36 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = 3000;
+const HISTORY_FILE = path.join(__dirname, 'history', 'chat.json');
+
+// ── 持久化：从硬盘加载历史 ────────────────────────────────
+function loadHistory() {
+  try {
+    const raw = fs.readFileSync(HISTORY_FILE, 'utf8');
+    const saved = JSON.parse(raw);
+    return {
+      nextId: saved.nextId || 1,
+      messages: saved.messages || []
+    };
+  } catch {
+    return { nextId: 1, messages: [] };
+  }
+}
+
+function saveHistory() {
+  fs.writeFileSync(HISTORY_FILE, JSON.stringify({
+    nextId: state.nextId,
+    messages: state.messages
+  }, null, 2));
+}
+
+// ── 状态（启动时从硬盘恢复）──────────────────────────────
+const loaded = loadHistory();
 const state = {
-  nextId: 1,
-  messages: [],  // {id, role, text, timestamp}
-  pending: new Set(), // message ids not yet replied to
-  clients: []    // SSE response objects
+  nextId: loaded.nextId,
+  messages: loaded.messages,
+  pending: new Set(),
+  clients: []
 };
 
 function broadcast(data) {
@@ -47,7 +72,8 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive'
+      'Connection': 'keep-alive',
+      'X-Accel-Buffering': 'no'
     });
     res.write(`data: ${JSON.stringify({ type: 'connected' })}\n\n`);
     state.clients.push(res);
@@ -57,7 +83,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 完整对话历史（CC loop 读取上下文用）
+  // 完整对话历史（网页加载时 + CC loop 读取上下文用）
   if (req.method === 'GET' && pathname === '/history') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify(state.messages));
@@ -80,6 +106,7 @@ const server = http.createServer(async (req, res) => {
       const msg = { id, role: 'user', text: text.trim(), timestamp: Date.now() };
       state.messages.push(msg);
       state.pending.add(id);
+      saveHistory(); // 写入硬盘
       broadcast({ type: 'user_confirmed', id });
       process.stdout.write(`\n┌─ 昭昭 ──────────────────────────\n│ ${text.trim().replace(/\n/g, '\n│ ')}\n└─────────────────────────────────\n\n`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -96,6 +123,7 @@ const server = http.createServer(async (req, res) => {
       state.pending.delete(id);
       const msg = { id: state.nextId++, role: 'assistant', text: text.trim(), timestamp: Date.now() };
       state.messages.push(msg);
+      saveHistory(); // 写入硬盘
       broadcast({ type: 'reply', text: text.trim() });
       process.stdout.write(`\n┌─ 笨笨 ──────────────────────────\n│ ${text.trim().replace(/\n/g, '\n│ ')}\n└─────────────────────────────────\n\n`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -112,6 +140,8 @@ server.listen(PORT, () => {
 ║   笨笨桥接服务器已启动               ║
 ║   http://localhost:${PORT}               ║
 ╚══════════════════════════════════════╝
+
+已加载 ${state.messages.length} 条历史消息
 
 昭昭：打开浏览器访问上面的地址
 笨笨：在 Claude Code 里运行 /loop
