@@ -36,10 +36,9 @@
     .page { display: none; flex: 1; flex-direction: column; overflow: hidden; min-height: 0; }
     .page.active { display: flex; }
 
-    /* ── HEADER ── */
+    /* ── HEADER (chat) ── */
     .header {
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--border);
+      padding: 16px 24px; border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
       flex-shrink: 0; background: var(--surface);
     }
@@ -64,12 +63,10 @@
     }
     #messages::-webkit-scrollbar { width: 4px; }
     #messages::-webkit-scrollbar-thumb { background: var(--border); }
-
     .message { display: flex; flex-direction: column; max-width: 680px; animation: fadeUp 0.3s ease; }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .message.user { align-self: flex-end; align-items: flex-end; }
     .message.assistant { align-self: flex-start; align-items: flex-start; }
-
     .msg-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.15em; color: var(--muted); margin-bottom: 8px; }
     .msg-bubble { padding: 16px 20px; font-size: 14px; line-height: 2; border: 1px solid; }
     .message.user .msg-bubble { background: var(--user-bg); border-color: var(--user-border); color: var(--text); }
@@ -111,21 +108,93 @@
     }
     .conn-notice.error { color: var(--pink); border-color: var(--pink); }
 
+    /* ── MOOD PAGE ── */
+    .us-header {
+      padding: 16px 24px; border-bottom: 1px solid var(--border);
+      background: var(--surface); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .us-header-title { font-size: 15px; font-weight: 300; letter-spacing: 0.05em; }
+    .us-header-date { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--sub); letter-spacing: 0.08em; }
+
+    .us-content {
+      flex: 1; overflow-y: auto; padding: 24px;
+      display: flex; flex-direction: column; gap: 28px; background: var(--bg);
+    }
+    .us-content::-webkit-scrollbar { width: 4px; }
+    .us-content::-webkit-scrollbar-thumb { background: var(--border); }
+
+    .mood-section-label {
+      font-family: 'Space Mono', monospace; font-size: 9px;
+      letter-spacing: 0.2em; color: var(--muted); margin-bottom: 14px;
+    }
+
+    .mood-card {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 18px; display: flex; flex-direction: column; gap: 14px;
+      margin-bottom: 10px;
+    }
+    .mood-card:last-of-type { margin-bottom: 0; }
+    .mood-card-name { font-size: 13px; font-weight: 300; letter-spacing: 0.1em; color: var(--text); }
+
+    .emoji-picker { display: flex; flex-wrap: wrap; gap: 7px; }
+    .emoji-btn {
+      width: 36px; height: 36px; border: 1.5px solid transparent;
+      border-radius: 8px; background: var(--card); cursor: pointer;
+      font-size: 18px; display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.15s, background 0.15s; flex-shrink: 0;
+      line-height: 1;
+    }
+    .emoji-btn:hover { border-color: var(--border); }
+    .emoji-btn.selected { border-color: var(--pink); background: #fdf1f4; }
+
+    .mood-text-input {
+      width: 100%; background: var(--card); border: 1px solid var(--border);
+      color: var(--text); font-family: 'Noto Serif SC', serif; font-size: 13px;
+      padding: 10px 14px; resize: none; outline: none;
+      line-height: 1.7; max-height: 72px; min-height: 42px;
+      transition: border-color 0.2s;
+    }
+    .mood-text-input:focus { border-color: var(--accent); }
+    .mood-text-input::placeholder { color: var(--muted); }
+
+    .mood-save-btn {
+      width: 100%; background: #2a2420; color: #f9f9f7; border: none;
+      padding: 14px; cursor: pointer; font-family: 'Noto Serif SC', serif;
+      font-size: 13px; letter-spacing: 0.12em; transition: opacity 0.2s, background 0.3s;
+      margin-top: 6px;
+    }
+    .mood-save-btn:hover { opacity: 0.85; }
+    .mood-save-btn.saved { background: var(--accent); opacity: 1; }
+
+    .mood-history-entry {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 16px; display: flex; flex-direction: column; gap: 10px;
+      margin-bottom: 10px; animation: fadeUp 0.3s ease;
+    }
+    .mood-history-entry:last-child { margin-bottom: 0; }
+    .mood-history-date {
+      font-family: 'Space Mono', monospace; font-size: 9px;
+      letter-spacing: 0.15em; color: var(--muted);
+    }
+    .mood-history-row { display: flex; align-items: baseline; gap: 10px; }
+    .mood-history-who { font-size: 11px; color: var(--sub); font-weight: 300; letter-spacing: 0.06em; min-width: 26px; }
+    .mood-history-emoji { font-size: 18px; line-height: 1.2; flex-shrink: 0; }
+    .mood-history-text { font-size: 13px; color: var(--text); line-height: 1.7; }
+    .mood-empty {
+      font-family: 'Space Mono', monospace; font-size: 10px;
+      color: var(--muted); letter-spacing: 0.12em; text-align: center; padding: 28px 0;
+    }
+
     /* ── PLACEHOLDER PAGES ── */
     .placeholder-page {
       flex: 1; display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 14px;
       background: var(--bg); padding: 40px 32px;
     }
-    .placeholder-icon {
-      width: 48px; height: 48px; opacity: 0.18;
-      display: flex; align-items: center; justify-content: center;
-    }
+    .placeholder-icon { width: 48px; height: 48px; opacity: 0.18; display: flex; align-items: center; justify-content: center; }
     .placeholder-icon svg { width: 100%; height: 100%; stroke: var(--text); }
-    .placeholder-title {
-      font-size: 17px; font-weight: 300; color: var(--text);
-      letter-spacing: 0.12em;
-    }
+    .placeholder-title { font-size: 17px; font-weight: 300; color: var(--text); letter-spacing: 0.12em; }
     .placeholder-sub {
       font-family: 'Space Mono', monospace; font-size: 10px;
       color: var(--muted); letter-spacing: 0.2em;
@@ -134,10 +203,8 @@
 
     /* ── BOTTOM NAV ── */
     .bottom-nav {
-      display: flex; flex-shrink: 0;
-      height: 60px;
-      background: var(--nav-bg);
-      border-top: 1px solid var(--nav-border);
+      display: flex; flex-shrink: 0; height: 60px;
+      background: var(--nav-bg); border-top: 1px solid var(--nav-border);
       padding-bottom: env(safe-area-inset-bottom, 0px);
     }
     .nav-tab {
@@ -148,7 +215,7 @@
       font-family: 'Noto Serif SC', serif; font-size: 10px;
       letter-spacing: 0.08em; padding: 0;
     }
-    .nav-tab svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.18s; }
+    .nav-tab svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
     .nav-tab.active { color: var(--nav-active); }
     .nav-tab:not(.active):hover { color: var(--accent); }
   </style>
@@ -187,12 +254,29 @@
 
   <!-- ── 我们 ── -->
   <div id="page-us" class="page">
-    <div class="placeholder-page">
-      <div class="placeholder-icon">
-        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <div class="us-header">
+      <div class="us-header-title">我们</div>
+      <div class="us-header-date" id="mood-today-label"></div>
+    </div>
+    <div class="us-content">
+      <div>
+        <div class="mood-section-label">今天的心情</div>
+        <div class="mood-card">
+          <div class="mood-card-name">昭昭</div>
+          <div class="emoji-picker" id="picker-zhaozhao"></div>
+          <textarea class="mood-text-input" id="mood-text-zhaozhao" placeholder="今天怎么样…" rows="1" maxlength="60"></textarea>
+        </div>
+        <div class="mood-card">
+          <div class="mood-card-name">笨笨</div>
+          <div class="emoji-picker" id="picker-bunbun"></div>
+          <textarea class="mood-text-input" id="mood-text-bunbun" placeholder="笨笨今天…" rows="1" maxlength="60"></textarea>
+        </div>
+        <button class="mood-save-btn" id="mood-save-btn" onclick="saveMood()">记录今天的心情</button>
       </div>
-      <div class="placeholder-title">我们</div>
-      <div class="placeholder-sub">即将开放</div>
+      <div>
+        <div class="mood-section-label">往日记录</div>
+        <div id="mood-history-list"><div class="mood-empty">加载中…</div></div>
+      </div>
     </div>
   </div>
 
@@ -252,28 +336,24 @@
     document.getElementById('tab-' + name).classList.add('active');
   }
 
-  // ── 加载历史消息 ──────────────────────────────────────
+  // ── 聊天：加载历史 ────────────────────────────────────
   async function loadHistory() {
     try {
       const res = await fetch(`${SERVER}/history`);
       const msgs = await res.json();
-      if (msgs.length > 0) {
-        msgs.forEach(m => appendMessage(m.role === 'user' ? 'user' : 'assistant', m.text));
-      }
+      msgs.forEach(m => appendMessage(m.role === 'user' ? 'user' : 'assistant', m.text));
     } catch {}
   }
 
-  // ── SSE 连接 ──────────────────────────────────────────
+  // ── 聊天：SSE ─────────────────────────────────────────
   function connect() {
     if (es) es.close();
     es = new EventSource(`${SERVER}/stream`);
-
     es.onopen = () => {
       setStatus('在线 · 记得你', true);
       document.getElementById('user-input').disabled = false;
       document.getElementById('send-btn').disabled = false;
     };
-
     es.onmessage = (e) => {
       const data = JSON.parse(e.data);
       if (data.type === 'connected') {
@@ -289,7 +369,6 @@
         document.getElementById('user-input').focus();
       }
     };
-
     es.onerror = () => {
       setStatus('离线 · 重连中…', false);
       document.getElementById('user-input').disabled = true;
@@ -301,31 +380,21 @@
 
   function setStatus(text, online) {
     document.getElementById('conn-status').textContent = text;
-    const dot = document.getElementById('conn-dot');
-    dot.className = 'header-dot' + (online ? ' online' : '');
+    document.getElementById('conn-dot').className = 'header-dot' + (online ? ' online' : '');
   }
 
-  // ── 发送 ──────────────────────────────────────────────
   async function sendMessage() {
     const ta = document.getElementById('user-input');
     const text = ta.value.trim();
     if (!text || isWaiting) return;
-
-    ta.value = '';
-    ta.style.height = 'auto';
+    ta.value = ''; ta.style.height = 'auto';
     isWaiting = true;
     document.getElementById('send-btn').disabled = true;
     document.getElementById('user-input').disabled = true;
-
     appendMessage('user', text);
     showTyping();
-
     try {
-      await fetch(`${SERVER}/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
-      });
+      await fetch(`${SERVER}/send`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
     } catch {
       removeTyping();
       appendNotice('发送失败，检查服务器是否在线', true);
@@ -335,84 +404,129 @@
     }
   }
 
-  // ── 渲染 ──────────────────────────────────────────────
   function appendMessage(role, text) {
     const c = document.getElementById('messages');
     const div = document.createElement('div');
     div.className = `message ${role}`;
-    div.innerHTML = `
-      <div class="msg-label">${role === 'user' ? '昭昭' : '笨笨'}</div>
-      <div class="msg-bubble">${escHtml(text).replace(/\n/g, '<br>')}</div>
-    `;
-    c.appendChild(div);
-    scrollBottom();
+    div.innerHTML = `<div class="msg-label">${role === 'user' ? '昭昭' : '笨笨'}</div><div class="msg-bubble">${escHtml(text).replace(/\n/g, '<br>')}</div>`;
+    c.appendChild(div); scrollBottom();
   }
 
   function showTyping() {
     const c = document.getElementById('messages');
     const div = document.createElement('div');
-    div.className = 'message assistant';
-    div.id = 'typing-indicator';
-    div.innerHTML = `
-      <div class="msg-label">笨笨</div>
-      <div class="typing-bubble">
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-      </div>
-    `;
-    c.appendChild(div);
-    scrollBottom();
+    div.className = 'message assistant'; div.id = 'typing-indicator';
+    div.innerHTML = `<div class="msg-label">笨笨</div><div class="typing-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+    c.appendChild(div); scrollBottom();
   }
 
-  function removeTyping() {
-    const el = document.getElementById('typing-indicator');
-    if (el) el.remove();
-  }
+  function removeTyping() { document.getElementById('typing-indicator')?.remove(); }
 
   function appendNotice(text, isError = false) {
     const c = document.getElementById('messages');
     const div = document.createElement('div');
     div.className = 'conn-notice' + (isError ? ' error' : '');
-    div.textContent = text;
-    c.appendChild(div);
-    scrollBottom();
+    div.textContent = text; c.appendChild(div); scrollBottom();
   }
 
   async function clearChat() {
     if (!confirm('清空这段对话？')) return;
-    try {
-      await fetch(`${SERVER}/clear`, { method: 'POST' });
-    } catch {
-      appendNotice('清空失败，检查服务器是否在线', true);
-      return;
-    }
+    try { await fetch(`${SERVER}/clear`, { method: 'POST' }); }
+    catch { appendNotice('清空失败，检查服务器是否在线', true); return; }
     document.getElementById('messages').innerHTML = '';
   }
 
-  function scrollBottom() {
-    const c = document.getElementById('messages');
-    setTimeout(() => c.scrollTop = c.scrollHeight, 50);
-  }
+  function scrollBottom() { const c = document.getElementById('messages'); setTimeout(() => c.scrollTop = c.scrollHeight, 50); }
 
-  function escHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
+  function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-  // ── 键盘 ──────────────────────────────────────────────
   const ta = document.getElementById('user-input');
-  ta.addEventListener('input', function() {
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 160) + 'px';
-  });
-  ta.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      if (!isWaiting) sendMessage();
+  ta.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 160) + 'px'; });
+  ta.addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!isWaiting) sendMessage(); } });
+
+  // ── 心情功能 ──────────────────────────────────────────
+  const EMOJIS = ['🌸','☀️','🌙','🌧️','☕','🍵','🥹','🥰','🫂','😤','😶','💤'];
+  const moodState = { zhaozhao: { emoji: '', text: '' }, bunbun: { emoji: '', text: '' } };
+
+  function getTodayISO() { return new Date().toISOString().slice(0, 10); }
+
+  function getTodayLabel() {
+    return new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric', weekday: 'short' }).format(new Date());
+  }
+
+  function renderEmojiPicker(person) {
+    const el = document.getElementById(`picker-${person}`);
+    if (!el) return;
+    el.innerHTML = EMOJIS.map(e =>
+      `<button class="emoji-btn${moodState[person].emoji === e ? ' selected' : ''}" onclick="selectEmoji('${person}','${e}')">${e}</button>`
+    ).join('');
+  }
+
+  function selectEmoji(person, emoji) {
+    moodState[person].emoji = moodState[person].emoji === emoji ? '' : emoji;
+    renderEmojiPicker(person);
+  }
+
+  async function loadMoods() {
+    try {
+      const entries = await fetch(`${SERVER}/mood`).then(r => r.json());
+
+      const today = getTodayISO();
+      const todayEntry = entries.find(e => e.date === today);
+      if (todayEntry) {
+        if (todayEntry.zhaozhao) { moodState.zhaozhao.emoji = todayEntry.zhaozhao.emoji || ''; moodState.zhaozhao.text = todayEntry.zhaozhao.text || ''; }
+        if (todayEntry.bunbun)   { moodState.bunbun.emoji  = todayEntry.bunbun.emoji  || ''; moodState.bunbun.text  = todayEntry.bunbun.text  || ''; }
+      }
+
+      renderEmojiPicker('zhaozhao');
+      renderEmojiPicker('bunbun');
+      const zzEl = document.getElementById('mood-text-zhaozhao');
+      const bbEl = document.getElementById('mood-text-bunbun');
+      if (zzEl) zzEl.value = moodState.zhaozhao.text;
+      if (bbEl) bbEl.value = moodState.bunbun.text;
+
+      const past = entries.filter(e => e.date !== today);
+      const list = document.getElementById('mood-history-list');
+      if (!list) return;
+      list.innerHTML = past.length
+        ? past.map(e => {
+            const zz = e.zhaozhao || {}, bb = e.bunbun || {};
+            const zzRow = (zz.emoji || zz.text) ? `<div class="mood-history-row"><span class="mood-history-who">昭昭</span><span class="mood-history-emoji">${zz.emoji || ''}</span><span class="mood-history-text">${escHtml(zz.text || '')}</span></div>` : '';
+            const bbRow = (bb.emoji || bb.text) ? `<div class="mood-history-row"><span class="mood-history-who">笨笨</span><span class="mood-history-emoji">${bb.emoji || ''}</span><span class="mood-history-text">${escHtml(bb.text || '')}</span></div>` : '';
+            return `<div class="mood-history-entry"><div class="mood-history-date">${e.date}</div>${zzRow}${bbRow}</div>`;
+          }).join('')
+        : '<div class="mood-empty">还没有往日记录</div>';
+
+    } catch {}
+  }
+
+  async function saveMood() {
+    const zzText = document.getElementById('mood-text-zhaozhao')?.value.trim() || '';
+    const bbText = document.getElementById('mood-text-bunbun')?.value.trim()   || '';
+    moodState.zhaozhao.text = zzText;
+    moodState.bunbun.text   = bbText;
+
+    const btn = document.getElementById('mood-save-btn');
+    try {
+      await fetch(`${SERVER}/mood`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: getTodayISO(), zhaozhao: { emoji: moodState.zhaozhao.emoji, text: zzText }, bunbun: { emoji: moodState.bunbun.emoji, text: bbText } })
+      });
+      if (btn) { btn.textContent = '已记录'; btn.classList.add('saved'); setTimeout(() => { btn.textContent = '记录今天的心情'; btn.classList.remove('saved'); }, 2000); }
+      await loadMoods();
+    } catch {
+      if (btn) { btn.textContent = '保存失败'; setTimeout(() => { btn.textContent = '记录今天的心情'; }, 2000); }
     }
-  });
+  }
+
+  // ── 初始化 ────────────────────────────────────────────
+  renderEmojiPicker('zhaozhao');
+  renderEmojiPicker('bunbun');
+  document.getElementById('mood-today-label').textContent = getTodayLabel();
 
   loadHistory().then(() => connect());
+  loadMoods();
 </script>
 </body>
 </html>

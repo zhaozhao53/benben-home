@@ -4,6 +4,17 @@ const path = require('path');
 
 const PORT = 3000;
 const HISTORY_FILE = path.join(__dirname, 'history', 'chat.json');
+const MOOD_FILE = path.join(__dirname, 'history', 'mood.json');
+
+function loadMoods() {
+  try { return JSON.parse(fs.readFileSync(MOOD_FILE, 'utf8')); }
+  catch { return { entries: [] }; }
+}
+
+function saveMoods(data) {
+  fs.mkdirSync(path.dirname(MOOD_FILE), { recursive: true });
+  fs.writeFileSync(MOOD_FILE, JSON.stringify(data, null, 2));
+}
 
 // ── 持久化：从硬盘加载历史 ────────────────────────────────
 function loadHistory() {
@@ -115,6 +126,17 @@ const server = http.createServer(async (req, res) => {
     return res.end(JSON.stringify({ id }));
   }
 
+  // 清空对话历史
+  if (req.method === 'POST' && pathname === '/clear') {
+    state.messages = [];
+    state.nextId = 1;
+    state.pending.clear();
+    saveHistory();
+    broadcast({ type: 'cleared' });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ ok: true }));
+  }
+
   // CC 提交回复
   if (req.method === 'POST' && pathname === '/reply') {
     const body = await readBody(req);
@@ -128,6 +150,32 @@ const server = http.createServer(async (req, res) => {
     saveHistory();
     broadcast({ type: 'reply', text: text.trim() });
     process.stdout.write(`\n┌─ 笨笨 ──────────────────────────\n│ ${text.trim().replace(/\n/g, '\n│ ')}\n└─────────────────────────────────\n\n`);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ ok: true }));
+  }
+
+  // 心情记录
+  if (req.method === 'GET' && pathname === '/mood') {
+    const data = loadMoods();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify(data.entries));
+  }
+
+  if (req.method === 'POST' && pathname === '/mood') {
+    const body = await readBody(req);
+    let parsed;
+    try { parsed = JSON.parse(body); } catch { res.writeHead(400); return res.end('invalid json'); }
+    const { date, zhaozhao, bunbun } = parsed;
+    if (!date) { res.writeHead(400); return res.end('missing date'); }
+    const data = loadMoods();
+    const idx = data.entries.findIndex(e => e.date === date);
+    const entry = { date, zhaozhao: zhaozhao || {}, bunbun: bunbun || {} };
+    if (idx >= 0) { data.entries[idx] = entry; }
+    else {
+      data.entries.push(entry);
+      data.entries.sort((a, b) => b.date.localeCompare(a.date));
+    }
+    saveMoods(data);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify({ ok: true }));
   }

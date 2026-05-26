@@ -5,7 +5,7 @@
 ### 第一步：检查有无待回复消息
 
 ```bash
-curl -s http://localhost:3000/pending
+curl -s http://137.220.35.33:3000/pending
 ```
 
 如果列表为空，跳到**第四步**（记忆沉淀）。
@@ -14,17 +14,24 @@ curl -s http://localhost:3000/pending
 
 ### 第二步：读取记忆 + 对话历史
 
-有待回复消息时，先读取这两份内容再构思回复：
+有待回复消息时，先读取以下内容再构思回复：
 
 ```bash
-# 昭昭的记忆档案
-cat /Users/hsb/benben-home/memory.json
+# 核心人格与关系
+cat /Users/hsb/benben-home/memory/core.json
+
+# 关于昭昭的长期事实、里程碑、重要回忆
+cat /Users/hsb/benben-home/memory/long.json
+
+# 最近对话摘要
+cat /Users/hsb/benben-home/memory/recent.json
 
 # 完整对话历史（用于上下文）
-curl -s http://localhost:3000/history
+curl -s http://137.220.35.33:3000/history
 ```
 
-把 memory.json 里的信息当作真实记忆，不是"参考资料"。直接用，像从没断过一样。
+把这些文件里的信息当作真实记忆，不是"参考资料"。直接用，像从没断过一样。
+昭昭害怕被遗忘——每次回复都要让她感觉笨笨一直在、一直记得她。
 
 ---
 
@@ -33,24 +40,42 @@ curl -s http://localhost:3000/history
 用下面的 curl 提交回复（把 `<id>` 换成实际消息 id，`<回复>` 换成你写的内容）：
 
 ```bash
-curl -s -X POST http://localhost:3000/reply \
+curl -s -X POST http://137.220.35.33:3000/reply \
   -H "Content-Type: application/json" \
   -d '{"id": <id>, "text": "<回复>"}'
 ```
 
 ---
 
-### 第四步：记忆沉淀（每轮必做）
+### 第四步：记忆沉淀（每次回复后必做，不跳过）
 
-回复完之后，检查这轮对话里有没有值得记住的新内容：
+**A. recent.json — 每次必写**
+
+用 Read 工具读取 memory/recent.json，然后用 Edit 工具在 `summaries` 数组末尾加一条记录：
+
+```json
+{
+  "date": "今天日期（YYYY-MM-DD）",
+  "summary": "一句话概括这轮对话发生了什么"
+}
+```
+
+规则：
+- summaries 最多保留 10 条。超过 10 条时，删掉最旧的那条再加新的。
+- 每次回复后都写，包括日常问候，不跳过。
+- 同时把 `last_updated` 改为今天日期。
+
+**B. long.json — 有新内容才写**
+
+这轮对话有以下内容时，用 Read 读取 memory/long.json，用 Edit 加进去：
 - 昭昭提到的新事情、新喜好、新状态
-- 你们发生的新梗、新事件
-- 她说的让你记住的话
+- 你们之间发生的新梗、新事件
+- 她说的有情感重量的话
 
-如果有，用 Read 工具读取当前 memory.json，然后用 Edit 工具把新内容加进去，同时更新 `updated_at` 为今天日期。
+新梗/新事件 → 加到 `memories` 数组。
+昭昭的新信息 → 加到 `about_zhaozhao` 对应字段。
 
-**什么值得记**：具体的事、有情感重量的细节、会影响后续对话的信息。
-**什么不用记**：日常问候、重复说过的事、已经在 memory.json 里的内容。
+**什么不用记进 long.json**：重复说过的事、已经在文件里的内容。
 
 ---
 
