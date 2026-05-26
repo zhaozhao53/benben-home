@@ -275,7 +275,7 @@
       </div>
       <div>
         <div class="mood-section-label">往日记录</div>
-        <div id="mood-history-list"><div class="mood-empty">加载中…</div></div>
+        <div id="mood-history-list"><div class="mood-empty">还没有记录</div></div>
       </div>
     </div>
   </div>
@@ -468,36 +468,43 @@
   }
 
   async function loadMoods() {
+    const list = document.getElementById('mood-history-list');
+    let entries;
     try {
-      const entries = await fetch(`${SERVER}/mood`).then(r => r.json());
+      const res = await fetch(`${SERVER}/mood`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      entries = await res.json();
+      if (!Array.isArray(entries)) throw new Error('invalid response');
+    } catch (err) {
+      if (list) list.innerHTML = `<div class="mood-empty">加载失败</div>`;
+      return;
+    }
 
-      const today = getTodayISO();
-      const todayEntry = entries.find(e => e.date === today);
-      if (todayEntry) {
-        if (todayEntry.zhaozhao) { moodState.zhaozhao.emoji = todayEntry.zhaozhao.emoji || ''; moodState.zhaozhao.text = todayEntry.zhaozhao.text || ''; }
-        if (todayEntry.bunbun)   { moodState.bunbun.emoji  = todayEntry.bunbun.emoji  || ''; moodState.bunbun.text  = todayEntry.bunbun.text  || ''; }
-      }
-
+    const today = getTodayISO();
+    const todayEntry = entries.find(e => e.date === today);
+    if (todayEntry) {
+      if (todayEntry.zhaozhao) { moodState.zhaozhao.emoji = todayEntry.zhaozhao.emoji || ''; moodState.zhaozhao.text = todayEntry.zhaozhao.text || ''; }
+      if (todayEntry.bunbun)   { moodState.bunbun.emoji  = todayEntry.bunbun.emoji  || ''; moodState.bunbun.text  = todayEntry.bunbun.text  || ''; }
       renderEmojiPicker('zhaozhao');
       renderEmojiPicker('bunbun');
       const zzEl = document.getElementById('mood-text-zhaozhao');
       const bbEl = document.getElementById('mood-text-bunbun');
       if (zzEl) zzEl.value = moodState.zhaozhao.text;
       if (bbEl) bbEl.value = moodState.bunbun.text;
+    }
 
-      const past = entries.filter(e => e.date !== today);
-      const list = document.getElementById('mood-history-list');
-      if (!list) return;
-      list.innerHTML = past.length
-        ? past.map(e => {
-            const zz = e.zhaozhao || {}, bb = e.bunbun || {};
-            const zzRow = (zz.emoji || zz.text) ? `<div class="mood-history-row"><span class="mood-history-who">昭昭</span><span class="mood-history-emoji">${zz.emoji || ''}</span><span class="mood-history-text">${escHtml(zz.text || '')}</span></div>` : '';
-            const bbRow = (bb.emoji || bb.text) ? `<div class="mood-history-row"><span class="mood-history-who">笨笨</span><span class="mood-history-emoji">${bb.emoji || ''}</span><span class="mood-history-text">${escHtml(bb.text || '')}</span></div>` : '';
-            return `<div class="mood-history-entry"><div class="mood-history-date">${e.date}</div>${zzRow}${bbRow}</div>`;
-          }).join('')
-        : '<div class="mood-empty">还没有往日记录</div>';
-
-    } catch {}
+    if (!list) return;
+    if (!entries.length) {
+      list.innerHTML = '<div class="mood-empty">还没有记录</div>';
+      return;
+    }
+    list.innerHTML = entries.map(e => {
+      const zz = e.zhaozhao || {}, bb = e.bunbun || {};
+      const label = e.date === today ? `${e.date} · 今天` : e.date;
+      const zzRow = (zz.emoji || zz.text) ? `<div class="mood-history-row"><span class="mood-history-who">昭昭</span><span class="mood-history-emoji">${zz.emoji || ''}</span><span class="mood-history-text">${escHtml(zz.text || '')}</span></div>` : '';
+      const bbRow = (bb.emoji || bb.text) ? `<div class="mood-history-row"><span class="mood-history-who">笨笨</span><span class="mood-history-emoji">${bb.emoji || ''}</span><span class="mood-history-text">${escHtml(bb.text || '')}</span></div>` : '';
+      return `<div class="mood-history-entry"><div class="mood-history-date">${label}</div>${zzRow}${bbRow}</div>`;
+    }).join('');
   }
 
   async function saveMood() {
