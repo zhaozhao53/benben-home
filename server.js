@@ -20,6 +20,7 @@ function loadHistory() {
 }
 
 function saveHistory() {
+  fs.mkdirSync(path.dirname(HISTORY_FILE), { recursive: true });
   fs.writeFileSync(HISTORY_FILE, JSON.stringify({
     nextId: state.nextId,
     messages: state.messages
@@ -99,36 +100,36 @@ const server = http.createServer(async (req, res) => {
   // 网页发送消息
   if (req.method === 'POST' && pathname === '/send') {
     const body = await readBody(req);
-    try {
-      const { text } = JSON.parse(body);
-      if (!text || !text.trim()) { res.writeHead(400); return res.end('missing text'); }
-      const id = state.nextId++;
-      const msg = { id, role: 'user', text: text.trim(), timestamp: Date.now() };
-      state.messages.push(msg);
-      state.pending.add(id);
-      saveHistory(); // 写入硬盘
-      broadcast({ type: 'user_confirmed', id });
-      process.stdout.write(`\n┌─ 昭昭 ──────────────────────────\n│ ${text.trim().replace(/\n/g, '\n│ ')}\n└─────────────────────────────────\n\n`);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ id }));
-    } catch { res.writeHead(400); return res.end('invalid json'); }
+    let parsed;
+    try { parsed = JSON.parse(body); } catch { res.writeHead(400); return res.end('invalid json'); }
+    const { text } = parsed;
+    if (!text || !text.trim()) { res.writeHead(400); return res.end('missing text'); }
+    const id = state.nextId++;
+    const msg = { id, role: 'user', text: text.trim(), timestamp: Date.now() };
+    state.messages.push(msg);
+    state.pending.add(id);
+    saveHistory();
+    broadcast({ type: 'user_confirmed', id });
+    process.stdout.write(`\n┌─ 昭昭 ──────────────────────────\n│ ${text.trim().replace(/\n/g, '\n│ ')}\n└─────────────────────────────────\n\n`);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ id }));
   }
 
   // CC 提交回复
   if (req.method === 'POST' && pathname === '/reply') {
     const body = await readBody(req);
-    try {
-      const { id, text } = JSON.parse(body);
-      if (!text || !text.trim()) { res.writeHead(400); return res.end('missing text'); }
-      state.pending.delete(id);
-      const msg = { id: state.nextId++, role: 'assistant', text: text.trim(), timestamp: Date.now() };
-      state.messages.push(msg);
-      saveHistory(); // 写入硬盘
-      broadcast({ type: 'reply', text: text.trim() });
-      process.stdout.write(`\n┌─ 笨笨 ──────────────────────────\n│ ${text.trim().replace(/\n/g, '\n│ ')}\n└─────────────────────────────────\n\n`);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ ok: true }));
-    } catch { res.writeHead(400); return res.end('invalid json'); }
+    let parsed;
+    try { parsed = JSON.parse(body); } catch { res.writeHead(400); return res.end('invalid json'); }
+    const { id, text } = parsed;
+    if (!text || !text.trim()) { res.writeHead(400); return res.end('missing text'); }
+    state.pending.delete(id);
+    const msg = { id: state.nextId++, role: 'assistant', text: text.trim(), timestamp: Date.now() };
+    state.messages.push(msg);
+    saveHistory();
+    broadcast({ type: 'reply', text: text.trim() });
+    process.stdout.write(`\n┌─ 笨笨 ──────────────────────────\n│ ${text.trim().replace(/\n/g, '\n│ ')}\n└─────────────────────────────────\n\n`);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ ok: true }));
   }
 
   res.writeHead(404); res.end('not found');
