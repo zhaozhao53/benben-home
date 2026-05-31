@@ -218,6 +218,61 @@
     .nav-tab svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
     .nav-tab.active { color: var(--nav-active); }
     .nav-tab:not(.active):hover { color: var(--accent); }
+
+    /* ── SETTINGS PAGE ── */
+    .settings-header {
+      padding: 16px 24px; border-bottom: 1px solid var(--border);
+      background: var(--surface); flex-shrink: 0;
+      display: flex; align-items: center;
+    }
+    .settings-header-title { font-size: 15px; font-weight: 300; letter-spacing: 0.05em; }
+
+    .settings-content {
+      flex: 1; overflow-y: auto; padding: 20px 18px;
+      display: flex; flex-direction: column; background: #FFF7F0;
+    }
+    .settings-content::-webkit-scrollbar { width: 4px; }
+    .settings-content::-webkit-scrollbar-thumb { background: #e5d5c8; }
+
+    .settings-section-label {
+      font-family: 'Space Mono', monospace; font-size: 9px;
+      letter-spacing: 0.2em; color: var(--muted);
+      padding: 0 4px; margin-top: 20px; margin-bottom: 8px;
+    }
+    .settings-section-label:first-child { margin-top: 4px; }
+
+    .settings-card {
+      background: #ffffff; border-radius: 14px;
+      border: 1px solid #eeddd3; overflow: hidden;
+    }
+
+    .settings-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .settings-item:hover { background: #fdf3ee; }
+    .settings-item:active { background: #f9e9e0; }
+
+    .settings-item-icon {
+      width: 34px; height: 34px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; background: #f5ede6;
+    }
+    .settings-item-icon svg { width: 16px; height: 16px; stroke: var(--accent); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    .settings-item-text { flex: 1; min-width: 0; }
+    .settings-item-title { font-size: 14px; color: var(--text); font-weight: 300; letter-spacing: 0.04em; }
+    .settings-item-desc { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.08em; margin-top: 3px; }
+
+    .settings-item-arrow { font-size: 18px; color: var(--muted); flex-shrink: 0; line-height: 1; }
+
+    .settings-divider { height: 1px; background: #f0e0d6; margin: 0 16px; }
+
+    .settings-card-danger .settings-item-icon { background: #fff0f0; }
+    .settings-card-danger .settings-item-icon svg { stroke: var(--pink); }
+    .settings-card-danger .settings-item-title { color: var(--pink); }
+    .settings-card-danger .settings-item:hover { background: #fff5f7; }
   </style>
 </head>
 <body>
@@ -293,12 +348,87 @@
 
   <!-- ── 设置 ── -->
   <div id="page-settings" class="page">
-    <div class="placeholder-page">
-      <div class="placeholder-icon">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <div class="settings-header">
+      <div class="settings-header-title">设置</div>
+    </div>
+    <div class="settings-content">
+
+      <div class="settings-section-label">数据</div>
+      <div class="settings-card">
+        <div class="settings-item" onclick="exportChat()">
+          <div class="settings-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <div class="settings-item-text">
+            <div class="settings-item-title">导出聊天记录</div>
+            <div class="settings-item-desc">下载全部对话为 JSON 文件</div>
+          </div>
+          <div class="settings-item-arrow">›</div>
+        </div>
+        <div class="settings-divider"></div>
+        <div class="settings-item" onclick="backupData()">
+          <div class="settings-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          </div>
+          <div class="settings-item-text">
+            <div class="settings-item-title">备份数据</div>
+            <div class="settings-item-desc">导出聊天与心情记录</div>
+          </div>
+          <div class="settings-item-arrow">›</div>
+        </div>
+        <div class="settings-divider"></div>
+        <div class="settings-item" onclick="restoreData()">
+          <div class="settings-item-icon">
+            <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          </div>
+          <div class="settings-item-text">
+            <div class="settings-item-title">恢复数据</div>
+            <div class="settings-item-desc">从备份文件中恢复</div>
+          </div>
+          <div class="settings-item-arrow">›</div>
+        </div>
       </div>
-      <div class="placeholder-title">设置</div>
-      <div class="placeholder-sub">即将开放</div>
+
+      <div class="settings-section-label">偏好</div>
+      <div class="settings-card">
+        <div class="settings-item" onclick="showAppearance()">
+          <div class="settings-item-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </div>
+          <div class="settings-item-text">
+            <div class="settings-item-title">外观设置</div>
+            <div class="settings-item-desc">主题色 · 字号 · 显示密度</div>
+          </div>
+          <div class="settings-item-arrow">›</div>
+        </div>
+        <div class="settings-divider"></div>
+        <div class="settings-item" onclick="showPersonality()">
+          <div class="settings-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <div class="settings-item-text">
+            <div class="settings-item-title">人格设置</div>
+            <div class="settings-item-desc">调整笨笨的回应风格</div>
+          </div>
+          <div class="settings-item-arrow">›</div>
+        </div>
+      </div>
+
+      <div class="settings-section-label">危险区域</div>
+      <div class="settings-card settings-card-danger">
+        <div class="settings-item" onclick="clearAllConversations()">
+          <div class="settings-item-icon">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          </div>
+          <div class="settings-item-text">
+            <div class="settings-item-title">清空全部对话</div>
+            <div class="settings-item-desc">删除所有聊天记录，不可恢复</div>
+          </div>
+          <div class="settings-item-arrow">›</div>
+        </div>
+      </div>
+
+      <input type="file" id="restore-file-input" accept=".json" style="display:none" onchange="handleRestoreFile(this)">
     </div>
   </div>
 
@@ -525,6 +655,58 @@
     } catch {
       if (btn) { btn.textContent = '保存失败'; setTimeout(() => { btn.textContent = '记录今天的心情'; }, 2000); }
     }
+  }
+
+  // ── 设置功能 ──────────────────────────────────────────
+  async function exportChat() {
+    try {
+      const res = await fetch(`${SERVER}/history`);
+      const msgs = await res.json();
+      const blob = new Blob([JSON.stringify(msgs, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `chat-${getTodayISO()}.json`;
+      a.click(); URL.revokeObjectURL(url);
+    } catch { alert('导出失败，检查服务器是否在线'); }
+  }
+
+  async function backupData() {
+    try {
+      const [chatRes, moodRes] = await Promise.all([fetch(`${SERVER}/history`), fetch(`${SERVER}/mood`)]);
+      const chat = await chatRes.json();
+      const mood = await moodRes.json();
+      const blob = new Blob([JSON.stringify({ chat, mood, exportedAt: new Date().toISOString() }, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `backup-${getTodayISO()}.json`;
+      a.click(); URL.revokeObjectURL(url);
+    } catch { alert('备份失败，检查服务器是否在线'); }
+  }
+
+  function restoreData() { document.getElementById('restore-file-input').click(); }
+
+  async function handleRestoreFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    input.value = '';
+    try {
+      const data = JSON.parse(await file.text());
+      if (!data.chat && !data.mood) { alert('文件格式不正确'); return; }
+      if (!confirm('恢复会覆盖现有数据，确定继续吗？')) return;
+      alert('恢复功能即将开放');
+    } catch { alert('读取文件失败'); }
+  }
+
+  function showAppearance() { alert('外观设置即将开放'); }
+  function showPersonality() { alert('人格设置即将开放'); }
+
+  async function clearAllConversations() {
+    if (!confirm('清空全部对话记录？此操作不可恢复。')) return;
+    try {
+      await fetch(`${SERVER}/clear`, { method: 'POST' });
+      document.getElementById('messages').innerHTML = '';
+      alert('已清空');
+    } catch { alert('清空失败，检查服务器是否在线'); }
   }
 
   // ── 初始化 ────────────────────────────────────────────
