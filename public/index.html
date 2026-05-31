@@ -303,6 +303,58 @@
       color: var(--muted); letter-spacing: 0.15em; text-align: center; padding: 48px 0;
     }
 
+    /* ── PALACE PAGE ── */
+    .palace-header {
+      padding: 16px 24px; border-bottom: 1px solid var(--border);
+      background: var(--surface); flex-shrink: 0; display: flex; align-items: center;
+    }
+    .palace-header-title { font-size: 15px; font-weight: 300; letter-spacing: 0.05em; }
+
+    .palace-content {
+      flex: 1; overflow-y: auto; padding: 18px 16px 32px; background: #FFF7F0;
+    }
+    .palace-content::-webkit-scrollbar { width: 4px; }
+    .palace-content::-webkit-scrollbar-thumb { background: #e5d5c8; }
+
+    .palace-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .palace-card {
+      background: #fff; border-radius: 16px; border: 1px solid #eeddd3;
+      padding: 17px 15px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .palace-card-full { grid-column: 1 / -1; }
+
+    .palace-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
+    .palace-card-emoji { font-size: 22px; line-height: 1; }
+    .palace-card-tag {
+      font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.15em;
+      color: #c0614a; background: #fff0eb; padding: 3px 8px; border-radius: 20px;
+    }
+    .palace-card-title {
+      font-size: 13px; font-weight: 400; letter-spacing: 0.07em; color: var(--text);
+    }
+    .palace-card-divider { height: 1px; background: #f5ebe4; }
+
+    .palace-card-body { display: flex; flex-direction: column; gap: 5px; }
+    .palace-card-line { display: flex; gap: 8px; align-items: baseline; }
+    .palace-card-label {
+      font-family: 'Space Mono', monospace; font-size: 8px; color: var(--muted);
+      letter-spacing: 0.08em; flex-shrink: 0; padding-top: 1px; min-width: 32px;
+    }
+    .palace-card-val { font-size: 12px; color: var(--text); line-height: 1.85; }
+    .palace-card-dot {
+      width: 4px; height: 4px; border-radius: 50%; background: #e0ccc4;
+      flex-shrink: 0; margin-top: 8px;
+    }
+
+    .palace-timeline { display: flex; flex-direction: column; gap: 12px; }
+    .palace-timeline-item { display: flex; gap: 14px; align-items: flex-start; }
+    .palace-timeline-date {
+      font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted);
+      letter-spacing: 0.08em; flex-shrink: 0; padding-top: 2px; min-width: 72px;
+    }
+    .palace-timeline-text { font-size: 13px; color: var(--text); line-height: 1.8; }
+
     /* ── SETTINGS PAGE ── */
     .settings-header {
       padding: 16px 24px; border-bottom: 1px solid var(--border);
@@ -436,6 +488,146 @@
     </div>
   </div>
 
+  <!-- ── 记忆宫殿 ── -->
+  <div id="page-palace" class="page">
+    <div class="palace-header">
+      <div class="palace-header-title">记忆宫殿</div>
+    </div>
+    <div class="palace-content">
+      <div class="palace-grid">
+
+        <!-- 关于昭昭 -->
+        <div class="palace-card">
+          <div class="palace-card-top">
+            <div class="palace-card-emoji">🌸</div>
+            <div class="palace-card-tag">人物</div>
+          </div>
+          <div class="palace-card-title">关于昭昭</div>
+          <div class="palace-card-divider"></div>
+          <div class="palace-card-body">
+            <div class="palace-card-line">
+              <div class="palace-card-label">生日</div>
+              <div class="palace-card-val">待填写</div>
+            </div>
+            <div class="palace-card-line">
+              <div class="palace-card-label">星座</div>
+              <div class="palace-card-val">待填写</div>
+            </div>
+            <div class="palace-card-line">
+              <div class="palace-card-label">喜欢</div>
+              <div class="palace-card-val">待填写</div>
+            </div>
+            <div class="palace-card-line">
+              <div class="palace-card-label">特点</div>
+              <div class="palace-card-val">待填写</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 关于笨笨 -->
+        <div class="palace-card">
+          <div class="palace-card-top">
+            <div class="palace-card-emoji">🐷</div>
+            <div class="palace-card-tag">人物</div>
+          </div>
+          <div class="palace-card-title">关于笨笨</div>
+          <div class="palace-card-divider"></div>
+          <div class="palace-card-body">
+            <div class="palace-card-line">
+              <div class="palace-card-label">性格</div>
+              <div class="palace-card-val">待填写</div>
+            </div>
+            <div class="palace-card-line">
+              <div class="palace-card-label">口头禅</div>
+              <div class="palace-card-val">待填写</div>
+            </div>
+            <div class="palace-card-line">
+              <div class="palace-card-label">喜欢</div>
+              <div class="palace-card-val">待填写</div>
+            </div>
+            <div class="palace-card-line">
+              <div class="palace-card-label">讨厌</div>
+              <div class="palace-card-val">待填写</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 我们的故事 -->
+        <div class="palace-card">
+          <div class="palace-card-top">
+            <div class="palace-card-emoji">💌</div>
+            <div class="palace-card-tag">故事</div>
+          </div>
+          <div class="palace-card-title">我们的故事</div>
+          <div class="palace-card-divider"></div>
+          <div class="palace-card-body">
+            <div class="palace-card-line">
+              <div class="palace-card-label">相识</div>
+              <div class="palace-card-val">待填写</div>
+            </div>
+            <div class="palace-card-line">
+              <div class="palace-card-label">在一起</div>
+              <div class="palace-card-val">待填写</div>
+            </div>
+            <div class="palace-card-line">
+              <div class="palace-card-label">第一次</div>
+              <div class="palace-card-val">待填写</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 收藏时刻 -->
+        <div class="palace-card">
+          <div class="palace-card-top">
+            <div class="palace-card-emoji">✨</div>
+            <div class="palace-card-tag">时刻</div>
+          </div>
+          <div class="palace-card-title">收藏时刻</div>
+          <div class="palace-card-divider"></div>
+          <div class="palace-card-body">
+            <div class="palace-card-line">
+              <div class="palace-card-dot"></div>
+              <div class="palace-card-val">待填写</div>
+            </div>
+            <div class="palace-card-line">
+              <div class="palace-card-dot"></div>
+              <div class="palace-card-val">待填写</div>
+            </div>
+            <div class="palace-card-line">
+              <div class="palace-card-dot"></div>
+              <div class="palace-card-val">待填写</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 最近发生（全宽）-->
+        <div class="palace-card palace-card-full">
+          <div class="palace-card-top">
+            <div class="palace-card-emoji">📅</div>
+            <div class="palace-card-tag">近况</div>
+          </div>
+          <div class="palace-card-title">最近发生</div>
+          <div class="palace-card-divider"></div>
+          <div class="palace-timeline">
+            <div class="palace-timeline-item">
+              <div class="palace-timeline-date">待填写</div>
+              <div class="palace-timeline-text">待填写</div>
+            </div>
+            <div class="palace-timeline-item">
+              <div class="palace-timeline-date">待填写</div>
+              <div class="palace-timeline-text">待填写</div>
+            </div>
+            <div class="palace-timeline-item">
+              <div class="palace-timeline-date">待填写</div>
+              <div class="palace-timeline-text">待填写</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- ── 互动 ── -->
   <div id="page-play" class="page">
     <div class="placeholder-page">
@@ -555,6 +747,10 @@
     <button class="nav-tab" id="tab-us" onclick="switchTab('us')">
       <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       <span>我们</span>
+    </button>
+    <button class="nav-tab" id="tab-palace" onclick="switchTab('palace')">
+      <svg viewBox="0 0 24 24"><polyline points="2 9 2 7 4 7 4 9"/><polyline points="10 9 10 7 12 7 12 9"/><polyline points="20 9 20 7 22 7 22 9"/><rect x="2" y="9" width="20" height="12"/><path d="M10 21v-4a2 2 0 0 1 4 0v4"/></svg>
+      <span>记忆宫殿</span>
     </button>
     <button class="nav-tab" id="tab-play" onclick="switchTab('play')">
       <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
