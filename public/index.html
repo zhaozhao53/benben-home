@@ -219,6 +219,90 @@
     .nav-tab.active { color: var(--nav-active); }
     .nav-tab:not(.active):hover { color: var(--accent); }
 
+    /* ── AVATAR MENU ── */
+    .header-avatar-wrap { position: relative; cursor: pointer; user-select: none; }
+    .header-avatar-wrap:hover .header-name { color: var(--accent); transition: color 0.18s; }
+
+    .avatar-menu {
+      display: none; position: absolute; top: calc(100% + 12px); left: 0;
+      background: #fff; border-radius: 12px; border: 1px solid #eeddd3;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.09); min-width: 156px;
+      z-index: 100; overflow: hidden;
+    }
+    .avatar-menu.open { display: block; animation: menuFadeIn 0.15s ease; }
+    @keyframes menuFadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .avatar-menu-item {
+      display: flex; align-items: center; gap: 10px; padding: 13px 15px;
+      cursor: pointer; transition: background 0.12s;
+    }
+    .avatar-menu-item:hover { background: #fdf3ee; }
+
+    .avatar-menu-icon {
+      width: 30px; height: 30px; border-radius: 8px; background: #fff0eb;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .avatar-menu-icon svg { width: 14px; height: 14px; stroke: #c0614a; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    .avatar-menu-label { font-size: 13px; color: var(--text); font-weight: 300; letter-spacing: 0.05em; }
+    .avatar-menu-divider { height: 1px; background: #f0e0d6; }
+
+    /* ── HISTORY MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(26,20,15,0.32);
+      z-index: 200; align-items: flex-end;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .history-panel {
+      width: 100%; max-height: 82vh; background: #FFF7F0;
+      border-radius: 20px 20px 0 0; display: flex; flex-direction: column;
+      animation: panelSlideUp 0.22s ease;
+    }
+    @keyframes panelSlideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .history-panel-header {
+      padding: 18px 20px 14px; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #eeddd3; flex-shrink: 0;
+    }
+    .history-panel-title { font-size: 15px; font-weight: 300; letter-spacing: 0.06em; }
+    .history-panel-close {
+      width: 28px; height: 28px; background: #f0e0d6; border: none; border-radius: 50%;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 17px; color: var(--accent); line-height: 1; transition: background 0.15s;
+    }
+    .history-panel-close:hover { background: #e5cfc5; }
+
+    .history-panel-body {
+      flex: 1; overflow-y: auto; padding: 18px 18px 28px;
+      display: flex; flex-direction: column; gap: 22px;
+    }
+    .history-panel-body::-webkit-scrollbar { width: 4px; }
+    .history-panel-body::-webkit-scrollbar-thumb { background: #e5d5c8; }
+
+    .history-date-label {
+      font-family: 'Space Mono', monospace; font-size: 9px;
+      letter-spacing: 0.2em; color: var(--muted); margin-bottom: 8px; padding: 0 2px;
+    }
+    .history-date-card {
+      background: #fff; border-radius: 12px; border: 1px solid #eeddd3; overflow: hidden;
+    }
+    .history-msg-row {
+      display: flex; gap: 10px; padding: 11px 14px; align-items: flex-start;
+      border-bottom: 1px solid #f5ebe4;
+    }
+    .history-msg-row:last-child { border-bottom: none; }
+    .history-msg-role {
+      font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.1em;
+      color: var(--muted); flex-shrink: 0; padding-top: 3px; min-width: 28px;
+    }
+    .history-msg-role.is-user { color: #c0614a; }
+    .history-msg-text { font-size: 13px; color: var(--text); line-height: 1.85; word-break: break-all; }
+    .history-empty {
+      font-family: 'Space Mono', monospace; font-size: 10px;
+      color: var(--muted); letter-spacing: 0.15em; text-align: center; padding: 48px 0;
+    }
+
     /* ── SETTINGS PAGE ── */
     .settings-header {
       padding: 16px 24px; border-bottom: 1px solid var(--border);
@@ -281,11 +365,28 @@
   <!-- ── 聊天 ── -->
   <div id="page-chat" class="page active">
     <div class="header">
-      <div class="header-left">
-        <div class="header-dot" id="conn-dot"></div>
-        <div>
-          <div class="header-name">笨笨</div>
-          <div class="header-status" id="conn-status">连接中…</div>
+      <div class="header-avatar-wrap" onclick="toggleAvatarMenu(event)">
+        <div class="header-left">
+          <div class="header-dot" id="conn-dot"></div>
+          <div>
+            <div class="header-name">笨笨</div>
+            <div class="header-status" id="conn-status">连接中…</div>
+          </div>
+        </div>
+        <div id="avatar-menu" class="avatar-menu">
+          <div class="avatar-menu-item" onclick="openHistory(event)">
+            <div class="avatar-menu-icon">
+              <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg>
+            </div>
+            <span class="avatar-menu-label">历史对话</span>
+          </div>
+          <div class="avatar-menu-divider"></div>
+          <div class="avatar-menu-item" onclick="openAbout(event)">
+            <div class="avatar-menu-icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <span class="avatar-menu-label">关于笨笨</span>
+          </div>
         </div>
       </div>
       <div class="header-right">
@@ -429,6 +530,19 @@
       </div>
 
       <input type="file" id="restore-file-input" accept=".json" style="display:none" onchange="handleRestoreFile(this)">
+    </div>
+  </div>
+
+  <!-- ── 历史对话弹层 ── -->
+  <div id="history-overlay" class="modal-overlay" onclick="closeHistory()">
+    <div class="history-panel" onclick="event.stopPropagation()">
+      <div class="history-panel-header">
+        <div class="history-panel-title">历史对话</div>
+        <button class="history-panel-close" onclick="closeHistory()">×</button>
+      </div>
+      <div class="history-panel-body" id="history-panel-body">
+        <div class="history-empty">加载中…</div>
+      </div>
     </div>
   </div>
 
@@ -655,6 +769,60 @@
     } catch {
       if (btn) { btn.textContent = '保存失败'; setTimeout(() => { btn.textContent = '记录今天的心情'; }, 2000); }
     }
+  }
+
+  // ── 头像菜单 ──────────────────────────────────────────
+  function toggleAvatarMenu(e) {
+    e.stopPropagation();
+    document.getElementById('avatar-menu').classList.toggle('open');
+  }
+  document.addEventListener('click', () => document.getElementById('avatar-menu').classList.remove('open'));
+
+  function openHistory(e) {
+    e.stopPropagation();
+    document.getElementById('avatar-menu').classList.remove('open');
+    document.getElementById('history-overlay').classList.add('open');
+    fetchAndShowHistory();
+  }
+
+  function openAbout(e) {
+    e.stopPropagation();
+    document.getElementById('avatar-menu').classList.remove('open');
+  }
+
+  function closeHistory() {
+    document.getElementById('history-overlay').classList.remove('open');
+  }
+
+  async function fetchAndShowHistory() {
+    const body = document.getElementById('history-panel-body');
+    body.innerHTML = '<div class="history-empty">加载中…</div>';
+    try {
+      const res = await fetch(`${SERVER}/history`);
+      const msgs = await res.json();
+      if (!msgs.length) { body.innerHTML = '<div class="history-empty">还没有对话记录</div>'; return; }
+
+      const groups = {};
+      msgs.forEach(m => {
+        const key = new Date(m.timestamp).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(m);
+      });
+
+      body.innerHTML = Object.entries(groups).map(([date, ms]) => `
+        <div>
+          <div class="history-date-label">${date}</div>
+          <div class="history-date-card">
+            ${ms.map(m => `
+              <div class="history-msg-row">
+                <div class="history-msg-role${m.role === 'user' ? ' is-user' : ''}">${m.role === 'user' ? '昭昭' : '笨笨'}</div>
+                <div class="history-msg-text">${escHtml(m.text).replace(/\n/g, '<br>')}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    } catch { body.innerHTML = '<div class="history-empty">加载失败</div>'; }
   }
 
   // ── 设置功能 ──────────────────────────────────────────
