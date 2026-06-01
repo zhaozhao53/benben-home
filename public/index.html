@@ -2,7 +2,9 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#FFF7F0">
   <title>昭昭和笨笨的家</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap');
@@ -25,12 +27,27 @@
       --nav-border: #e5dfc8;
       --nav-active: #c45470;
       --nav-inactive: #b8b2a8;
+      color-scheme: light;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Noto Serif SC', serif; overflow: hidden; }
+    html {
+      height: 100%; height: -webkit-fill-available;
+      background: var(--bg); overflow: hidden;
+    }
+    body {
+      height: 100%; height: -webkit-fill-available;
+      background: var(--bg); color: var(--text);
+      font-family: 'Noto Serif SC', serif; overflow: hidden;
+      -webkit-text-size-adjust: 100%; text-size-adjust: 100%;
+      touch-action: manipulation;
+    }
 
-    #app { display: flex; height: 100vh; flex-direction: column; }
+    #app {
+      display: flex; flex-direction: column;
+      height: 100vh; height: 100dvh;
+      min-height: -webkit-fill-available;
+    }
 
     /* ── PAGE SYSTEM ── */
     .page { display: none; flex: 1; flex-direction: column; overflow: hidden; min-height: 0; }
@@ -296,9 +313,9 @@
 
     /* ── BOTTOM NAV ── */
     .bottom-nav {
-      display: flex; flex-shrink: 0; height: 60px;
+      display: flex; flex-shrink: 0;
+      min-height: 60px; padding-bottom: env(safe-area-inset-bottom, 0px);
       background: var(--nav-bg); border-top: 1px solid var(--nav-border);
-      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
     .nav-tab {
       flex: 1; display: flex; flex-direction: column;
@@ -605,7 +622,7 @@
         <button class="attach-remove-btn" onclick="clearAttachment()">×</button>
       </div>
       <div class="input-row">
-        <input type="file" id="attach-input" accept="image/*,*/*" style="display:none" onchange="handleFileSelect(this)">
+        <input type="file" id="attach-input" accept="image/*,video/*,application/pdf,text/plain,.doc,.docx,.xls,.xlsx,.zip" style="display:none" onchange="handleFileSelect(this)">
         <button id="attach-btn" class="attach-btn" onclick="openAttachPicker()" disabled title="发送图片或文件">
           <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
         </button>
@@ -636,7 +653,7 @@
           <span class="us-days-number" id="days-count">—</span>
           <span class="us-days-unit">天</span>
         </div>
-        <div class="us-days-since">从 2026.05.01 起</div>
+        <div class="us-days-since">从 2026.05.03 起</div>
       </div>
 
       <!-- 相册 -->
@@ -1558,7 +1575,7 @@
 
   // ── 认识天数 ──────────────────────────────────────────
   function calcDays() {
-    const start = new Date('2026-05-01T00:00:00');
+    const start = new Date('2026-05-03T00:00:00');
     const diff = Math.floor((Date.now() - start) / 86400000);
     const el = document.getElementById('days-count');
     if (el) el.textContent = diff;
