@@ -498,6 +498,56 @@
       border-radius: 10px; font-family: 'Menlo', 'Courier New', monospace; font-size: 11px;
       color: #c0614a; cursor: pointer; letter-spacing: 0.05em;
     }
+
+    /* ── PALACE EDIT ── */
+    .palace-card-top-right { display: flex; align-items: center; gap: 6px; }
+    .palace-edit-btn {
+      background: none; border: 1px solid #e5d5c8; border-radius: 5px;
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 9px;
+      color: #c0614a; cursor: pointer; padding: 2px 7px; letter-spacing: 0.05em;
+      transition: background 0.15s;
+    }
+    .palace-edit-btn:hover { background: #fff0eb; }
+
+    #palace-edit-overlay { display: none; position: fixed; inset: 0; background: rgba(26,20,15,0.32); z-index: 200; align-items: flex-end; }
+    #palace-edit-overlay.open { display: flex; }
+    .palace-edit-panel {
+      width: 100%; max-height: 88vh; background: #FFF7F0; border-radius: 20px 20px 0 0;
+      display: flex; flex-direction: column; animation: panelSlideUp 0.22s ease;
+    }
+    .palace-edit-header {
+      padding: 18px 20px 14px; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #eeddd3; flex-shrink: 0;
+    }
+    .palace-edit-title { font-size: 15px; font-weight: 300; letter-spacing: 0.06em; }
+    .palace-edit-save {
+      background: #c0614a; color: #fff; border: none; border-radius: 8px;
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 11px; padding: 6px 16px; cursor: pointer;
+    }
+    .palace-edit-body { flex: 1; overflow-y: auto; padding: 16px 20px 8px; display: flex; flex-direction: column; gap: 14px; }
+    .palace-edit-field { display: flex; flex-direction: column; gap: 5px; }
+    .palace-edit-label { font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.12em; }
+    .palace-edit-input {
+      width: 100%; background: #fff; border: 1px solid #e5d5c8; border-radius: 8px;
+      padding: 9px 12px; font-family: 'PingFang SC', 'Hiragino Sans GB', sans-serif; font-size: 13px;
+      color: var(--text); resize: none; outline: none;
+    }
+    .palace-edit-input:focus { border-color: #c0614a; }
+    .palace-edit-cancel {
+      margin: 8px 20px 28px; padding: 11px; background: none; border: 1px solid #e5d5c8;
+      border-radius: 10px; font-family: 'Menlo', 'Courier New', monospace; font-size: 11px;
+      color: var(--sub); cursor: pointer; flex-shrink: 0;
+    }
+    .palace-timeline-edit-row { display: flex; flex-direction: column; gap: 5px; padding: 10px; background: #fff; border-radius: 10px; border: 1px solid #eeddd3; }
+    .palace-edit-date { font-size: 12px; }
+    .palace-timeline-del { align-self: flex-end; background: none; border: none; font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); cursor: pointer; padding: 2px 0; }
+    .palace-timeline-del:hover { color: var(--pink); }
+    .palace-timeline-add {
+      margin-top: 8px; padding: 8px; width: 100%; background: none; border: 1px dashed #e5d5c8;
+      border-radius: 8px; font-family: 'Menlo', 'Courier New', monospace; font-size: 10px;
+      color: #c0614a; cursor: pointer;
+    }
+    #palace-timeline-entries { display: flex; flex-direction: column; gap: 10px; }
   </style>
 </head>
 <body>
@@ -651,128 +701,70 @@
         <div class="palace-card">
           <div class="palace-card-top">
             <div class="palace-card-emoji">🌸</div>
-            <div class="palace-card-tag">人物</div>
+            <div class="palace-card-top-right">
+              <div class="palace-card-tag">人物</div>
+              <button class="palace-edit-btn" onclick="openPalaceEdit('zhaozhao')">编辑</button>
+            </div>
           </div>
           <div class="palace-card-title">关于昭昭</div>
           <div class="palace-card-divider"></div>
-          <div class="palace-card-body">
-            <div class="palace-card-line">
-              <div class="palace-card-label">生日</div>
-              <div class="palace-card-val">待填写</div>
-            </div>
-            <div class="palace-card-line">
-              <div class="palace-card-label">星座</div>
-              <div class="palace-card-val">待填写</div>
-            </div>
-            <div class="palace-card-line">
-              <div class="palace-card-label">喜欢</div>
-              <div class="palace-card-val">待填写</div>
-            </div>
-            <div class="palace-card-line">
-              <div class="palace-card-label">特点</div>
-              <div class="palace-card-val">待填写</div>
-            </div>
-          </div>
+          <div class="palace-card-body" id="card-body-zhaozhao"><div class="palace-card-val" style="color:var(--muted)">加载中…</div></div>
         </div>
 
         <!-- 关于笨笨 -->
         <div class="palace-card">
           <div class="palace-card-top">
             <div class="palace-card-emoji">🐷</div>
-            <div class="palace-card-tag">人物</div>
+            <div class="palace-card-top-right">
+              <div class="palace-card-tag">人物</div>
+              <button class="palace-edit-btn" onclick="openPalaceEdit('bunbun')">编辑</button>
+            </div>
           </div>
           <div class="palace-card-title">关于笨笨</div>
           <div class="palace-card-divider"></div>
-          <div class="palace-card-body">
-            <div class="palace-card-line">
-              <div class="palace-card-label">性格</div>
-              <div class="palace-card-val">待填写</div>
-            </div>
-            <div class="palace-card-line">
-              <div class="palace-card-label">口头禅</div>
-              <div class="palace-card-val">待填写</div>
-            </div>
-            <div class="palace-card-line">
-              <div class="palace-card-label">喜欢</div>
-              <div class="palace-card-val">待填写</div>
-            </div>
-            <div class="palace-card-line">
-              <div class="palace-card-label">讨厌</div>
-              <div class="palace-card-val">待填写</div>
-            </div>
-          </div>
+          <div class="palace-card-body" id="card-body-bunbun"><div class="palace-card-val" style="color:var(--muted)">加载中…</div></div>
         </div>
 
         <!-- 我们的故事 -->
         <div class="palace-card">
           <div class="palace-card-top">
             <div class="palace-card-emoji">💌</div>
-            <div class="palace-card-tag">故事</div>
+            <div class="palace-card-top-right">
+              <div class="palace-card-tag">故事</div>
+              <button class="palace-edit-btn" onclick="openPalaceEdit('story')">编辑</button>
+            </div>
           </div>
           <div class="palace-card-title">我们的故事</div>
           <div class="palace-card-divider"></div>
-          <div class="palace-card-body">
-            <div class="palace-card-line">
-              <div class="palace-card-label">相识</div>
-              <div class="palace-card-val">待填写</div>
-            </div>
-            <div class="palace-card-line">
-              <div class="palace-card-label">在一起</div>
-              <div class="palace-card-val">待填写</div>
-            </div>
-            <div class="palace-card-line">
-              <div class="palace-card-label">第一次</div>
-              <div class="palace-card-val">待填写</div>
-            </div>
-          </div>
+          <div class="palace-card-body" id="card-body-story"><div class="palace-card-val" style="color:var(--muted)">加载中…</div></div>
         </div>
 
         <!-- 收藏时刻 -->
         <div class="palace-card">
           <div class="palace-card-top">
             <div class="palace-card-emoji">✨</div>
-            <div class="palace-card-tag">时刻</div>
+            <div class="palace-card-top-right">
+              <div class="palace-card-tag">时刻</div>
+              <button class="palace-edit-btn" onclick="openPalaceEdit('favorites')">编辑</button>
+            </div>
           </div>
           <div class="palace-card-title">收藏时刻</div>
           <div class="palace-card-divider"></div>
-          <div class="palace-card-body">
-            <div class="palace-card-line">
-              <div class="palace-card-dot"></div>
-              <div class="palace-card-val">待填写</div>
-            </div>
-            <div class="palace-card-line">
-              <div class="palace-card-dot"></div>
-              <div class="palace-card-val">待填写</div>
-            </div>
-            <div class="palace-card-line">
-              <div class="palace-card-dot"></div>
-              <div class="palace-card-val">待填写</div>
-            </div>
-          </div>
+          <div class="palace-card-body" id="card-body-favorites"><div class="palace-card-val" style="color:var(--muted)">加载中…</div></div>
         </div>
 
         <!-- 最近发生（全宽）-->
         <div class="palace-card palace-card-full">
           <div class="palace-card-top">
             <div class="palace-card-emoji">📅</div>
-            <div class="palace-card-tag">近况</div>
+            <div class="palace-card-top-right">
+              <div class="palace-card-tag">近况</div>
+              <button class="palace-edit-btn" onclick="openPalaceEdit('recent')">编辑</button>
+            </div>
           </div>
           <div class="palace-card-title">最近发生</div>
           <div class="palace-card-divider"></div>
-          <div class="palace-timeline">
-            <div class="palace-timeline-item">
-              <div class="palace-timeline-date">待填写</div>
-              <div class="palace-timeline-text">待填写</div>
-            </div>
-            <div class="palace-timeline-item">
-              <div class="palace-timeline-date">待填写</div>
-              <div class="palace-timeline-text">待填写</div>
-            </div>
-            <div class="palace-timeline-item">
-              <div class="palace-timeline-date">待填写</div>
-              <div class="palace-timeline-text">待填写</div>
-            </div>
-          </div>
+          <div class="palace-timeline" id="card-body-recent"><div class="palace-timeline-text" style="color:var(--muted)">加载中…</div></div>
         </div>
 
       </div>
@@ -915,6 +907,18 @@
     </div>
   </div>
 
+  <!-- ── 记忆宫殿编辑 ── -->
+  <div id="palace-edit-overlay" onclick="closePalaceEdit()">
+    <div class="palace-edit-panel" onclick="event.stopPropagation()">
+      <div class="palace-edit-header">
+        <div class="palace-edit-title" id="palace-edit-title">编辑</div>
+        <button class="palace-edit-save" onclick="savePalaceEdit()">保存</button>
+      </div>
+      <div class="palace-edit-body" id="palace-edit-body"></div>
+      <button class="palace-edit-cancel" onclick="closePalaceEdit()">取消</button>
+    </div>
+  </div>
+
   <!-- ── 底部导航 ── -->
   <nav class="bottom-nav">
     <button class="nav-tab active" id="tab-chat" onclick="switchTab('chat')">
@@ -951,6 +955,175 @@
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
     document.getElementById('page-' + name).classList.add('active');
     document.getElementById('tab-' + name).classList.add('active');
+    if (name === 'palace') loadPalace();
+  }
+
+  // ── 记忆宫殿 ──────────────────────────────────────────
+  const PALACE_CARDS = {
+    zhaozhao: {
+      title: '关于昭昭', file: 'long', dataPath: ['palace', 'zhaozhao'], type: 'kv',
+      fields: [{ key: '生日' }, { key: '星座' }, { key: '喜欢', multi: true }, { key: '特点', multi: true }]
+    },
+    bunbun: {
+      title: '关于笨笨', file: 'long', dataPath: ['palace', 'bunbun'], type: 'kv',
+      fields: [{ key: '性格', multi: true }, { key: '口头禅' }, { key: '喜欢', multi: true }, { key: '讨厌', multi: true }]
+    },
+    story: {
+      title: '我们的故事', file: 'long', dataPath: ['palace', 'story'], type: 'kv',
+      fields: [{ key: '相识', multi: true }, { key: '在一起' }, { key: '第一次', multi: true }]
+    },
+    favorites: { title: '收藏时刻', file: 'long', dataPath: ['palace', 'favorites'], type: 'list' },
+    recent:    { title: '最近发生', file: 'recent', dataPath: ['summaries'], type: 'timeline' }
+  };
+
+  let palaceData = { long: null, recent: null };
+  let editingCard = null;
+
+  function deepGet(obj, path) {
+    return path.reduce((a, k) => (a && a[k] !== undefined ? a[k] : null), obj);
+  }
+  function deepSet(obj, path, val) {
+    const last = path[path.length - 1];
+    path.slice(0, -1).reduce((a, k) => { if (!a[k]) a[k] = {}; return a[k]; }, obj)[last] = val;
+  }
+
+  async function loadPalace() {
+    try {
+      const [lr, rr] = await Promise.all([
+        fetch(`${SERVER}/memory/long`),
+        fetch(`${SERVER}/memory/recent`)
+      ]);
+      palaceData.long   = await lr.json();
+      palaceData.recent = await rr.json();
+    } catch {}
+    Object.keys(PALACE_CARDS).forEach(id => renderPalaceCard(id));
+  }
+
+  function renderPalaceCard(id) {
+    const el = document.getElementById('card-body-' + id);
+    if (!el) return;
+    const card = PALACE_CARDS[id];
+    const data = deepGet(palaceData[card.file] || {}, card.dataPath);
+
+    if (card.type === 'kv') {
+      const kv = data || {};
+      el.innerHTML = card.fields.map(f => `
+        <div class="palace-card-line">
+          <div class="palace-card-label">${f.key}</div>
+          <div class="palace-card-val">${escHtml(kv[f.key] || '待填写')}</div>
+        </div>`).join('');
+    } else if (card.type === 'list') {
+      const list = (data && data.length) ? data : ['待填写'];
+      el.innerHTML = list.map(item => `
+        <div class="palace-card-line">
+          <div class="palace-card-dot"></div>
+          <div class="palace-card-val">${escHtml(item)}</div>
+        </div>`).join('');
+    } else if (card.type === 'timeline') {
+      const summaries = data || [];
+      const items = summaries.slice(-5).reverse();
+      el.innerHTML = items.length
+        ? items.map(s => `
+            <div class="palace-timeline-item">
+              <div class="palace-timeline-date">${escHtml(s.date || '')}</div>
+              <div class="palace-timeline-text">${escHtml(s.summary || '')}</div>
+            </div>`).join('')
+        : '<div class="palace-timeline-item"><div class="palace-timeline-text" style="color:var(--muted)">待填写</div></div>';
+    }
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function openPalaceEdit(id) {
+    editingCard = id;
+    const card = PALACE_CARDS[id];
+    const data = deepGet(palaceData[card.file] || {}, card.dataPath);
+    document.getElementById('palace-edit-title').textContent = card.title;
+    const body = document.getElementById('palace-edit-body');
+
+    if (card.type === 'kv') {
+      const kv = data || {};
+      body.innerHTML = card.fields.map(f => `
+        <div class="palace-edit-field">
+          <div class="palace-edit-label">${f.key}</div>
+          ${f.multi
+            ? `<textarea class="palace-edit-input" data-key="${f.key}" rows="3">${escHtml(kv[f.key] || '')}</textarea>`
+            : `<input class="palace-edit-input" type="text" data-key="${f.key}" value="${escHtml(kv[f.key] || '')}">`}
+        </div>`).join('');
+    } else if (card.type === 'list') {
+      const list = data || [];
+      body.innerHTML = `
+        <div class="palace-edit-field">
+          <div class="palace-edit-label">每行一条</div>
+          <textarea class="palace-edit-input" id="palace-list-input" rows="10">${list.join('\n')}</textarea>
+        </div>`;
+    } else if (card.type === 'timeline') {
+      const summaries = data || [];
+      body.innerHTML = `
+        <div id="palace-timeline-entries">
+          ${summaries.map((s, i) => timelineRow(i, s.date || '', s.summary || '')).join('')}
+        </div>
+        <button class="palace-timeline-add" onclick="addTimelineRow()">+ 添加一条</button>`;
+    }
+
+    document.getElementById('palace-edit-overlay').classList.add('open');
+  }
+
+  function timelineRow(i, date, summary) {
+    return `<div class="palace-timeline-edit-row" data-idx="${i}">
+      <input class="palace-edit-input palace-edit-date" type="text" placeholder="日期 YYYY-MM-DD" data-field="date" value="${escHtml(date)}">
+      <textarea class="palace-edit-input" placeholder="内容" data-field="summary" rows="2">${escHtml(summary)}</textarea>
+      <button class="palace-timeline-del" onclick="this.closest('.palace-timeline-edit-row').remove()">删除</button>
+    </div>`;
+  }
+
+  function addTimelineRow() {
+    const container = document.getElementById('palace-timeline-entries');
+    const idx = container.children.length;
+    container.insertAdjacentHTML('beforeend', timelineRow(idx, '', ''));
+  }
+
+  async function savePalaceEdit() {
+    const card = PALACE_CARDS[editingCard];
+    const fileData = palaceData[card.file] || {};
+
+    if (card.type === 'kv') {
+      const kv = {};
+      document.querySelectorAll('#palace-edit-body [data-key]').forEach(el => { kv[el.dataset.key] = el.value.trim(); });
+      deepSet(fileData, card.dataPath, kv);
+    } else if (card.type === 'list') {
+      const list = document.getElementById('palace-list-input').value
+        .split('\n').map(l => l.trim()).filter(Boolean);
+      deepSet(fileData, card.dataPath, list);
+    } else if (card.type === 'timeline') {
+      const rows = document.querySelectorAll('#palace-timeline-entries .palace-timeline-edit-row');
+      const summaries = [];
+      rows.forEach(row => {
+        const date    = row.querySelector('[data-field="date"]').value.trim();
+        const summary = row.querySelector('[data-field="summary"]').value.trim();
+        if (date || summary) summaries.push({ date, summary });
+      });
+      deepSet(fileData, card.dataPath, summaries);
+    }
+
+    palaceData[card.file] = fileData;
+    try {
+      const r = await fetch(`${SERVER}/memory/${card.file}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fileData, null, 2)
+      });
+      if (!r.ok) throw new Error();
+      renderPalaceCard(editingCard);
+      closePalaceEdit();
+    } catch { alert('保存失败，请重试'); }
+  }
+
+  function closePalaceEdit() {
+    document.getElementById('palace-edit-overlay').classList.remove('open');
+    editingCard = null;
   }
 
   // ── 聊天：加载历史 ────────────────────────────────────

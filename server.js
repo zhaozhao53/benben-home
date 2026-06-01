@@ -193,6 +193,28 @@ const server = http.createServer(async (req, res) => {
     return res.end(JSON.stringify({ ok: true }));
   }
 
+  // 记忆文件读取
+  if (req.method === 'GET' && /^\/memory\/(core|long|recent)$/.test(pathname)) {
+    const name = pathname.replace('/memory/', '');
+    try {
+      const data = fs.readFileSync(path.join(__dirname, 'memory', name + '.json'), 'utf8');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(data);
+    } catch { res.writeHead(404); return res.end('not found'); }
+  }
+
+  // 记忆文件写入
+  if (req.method === 'POST' && /^\/memory\/(core|long|recent)$/.test(pathname)) {
+    const body = await readBody(req);
+    const name = pathname.replace('/memory/', '');
+    try {
+      JSON.parse(body);
+      fs.writeFileSync(path.join(__dirname, 'memory', name + '.json'), body);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: true }));
+    } catch { res.writeHead(400); return res.end('invalid json'); }
+  }
+
   res.writeHead(404); res.end('not found');
 });
 
