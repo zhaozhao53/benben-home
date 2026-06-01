@@ -315,7 +315,28 @@
     .scontent::-webkit-scrollbar-thumb { background: #e5d5c8; }
 
     /* Session list */
-    .session-list { display: flex; flex-direction: column; gap: 12px; padding: 16px 14px 32px; }
+    .session-list { display: flex; flex-direction: column; gap: 0; padding: 12px 14px 32px; }
+
+    .month-group { margin-bottom: 10px; }
+    .month-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 4px 9px 2px; cursor: pointer; user-select: none;
+    }
+    .month-header-left { display: flex; align-items: center; gap: 8px; }
+    .month-label {
+      font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.18em;
+      color: var(--sub);
+    }
+    .month-count {
+      font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.1em;
+      color: var(--muted); background: #f0e8e2; padding: 2px 8px; border-radius: 20px;
+    }
+    .month-arrow {
+      font-size: 13px; color: var(--muted); transition: transform 0.2s; line-height: 1;
+    }
+    .month-group.open .month-arrow { transform: rotate(90deg); }
+    .month-sessions { display: none; flex-direction: column; gap: 10px; padding-bottom: 4px; }
+    .month-group.open .month-sessions { display: flex; }
 
     .session-card {
       background: #fff; border-radius: 12px; border: 1px solid #eeddd3;
@@ -841,17 +862,6 @@
           </div>
           <div class="settings-item-arrow">›</div>
         </div>
-        <div class="settings-divider"></div>
-        <div class="settings-item" onclick="showPersonality()">
-          <div class="settings-item-icon">
-            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          </div>
-          <div class="settings-item-text">
-            <div class="settings-item-title">人格设置</div>
-            <div class="settings-item-desc">调整笨笨的回应风格</div>
-          </div>
-          <div class="settings-item-arrow">›</div>
-        </div>
       </div>
 
       <div class="settings-section-label">危险区域</div>
@@ -1180,6 +1190,14 @@
     return new Date(ts).toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' });
   }
 
+  function fmtMonth(ts) {
+    return new Date(ts).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' });
+  }
+
+  function toggleMonthGroup(el) {
+    el.closest('.month-group').classList.toggle('open');
+  }
+
   async function renderSessionHistory() {
     const list = document.getElementById('session-list');
     list.innerHTML = '<div class="history-empty">加载中…</div>';
@@ -1197,30 +1215,56 @@
     }
     const sessions = groupSessions(msgs);
     window._sessions = sessions;
-    list.innerHTML = sessions.map((sess, i) => {
-      const isActive = i === sessions.length - 1;
-      const firstUser = sess.find(m => m.role === 'user');
-      const preview = firstUser ? firstUser.text.slice(0, 60) + (firstUser.text.length > 60 ? '…' : '') : '（无用户消息）';
-      const startD = fmtDate(sess[0].timestamp);
-      const endD = fmtDate(sess[sess.length - 1].timestamp);
-      const range = startD === endD ? startD : `${startD} — ${endD}`;
-      const dlBtns = isActive ? '' : `
-        <div class="session-dl-btns">
-          <button class="session-dl-btn" onclick="downloadSession(${i},'txt')">TXT</button>
-          <button class="session-dl-btn" onclick="downloadSession(${i},'json')">JSON</button>
-        </div>`;
+
+    // 按月分组
+    const byMonth = {};
+    sessions.forEach((sess, i) => {
+      const mk = fmtMonth(sess[0].timestamp);
+      if (!byMonth[mk]) byMonth[mk] = [];
+      byMonth[mk].push({ sess, i });
+    });
+    const monthKeys = Object.keys(byMonth);
+    const latestMonth = monthKeys[monthKeys.length - 1];
+
+    list.innerHTML = monthKeys.map(mk => {
+      const items = byMonth[mk];
+      const isLatest = mk === latestMonth;
+      const cards = items.map(({ sess, i }) => {
+        const isActive = i === sessions.length - 1;
+        const firstUser = sess.find(m => m.role === 'user');
+        const preview = firstUser ? firstUser.text.slice(0, 60) + (firstUser.text.length > 60 ? '…' : '') : '（无用户消息）';
+        const startD = fmtDate(sess[0].timestamp);
+        const endD = fmtDate(sess[sess.length - 1].timestamp);
+        const range = startD === endD ? startD : `${startD} — ${endD}`;
+        const dlBtns = isActive ? '' : `
+          <div class="session-dl-btns">
+            <button class="session-dl-btn" onclick="downloadSession(${i},'txt')">TXT</button>
+            <button class="session-dl-btn" onclick="downloadSession(${i},'json')">JSON</button>
+          </div>`;
+        return `
+          <div class="session-card">
+            <div class="session-card-top">
+              <div class="session-num">Session ${i + 1}</div>
+              <div class="session-badge${isActive ? ' is-active' : ''}">${isActive ? '进行中' : '已结束'}</div>
+            </div>
+            <div class="session-date-range">${range}</div>
+            <div class="session-preview">${escHtml(preview)}</div>
+            <div class="session-meta">
+              <div class="session-count">${sess.length} 条消息</div>
+              ${dlBtns}
+            </div>
+          </div>`;
+      }).join('');
       return `
-        <div class="session-card">
-          <div class="session-card-top">
-            <div class="session-num">Session ${i + 1}</div>
-            <div class="session-badge${isActive ? ' is-active' : ''}">${isActive ? '进行中' : '已结束'}</div>
+        <div class="month-group${isLatest ? ' open' : ''}">
+          <div class="month-header" onclick="toggleMonthGroup(this)">
+            <div class="month-header-left">
+              <div class="month-label">${mk}</div>
+              <div class="month-count">${items.length} 个对话</div>
+            </div>
+            <div class="month-arrow">›</div>
           </div>
-          <div class="session-date-range">${range}</div>
-          <div class="session-preview">${escHtml(preview)}</div>
-          <div class="session-meta">
-            <div class="session-count">${sess.length} 条消息</div>
-            ${dlBtns}
-          </div>
+          <div class="month-sessions">${cards}</div>
         </div>`;
     }).join('');
   }
@@ -1366,7 +1410,6 @@
   }
 
   function showAppearance() { alert('外观设置即将开放'); }
-  function showPersonality() { alert('人格设置即将开放'); }
 
   async function clearAllConversations() {
     if (!confirm('清空全部对话记录？此操作不可恢复。')) return;
