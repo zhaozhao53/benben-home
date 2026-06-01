@@ -100,6 +100,53 @@
     #send-btn svg { width: 18px; height: 18px; }
     .input-hint { margin-top: 8px; font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.1em; }
 
+    /* ── ATTACH ── */
+    .attach-btn {
+      width: 48px; height: 48px; background: var(--card); border: 1px solid var(--border);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: border-color 0.2s, background 0.2s, color 0.2s; color: var(--muted);
+    }
+    .attach-btn:hover { border-color: var(--accent); color: var(--accent); background: #fdf3ee; }
+    .attach-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .attach-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    .attach-preview-bar {
+      display: none; align-items: center; gap: 10px;
+      padding: 8px 0 10px; border-bottom: 1px solid var(--border); margin-bottom: 10px;
+    }
+    .attach-preview-content { flex: 1; min-width: 0; display: flex; align-items: center; }
+    .attach-thumb { max-height: 56px; max-width: 100px; object-fit: cover; border-radius: 6px; display: block; }
+    .attach-file-chip {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--card); border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px;
+      max-width: 100%; overflow: hidden;
+    }
+    .attach-file-chip svg { width: 14px; height: 14px; stroke: #c0614a; fill: none; stroke-width: 1.8; stroke-linecap: round; flex-shrink: 0; }
+    .attach-file-chip-name { font-size: 12px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px; }
+    .attach-file-chip-size { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); flex-shrink: 0; }
+    .attach-remove-btn {
+      width: 22px; height: 22px; border-radius: 50%; border: none; background: var(--border);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: var(--sub); flex-shrink: 0; line-height: 1; transition: background 0.15s;
+    }
+    .attach-remove-btn:hover { background: #e0ccc4; }
+
+    .msg-attach-img {
+      max-width: 100%; max-height: 220px; object-fit: contain; border-radius: 8px;
+      display: block; margin-bottom: 8px; cursor: pointer;
+    }
+    .msg-attach-img:only-child, .msg-attach-img:last-child { margin-bottom: 0; }
+    .msg-attach-file {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(0,0,0,0.04); border-radius: 8px; padding: 10px 13px; margin-bottom: 8px;
+    }
+    .msg-attach-file:last-child { margin-bottom: 0; }
+    .msg-attach-file svg { width: 18px; height: 18px; stroke: #c0614a; fill: none; stroke-width: 1.8; stroke-linecap: round; flex-shrink: 0; }
+    .msg-attach-file-info { min-width: 0; }
+    .msg-attach-file-name { font-size: 12px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: 0.03em; }
+    .msg-attach-file-size { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.1em; margin-top: 2px; }
+    .msg-text-part { /* text after attachment */ }
+
     /* ── NOTICE ── */
     .conn-notice {
       align-self: center; font-family: 'Space Mono', monospace; font-size: 10px;
@@ -553,7 +600,15 @@
     </div>
     <div id="messages"></div>
     <div class="input-area">
+      <div id="attach-preview-bar" class="attach-preview-bar">
+        <div id="attach-preview-content" class="attach-preview-content"></div>
+        <button class="attach-remove-btn" onclick="clearAttachment()">×</button>
+      </div>
       <div class="input-row">
+        <input type="file" id="attach-input" accept="image/*,*/*" style="display:none" onchange="handleFileSelect(this)">
+        <button id="attach-btn" class="attach-btn" onclick="openAttachPicker()" disabled title="发送图片或文件">
+          <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </button>
         <textarea id="user-input" placeholder="说点什么…" rows="1" disabled></textarea>
         <button id="send-btn" onclick="sendMessage()" disabled>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -983,6 +1038,7 @@
       setStatus('在线 · 记得你', true);
       document.getElementById('user-input').disabled = false;
       document.getElementById('send-btn').disabled = false;
+      document.getElementById('attach-btn').disabled = false;
     };
     es.onmessage = (e) => {
       const data = JSON.parse(e.data);
@@ -995,6 +1051,7 @@
         appendMessage('assistant', data.text);
         isWaiting = false;
         document.getElementById('send-btn').disabled = false;
+        document.getElementById('attach-btn').disabled = false;
         document.getElementById('user-input').disabled = false;
         document.getElementById('user-input').focus();
       }
@@ -1003,6 +1060,7 @@
       setStatus('离线 · 重连中…', false);
       document.getElementById('user-input').disabled = true;
       document.getElementById('send-btn').disabled = true;
+      document.getElementById('attach-btn').disabled = true;
       es.close();
       setTimeout(connect, 3000);
     };
@@ -1013,32 +1071,110 @@
     document.getElementById('conn-dot').className = 'header-dot' + (online ? ' online' : '');
   }
 
+  // ── 附件 ──────────────────────────────────────────────
+  let _pendingAttach = null;
+
+  function fmtSize(b) {
+    if (b < 1024) return b + ' B';
+    if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+    return (b / 1048576).toFixed(1) + ' MB';
+  }
+
+  function openAttachPicker() {
+    document.getElementById('attach-input').click();
+  }
+
+  function handleFileSelect(input) {
+    const file = input.files[0];
+    input.value = '';
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { appendNotice('文件最大 10MB', true); return; }
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        _pendingAttach = { type: 'image', dataUrl: e.target.result, name: file.name, size: fmtSize(file.size) };
+        _showAttachPreview();
+      };
+      reader.readAsDataURL(file);
+    } else {
+      _pendingAttach = { type: 'file', name: file.name, size: fmtSize(file.size) };
+      _showAttachPreview();
+    }
+  }
+
+  function _showAttachPreview() {
+    const bar = document.getElementById('attach-preview-bar');
+    const content = document.getElementById('attach-preview-content');
+    if (_pendingAttach.type === 'image') {
+      content.innerHTML = `<img src="${_pendingAttach.dataUrl}" class="attach-thumb">`;
+    } else {
+      content.innerHTML = `<div class="attach-file-chip">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span class="attach-file-chip-name">${escHtml(_pendingAttach.name)}</span>
+        <span class="attach-file-chip-size">${_pendingAttach.size}</span>
+      </div>`;
+    }
+    bar.style.display = 'flex';
+  }
+
+  function clearAttachment() {
+    _pendingAttach = null;
+    document.getElementById('attach-preview-bar').style.display = 'none';
+    document.getElementById('attach-preview-content').innerHTML = '';
+  }
+
+  // ── 发送消息 ──────────────────────────────────────────
   async function sendMessage() {
     const ta = document.getElementById('user-input');
     const text = ta.value.trim();
-    if (!text || isWaiting) return;
+    const attach = _pendingAttach;
+    if (!text && !attach || isWaiting) return;
     ta.value = ''; ta.style.height = 'auto';
+    clearAttachment();
     isWaiting = true;
     document.getElementById('send-btn').disabled = true;
+    document.getElementById('attach-btn').disabled = true;
     document.getElementById('user-input').disabled = true;
-    appendMessage('user', text);
+    appendMessage('user', text, attach);
     showTyping();
+    // 服务端只存文字描述，附件留在本地
+    let serverText = text;
+    if (attach) {
+      const marker = attach.type === 'image' ? `[图片: ${attach.name}]` : `[文件: ${attach.name} · ${attach.size}]`;
+      serverText = text ? `${text}\n${marker}` : marker;
+    }
     try {
-      await fetch(`${SERVER}/send`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
+      await fetch(`${SERVER}/send`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: serverText }) });
     } catch {
       removeTyping();
       appendNotice('发送失败，检查服务器是否在线', true);
       isWaiting = false;
       document.getElementById('send-btn').disabled = false;
+      document.getElementById('attach-btn').disabled = false;
       document.getElementById('user-input').disabled = false;
     }
   }
 
-  function appendMessage(role, text) {
+  function appendMessage(role, text, attach) {
     const c = document.getElementById('messages');
     const div = document.createElement('div');
     div.className = `message ${role}`;
-    div.innerHTML = `<div class="msg-label">${role === 'user' ? '昭昭' : '笨笨'}</div><div class="msg-bubble">${escHtml(text).replace(/\n/g, '<br>')}</div>`;
+    let bubble = '';
+    if (attach) {
+      if (attach.type === 'image') {
+        bubble += `<img src="${attach.dataUrl}" class="msg-attach-img" onclick="window.open(this.src)" title="${escHtml(attach.name)}">`;
+      } else {
+        bubble += `<div class="msg-attach-file">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <div class="msg-attach-file-info">
+            <div class="msg-attach-file-name">${escHtml(attach.name)}</div>
+            <div class="msg-attach-file-size">${attach.size}</div>
+          </div>
+        </div>`;
+      }
+    }
+    if (text) bubble += `<div class="msg-text-part">${escHtml(text).replace(/\n/g, '<br>')}</div>`;
+    div.innerHTML = `<div class="msg-label">${role === 'user' ? '昭昭' : '笨笨'}</div><div class="msg-bubble">${bubble}</div>`;
     c.appendChild(div); scrollBottom();
   }
 
