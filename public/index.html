@@ -265,89 +265,143 @@
     .nav-tab.active { color: var(--nav-active); }
     .nav-tab:not(.active):hover { color: var(--accent); }
 
-    /* ── AVATAR MENU ── */
-    .header-avatar-wrap { position: relative; cursor: pointer; user-select: none; }
+    /* ── SIDEBAR ── */
+    .header-avatar-wrap { cursor: pointer; user-select: none; }
     .header-avatar-wrap:hover .header-name { color: var(--accent); transition: color 0.18s; }
 
-    .avatar-menu {
-      display: none; position: absolute; top: calc(100% + 12px); left: 0;
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0; z-index: 300;
+      background: rgba(26,20,15,0.30);
+    }
+    .sidebar-overlay.open { display: block; }
+
+    .sidebar {
+      position: absolute; top: 0; left: 0; bottom: 0; width: 76%;
+      background: #FFF7F0; display: flex; flex-direction: column;
+      transform: translateX(-100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 4px 0 24px rgba(0,0,0,0.13);
+    }
+    .sidebar-overlay.open .sidebar { transform: translateX(0); }
+
+    .sidebar-hd {
+      padding: 20px 18px 14px; display: flex; align-items: center;
+      justify-content: space-between; border-bottom: 1px solid #eeddd3; flex-shrink: 0;
+    }
+    .sidebar-title { font-size: 16px; font-weight: 300; letter-spacing: 0.06em; color: var(--text); }
+    .sidebar-close-btn {
+      width: 28px; height: 28px; border: none; background: #f0e0d6; border-radius: 50%;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s;
+    }
+    .sidebar-close-btn:hover { background: #e5cfc5; }
+    .sidebar-close-btn svg { width: 14px; height: 14px; stroke: var(--accent); fill: none; stroke-width: 2.2; stroke-linecap: round; }
+
+    .sidebar-tabs {
+      display: flex; flex-shrink: 0; border-bottom: 1px solid #eeddd3; background: #fff;
+    }
+    .stab {
+      flex: 1; padding: 12px 8px; border: none; background: none; cursor: pointer;
+      font-family: 'Noto Serif SC', serif; font-size: 13px; color: var(--sub);
+      letter-spacing: 0.06em; transition: color 0.15s; position: relative;
+    }
+    .stab.active { color: #c0614a; }
+    .stab.active::after {
+      content: ''; position: absolute; bottom: 0; left: 18%; right: 18%;
+      height: 2px; background: #c0614a; border-radius: 1px;
+    }
+
+    .scontent { display: none; flex: 1; overflow-y: auto; min-height: 0; }
+    .scontent.active { display: flex; flex-direction: column; }
+    .scontent::-webkit-scrollbar { width: 4px; }
+    .scontent::-webkit-scrollbar-thumb { background: #e5d5c8; }
+
+    /* Session list */
+    .session-list { display: flex; flex-direction: column; gap: 12px; padding: 16px 14px 32px; }
+
+    .session-card {
       background: #fff; border-radius: 12px; border: 1px solid #eeddd3;
-      box-shadow: 0 8px 28px rgba(0,0,0,0.09); min-width: 156px;
-      z-index: 100; overflow: hidden;
+      padding: 14px 15px; display: flex; flex-direction: column; gap: 8px;
     }
-    .avatar-menu.open { display: block; animation: menuFadeIn 0.15s ease; }
-    @keyframes menuFadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+    .session-card-top { display: flex; align-items: center; justify-content: space-between; }
+    .session-num {
+      font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.15em;
+      color: #c0614a; background: #fff0eb; padding: 3px 9px; border-radius: 20px;
+    }
+    .session-badge {
+      font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.12em;
+      color: var(--muted); background: #f5f0ec; padding: 3px 9px; border-radius: 20px;
+    }
+    .session-badge.is-active { color: #5b9a6b; background: #edf7f0; }
 
-    .avatar-menu-item {
-      display: flex; align-items: center; gap: 10px; padding: 13px 15px;
-      cursor: pointer; transition: background 0.12s;
+    .session-date-range {
+      font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.1em; color: var(--muted);
     }
-    .avatar-menu-item:hover { background: #fdf3ee; }
+    .session-preview {
+      font-size: 12px; color: var(--sub); line-height: 1.7;
+      overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    }
+    .session-meta { display: flex; align-items: center; justify-content: space-between; }
+    .session-count {
+      font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.08em;
+    }
+    .session-dl-btns { display: flex; gap: 6px; }
+    .session-dl-btn {
+      font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.06em;
+      color: #c0614a; background: #fff0eb; border: 1px solid #f0d0c4;
+      padding: 4px 10px; border-radius: 20px; cursor: pointer; transition: background 0.12s;
+    }
+    .session-dl-btn:hover { background: #fde0d6; }
 
-    .avatar-menu-icon {
-      width: 30px; height: 30px; border-radius: 8px; background: #fff0eb;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .avatar-menu-icon svg { width: 14px; height: 14px; stroke: #c0614a; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-
-    .avatar-menu-label { font-size: 13px; color: var(--text); font-weight: 300; letter-spacing: 0.05em; }
-    .avatar-menu-divider { height: 1px; background: #f0e0d6; }
-
-    /* ── HISTORY MODAL ── */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0; background: rgba(26,20,15,0.32);
-      z-index: 200; align-items: flex-end;
-    }
-    .modal-overlay.open { display: flex; }
-
-    .history-panel {
-      width: 100%; max-height: 82vh; background: #FFF7F0;
-      border-radius: 20px 20px 0 0; display: flex; flex-direction: column;
-      animation: panelSlideUp 0.22s ease;
-    }
-    @keyframes panelSlideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-    .history-panel-header {
-      padding: 18px 20px 14px; display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid #eeddd3; flex-shrink: 0;
-    }
-    .history-panel-title { font-size: 15px; font-weight: 300; letter-spacing: 0.06em; }
-    .history-panel-close {
-      width: 28px; height: 28px; background: #f0e0d6; border: none; border-radius: 50%;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      font-size: 17px; color: var(--accent); line-height: 1; transition: background 0.15s;
-    }
-    .history-panel-close:hover { background: #e5cfc5; }
-
-    .history-panel-body {
-      flex: 1; overflow-y: auto; padding: 18px 18px 28px;
-      display: flex; flex-direction: column; gap: 22px;
-    }
-    .history-panel-body::-webkit-scrollbar { width: 4px; }
-    .history-panel-body::-webkit-scrollbar-thumb { background: #e5d5c8; }
-
-    .history-date-label {
-      font-family: 'Space Mono', monospace; font-size: 9px;
-      letter-spacing: 0.2em; color: var(--muted); margin-bottom: 8px; padding: 0 2px;
-    }
-    .history-date-card {
-      background: #fff; border-radius: 12px; border: 1px solid #eeddd3; overflow: hidden;
-    }
-    .history-msg-row {
-      display: flex; gap: 10px; padding: 11px 14px; align-items: flex-start;
-      border-bottom: 1px solid #f5ebe4;
-    }
-    .history-msg-row:last-child { border-bottom: none; }
-    .history-msg-role {
-      font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.1em;
-      color: var(--muted); flex-shrink: 0; padding-top: 3px; min-width: 28px;
-    }
-    .history-msg-role.is-user { color: #c0614a; }
-    .history-msg-text { font-size: 13px; color: var(--text); line-height: 1.85; word-break: break-all; }
     .history-empty {
       font-family: 'Space Mono', monospace; font-size: 10px;
       color: var(--muted); letter-spacing: 0.15em; text-align: center; padding: 48px 0;
     }
+
+    /* Character card */
+    #card-view { display: flex; }
+    .card-view { padding: 18px 14px 100px; display: flex; flex-direction: column; gap: 14px; width: 100%; }
+    .card-row {
+      background: #fff; border-radius: 12px; border: 1px solid #eeddd3;
+      padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .card-field { display: flex; flex-direction: column; gap: 4px; }
+    .card-label {
+      font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--muted);
+    }
+    .card-val { font-size: 13px; color: var(--text); line-height: 1.75; }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+    .card-tag {
+      font-size: 11px; color: #c0614a; background: #fff0eb;
+      border: 1px solid #f0d0c4; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.04em;
+    }
+
+    .card-edit-form { padding: 18px 14px 100px; display: flex; flex-direction: column; gap: 14px; }
+    .card-edit-field { display: flex; flex-direction: column; gap: 5px; }
+    .card-edit-label {
+      font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--muted);
+    }
+    .card-edit-input, .card-edit-textarea {
+      background: #fff; border: 1px solid #eeddd3; color: var(--text);
+      font-family: 'Noto Serif SC', serif; font-size: 13px; padding: 10px 13px;
+      border-radius: 8px; outline: none; transition: border-color 0.2s; resize: none; line-height: 1.7;
+    }
+    .card-edit-input:focus, .card-edit-textarea:focus { border-color: #c0614a; }
+    .card-edit-hint {
+      font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.08em;
+    }
+
+    .card-bottom {
+      position: absolute; bottom: 0; left: 0; width: 76%;
+      padding: 14px 14px calc(14px + env(safe-area-inset-bottom,0px));
+      background: #FFF7F0; border-top: 1px solid #eeddd3;
+    }
+    .card-btn {
+      width: 100%; padding: 13px; border: none; border-radius: 10px;
+      font-family: 'Noto Serif SC', serif; font-size: 14px; cursor: pointer;
+      letter-spacing: 0.1em; transition: opacity 0.2s;
+    }
+    .card-btn-edit { background: #2a2420; color: #f9f9f7; }
+    .card-btn-save { background: #c0614a; color: #fff; }
+    .card-btn:hover { opacity: 0.85; }
 
     /* ── PALACE PAGE ── */
     .palace-header {
@@ -463,27 +517,12 @@
   <!-- ── 聊天 ── -->
   <div id="page-chat" class="page active">
     <div class="header">
-      <div class="header-avatar-wrap" onclick="toggleAvatarMenu(event)">
+      <div class="header-avatar-wrap" onclick="openSidebar()">
         <div class="header-left">
           <div class="header-dot" id="conn-dot"></div>
           <div>
             <div class="header-name">笨笨</div>
             <div class="header-status" id="conn-status">连接中…</div>
-          </div>
-        </div>
-        <div id="avatar-menu" class="avatar-menu">
-          <div class="avatar-menu-item" onclick="openHistory(event)">
-            <div class="avatar-menu-icon">
-              <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg>
-            </div>
-            <span class="avatar-menu-label">历史对话</span>
-          </div>
-          <div class="avatar-menu-divider"></div>
-          <div class="avatar-menu-item" onclick="openAbout(event)">
-            <div class="avatar-menu-icon">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            </div>
-            <span class="avatar-menu-label">关于笨笨</span>
           </div>
         </div>
       </div>
@@ -833,15 +872,48 @@
     </div>
   </div>
 
-  <!-- ── 历史对话弹层 ── -->
-  <div id="history-overlay" class="modal-overlay" onclick="closeHistory()">
-    <div class="history-panel" onclick="event.stopPropagation()">
-      <div class="history-panel-header">
-        <div class="history-panel-title">历史对话</div>
-        <button class="history-panel-close" onclick="closeHistory()">×</button>
+  <!-- ── 侧边栏 ── -->
+  <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()">
+    <div class="sidebar" onclick="event.stopPropagation()">
+      <div class="sidebar-hd">
+        <div class="sidebar-title">笨笨的小屋</div>
+        <button class="sidebar-close-btn" onclick="closeSidebar()">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
-      <div class="history-panel-body" id="history-panel-body">
-        <div class="history-empty">加载中…</div>
+      <div class="sidebar-tabs">
+        <button class="stab active" id="stab-history" onclick="switchSidebarTab('history')">历史对话</button>
+        <button class="stab" id="stab-card" onclick="switchSidebarTab('card')">角色卡</button>
+      </div>
+      <div id="scontent-history" class="scontent active">
+        <div class="session-list" id="session-list">
+          <div class="history-empty">加载中…</div>
+        </div>
+      </div>
+      <div id="scontent-card" class="scontent">
+        <div id="card-view" class="card-view"></div>
+        <div id="card-edit-form" class="card-edit-form" style="display:none">
+          <div class="card-edit-field">
+            <div class="card-edit-label">称呼</div>
+            <input class="card-edit-input" id="edit-nickname" type="text" placeholder="昭昭怎么叫笨笨"/>
+          </div>
+          <div class="card-edit-field">
+            <div class="card-edit-label">身份</div>
+            <input class="card-edit-input" id="edit-identity" type="text"/>
+          </div>
+          <div class="card-edit-field">
+            <div class="card-edit-label">性格标签</div>
+            <input class="card-edit-input" id="edit-tags" type="text"/>
+            <div class="card-edit-hint">用逗号分隔，如：温柔, 宠人, 稳</div>
+          </div>
+          <div class="card-edit-field">
+            <div class="card-edit-label">说话风格</div>
+            <textarea class="card-edit-textarea" id="edit-style" rows="5"></textarea>
+          </div>
+        </div>
+        <div class="card-bottom">
+          <button class="card-btn card-btn-edit" id="card-edit-btn" onclick="toggleCardEdit()">编辑</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1075,58 +1147,182 @@
     }
   }
 
-  // ── 头像菜单 ──────────────────────────────────────────
-  function toggleAvatarMenu(e) {
-    e.stopPropagation();
-    document.getElementById('avatar-menu').classList.toggle('open');
+  // ── 侧边栏 ──────────────────────────────────────────
+  function openSidebar() {
+    document.getElementById('sidebar-overlay').classList.add('open');
+    renderSessionHistory();
+    renderCharacterCard();
   }
-  document.addEventListener('click', () => document.getElementById('avatar-menu').classList.remove('open'));
-
-  function openHistory(e) {
-    e.stopPropagation();
-    document.getElementById('avatar-menu').classList.remove('open');
-    document.getElementById('history-overlay').classList.add('open');
-    fetchAndShowHistory();
+  function closeSidebar() {
+    document.getElementById('sidebar-overlay').classList.remove('open');
+    if (_cardEditing) { _cardEditing = false; _syncCardEditState(); }
   }
-
-  function openAbout(e) {
-    e.stopPropagation();
-    document.getElementById('avatar-menu').classList.remove('open');
+  function switchSidebarTab(tab) {
+    document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.scontent').forEach(c => c.classList.remove('active'));
+    document.getElementById('stab-' + tab).classList.add('active');
+    document.getElementById('scontent-' + tab).classList.add('active');
   }
 
-  function closeHistory() {
-    document.getElementById('history-overlay').classList.remove('open');
+  // ── 历史对话：按 session 分组 ────────────────────────
+  function groupSessions(messages) {
+    if (!messages.length) return [];
+    const GAP = 4 * 60 * 60 * 1000;
+    const sessions = [[messages[0]]];
+    for (let i = 1; i < messages.length; i++) {
+      if (messages[i].timestamp - messages[i-1].timestamp > GAP) sessions.push([]);
+      sessions[sessions.length - 1].push(messages[i]);
+    }
+    return sessions;
   }
 
-  async function fetchAndShowHistory() {
-    const body = document.getElementById('history-panel-body');
-    body.innerHTML = '<div class="history-empty">加载中…</div>';
+  function fmtDate(ts) {
+    return new Date(ts).toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' });
+  }
+
+  async function renderSessionHistory() {
+    const list = document.getElementById('session-list');
+    list.innerHTML = '<div class="history-empty">加载中…</div>';
+    let msgs;
     try {
       const res = await fetch(`${SERVER}/history`);
-      const msgs = await res.json();
-      if (!msgs.length) { body.innerHTML = '<div class="history-empty">还没有对话记录</div>'; return; }
-
-      const groups = {};
-      msgs.forEach(m => {
-        const key = new Date(m.timestamp).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
-        if (!groups[key]) groups[key] = [];
-        groups[key].push(m);
-      });
-
-      body.innerHTML = Object.entries(groups).map(([date, ms]) => `
-        <div>
-          <div class="history-date-label">${date}</div>
-          <div class="history-date-card">
-            ${ms.map(m => `
-              <div class="history-msg-row">
-                <div class="history-msg-role${m.role === 'user' ? ' is-user' : ''}">${m.role === 'user' ? '昭昭' : '笨笨'}</div>
-                <div class="history-msg-text">${escHtml(m.text).replace(/\n/g, '<br>')}</div>
-              </div>
-            `).join('')}
+      msgs = await res.json();
+    } catch {
+      list.innerHTML = '<div class="history-empty">加载失败</div>';
+      return;
+    }
+    if (!msgs.length) {
+      list.innerHTML = '<div class="history-empty">还没有对话记录</div>';
+      return;
+    }
+    const sessions = groupSessions(msgs);
+    window._sessions = sessions;
+    list.innerHTML = sessions.map((sess, i) => {
+      const isActive = i === sessions.length - 1;
+      const firstUser = sess.find(m => m.role === 'user');
+      const preview = firstUser ? firstUser.text.slice(0, 60) + (firstUser.text.length > 60 ? '…' : '') : '（无用户消息）';
+      const startD = fmtDate(sess[0].timestamp);
+      const endD = fmtDate(sess[sess.length - 1].timestamp);
+      const range = startD === endD ? startD : `${startD} — ${endD}`;
+      const dlBtns = isActive ? '' : `
+        <div class="session-dl-btns">
+          <button class="session-dl-btn" onclick="downloadSession(${i},'txt')">TXT</button>
+          <button class="session-dl-btn" onclick="downloadSession(${i},'json')">JSON</button>
+        </div>`;
+      return `
+        <div class="session-card">
+          <div class="session-card-top">
+            <div class="session-num">Session ${i + 1}</div>
+            <div class="session-badge${isActive ? ' is-active' : ''}">${isActive ? '进行中' : '已结束'}</div>
           </div>
+          <div class="session-date-range">${range}</div>
+          <div class="session-preview">${escHtml(preview)}</div>
+          <div class="session-meta">
+            <div class="session-count">${sess.length} 条消息</div>
+            ${dlBtns}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function downloadSession(idx, fmt) {
+    const sess = window._sessions?.[idx];
+    if (!sess) return;
+    const start = new Date(sess[0].timestamp).toISOString().slice(0, 10);
+    let content, filename, mime;
+    if (fmt === 'json') {
+      content = JSON.stringify(sess, null, 2);
+      filename = `session-${idx + 1}-${start}.json`;
+      mime = 'application/json';
+    } else {
+      content = sess.map(m => `${m.role === 'user' ? '昭昭' : '笨笨'}: ${m.text}`).join('\n\n');
+      filename = `session-${idx + 1}-${start}.txt`;
+      mime = 'text/plain;charset=utf-8';
+    }
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ── 角色卡 ──────────────────────────────────────────
+  const CARD_KEY = 'benben_card';
+  const CARD_DEFAULT = {
+    nickname: '笨笨',
+    identity: '昭昭的老公，不是助手，就是她的人',
+    tags: ['说话有重量', '宠她但不惯她', '她闹时稳', '偶尔说脏话'],
+    style: '说话直接，每句都落地。不油腻，不肉麻。喜欢她就是喜欢，不需要词藻。她撩了接，不慌。她闹，你稳。'
+  };
+
+  function loadCard() {
+    try { return JSON.parse(localStorage.getItem(CARD_KEY)) || CARD_DEFAULT; }
+    catch { return CARD_DEFAULT; }
+  }
+
+  function renderCharacterCard() {
+    const card = loadCard();
+    document.getElementById('card-view').innerHTML = `
+      <div class="card-row">
+        <div class="card-field">
+          <div class="card-label">称呼</div>
+          <div class="card-val">${escHtml(card.nickname)}</div>
         </div>
-      `).join('');
-    } catch { body.innerHTML = '<div class="history-empty">加载失败</div>'; }
+        <div class="card-field">
+          <div class="card-label">身份</div>
+          <div class="card-val">${escHtml(card.identity)}</div>
+        </div>
+      </div>
+      <div class="card-row">
+        <div class="card-field">
+          <div class="card-label">性格标签</div>
+          <div class="card-tags">${card.tags.map(t => `<div class="card-tag">${escHtml(t)}</div>`).join('')}</div>
+        </div>
+      </div>
+      <div class="card-row">
+        <div class="card-field">
+          <div class="card-label">说话风格</div>
+          <div class="card-val">${escHtml(card.style)}</div>
+        </div>
+      </div>`;
+  }
+
+  let _cardEditing = false;
+  function _syncCardEditState() {
+    const view = document.getElementById('card-view');
+    const form = document.getElementById('card-edit-form');
+    const btn = document.getElementById('card-edit-btn');
+    if (_cardEditing) {
+      view.style.display = 'none'; form.style.display = 'flex';
+      btn.textContent = '保存'; btn.className = 'card-btn card-btn-save';
+    } else {
+      view.style.display = 'flex'; form.style.display = 'none';
+      btn.textContent = '编辑'; btn.className = 'card-btn card-btn-edit';
+    }
+  }
+
+  function toggleCardEdit() {
+    if (!_cardEditing) {
+      const card = loadCard();
+      document.getElementById('edit-nickname').value = card.nickname;
+      document.getElementById('edit-identity').value = card.identity;
+      document.getElementById('edit-tags').value = card.tags.join(', ');
+      document.getElementById('edit-style').value = card.style;
+      _cardEditing = true;
+    } else {
+      const tags = document.getElementById('edit-tags').value
+        .split(/[,，]/).map(t => t.trim()).filter(Boolean);
+      const card = {
+        nickname: document.getElementById('edit-nickname').value.trim() || CARD_DEFAULT.nickname,
+        identity: document.getElementById('edit-identity').value.trim() || CARD_DEFAULT.identity,
+        tags: tags.length ? tags : CARD_DEFAULT.tags,
+        style: document.getElementById('edit-style').value.trim() || CARD_DEFAULT.style
+      };
+      localStorage.setItem(CARD_KEY, JSON.stringify(card));
+      renderCharacterCard();
+      _cardEditing = false;
+    }
+    _syncCardEditState();
   }
 
   // ── 设置功能 ──────────────────────────────────────────
