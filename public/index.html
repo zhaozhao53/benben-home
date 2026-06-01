@@ -31,19 +31,22 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      height: 100%; background: var(--bg); color: var(--text); overflow: hidden;
-      font-family: 'PingFang SC', 'Hiragino Sans GB', 'Noto Serif SC', sans-serif;
+    html {
+      height: 100%; height: -webkit-fill-available;
+      background: var(--bg); overflow: hidden;
+    }
+    body {
+      height: 100%; height: -webkit-fill-available;
+      background: var(--bg); color: var(--text);
+      font-family: 'PingFang SC', 'Hiragino Sans GB', 'Noto Serif SC', sans-serif; overflow: hidden;
       -webkit-text-size-adjust: 100%; text-size-adjust: 100%;
       touch-action: manipulation;
     }
 
-    /* position:fixed+inset:0 固定容器，阻止键盘弹出时页面被撑大；
-       JS 通过 visualViewport 动态修正高度，确保输入框始终可见 */
     #app {
-      position: fixed; inset: 0;
       display: flex; flex-direction: column;
-      overflow: hidden;
+      height: 100vh; height: 100dvh;
+      min-height: -webkit-fill-available;
     }
 
     /* ── PAGE SYSTEM ── */
@@ -1579,18 +1582,6 @@
   }
 
   // ── 初始化 ────────────────────────────────────────────
-  // ── iOS 键盘弹出修正 ─────────────────────────────────
-  // visualViewport.height 会随键盘弹出实时缩小，同步给 #app
-  if (window.visualViewport) {
-    const app = document.getElementById('app');
-    const onVpResize = () => {
-      app.style.height = window.visualViewport.height + 'px';
-      scrollBottom();
-    };
-    window.visualViewport.addEventListener('resize', onVpResize);
-    onVpResize();
-  }
-
   calcDays();
   document.getElementById('mood-today-label').textContent = getTodayLabel();
   loadHistory().then(() => connect());
