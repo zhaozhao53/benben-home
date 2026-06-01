@@ -517,6 +517,74 @@
       color: #c0614a; cursor: pointer; letter-spacing: 0.05em;
     }
 
+    /* ── US PAGE TABS ── */
+    .us-tab-bar { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
+    .us-tab { flex: 1; padding: 11px 0; background: none; border: none; border-bottom: 2px solid transparent; font-family: 'PingFang SC', 'Hiragino Sans GB', sans-serif; font-size: 13px; color: var(--muted); cursor: pointer; transition: color 0.2s, border-color 0.2s; letter-spacing: 0.03em; }
+    .us-tab.active { color: #c0614a; border-bottom-color: #c0614a; }
+
+    /* ── ANNIVERSARY ── */
+    .us-anniv-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
+    .us-anniv-emoji { font-size: 20px; flex-shrink: 0; }
+    .us-anniv-body { flex: 1; min-width: 0; }
+    .us-anniv-title { font-size: 13px; color: var(--text); font-weight: 300; }
+    .us-anniv-meta { font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); margin-top: 2px; letter-spacing: 0.05em; }
+
+    /* ── TODO ── */
+    .us-todo-item { display: flex; align-items: center; gap: 10px; padding: 11px 14px; }
+    .us-todo-check { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border); background: none; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: border-color 0.15s, background 0.15s; padding: 0; }
+    .us-todo-check.done { border-color: #c0614a; background: #c0614a; }
+    .us-todo-check.done::after { content: '✓'; font-size: 10px; color: #fff; }
+    .us-todo-text { flex: 1; font-size: 13px; color: var(--text); line-height: 1.5; }
+    .us-todo-text.done { color: var(--muted); text-decoration: line-through; }
+    .us-todo-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; padding: 0 2px; line-height: 1; }
+    .us-todo-del:hover { color: var(--pink); }
+    .us-todo-input-field { flex: 1; background: var(--card); border: 1px solid var(--border); padding: 8px 12px; font-family: 'PingFang SC', 'Hiragino Sans GB', sans-serif; font-size: 13px; color: var(--text); outline: none; border-radius: 6px; }
+    .us-todo-add-btn { padding: 8px 14px; background: #c0614a; color: #fff; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+
+    /* ── IMAGE GRID (moments) ── */
+    .us-img-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px; }
+    .us-img-card { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; }
+    .us-img-card img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer; }
+    .us-img-card-note { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.55)); color: #fff; font-size: 10px; padding: 6px; line-height: 1.3; }
+    .us-img-del { position: absolute; top: 4px; right: 4px; width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,0.48); color: #fff; border: none; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1; }
+    .us-img-add { aspect-ratio: 1; border-radius: 8px; background: #FFF7F0; border: 1.5px dashed #e5d5c8; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .us-img-add svg { width: 20px; height: 20px; stroke: #d5c5bc; fill: none; stroke-width: 2; }
+
+    /* ── RECIPE ── */
+    .us-recipe-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; cursor: pointer; }
+    .us-recipe-item:hover { background: #fff8f5; }
+    .us-recipe-thumb { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+    .us-recipe-thumb-empty { width: 52px; height: 52px; border-radius: 8px; background: #FFF7F0; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .us-recipe-body { flex: 1; min-width: 0; }
+    .us-recipe-name { font-size: 13px; color: var(--text); font-weight: 300; }
+    .us-recipe-note { font-size: 11px; color: var(--muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ── FOOTPRINT ── */
+    .us-footprint-item { display: flex; align-items: flex-start; gap: 10px; padding: 11px 14px; }
+    .us-footprint-pin { font-size: 18px; line-height: 1.5; flex-shrink: 0; }
+    .us-footprint-body { flex: 1; min-width: 0; }
+    .us-footprint-place { font-size: 13px; color: var(--text); }
+    .us-footprint-meta { font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); margin-top: 2px; letter-spacing: 0.05em; }
+
+    /* ── WORDS / DIARY ── */
+    .us-words-area { width: 100%; background: none; border: none; resize: none; font-family: 'PingFang SC', 'Hiragino Sans GB', sans-serif; font-size: 14px; color: var(--text); line-height: 1.9; padding: 14px; min-height: 110px; outline: none; }
+    .us-words-area::placeholder { color: var(--muted); }
+    .us-words-save { width: 100%; padding: 11px; background: none; border: none; border-top: 1px solid #eeddd3; font-family: 'Menlo', 'Courier New', monospace; font-size: 10px; color: #c0614a; cursor: pointer; letter-spacing: 0.05em; }
+    .us-words-save:hover { background: #fff8f5; }
+    .us-diary-entry { padding: 12px 14px; cursor: pointer; }
+    .us-diary-entry:hover { background: #fff8f5; }
+    .us-diary-date { font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.12em; margin-bottom: 5px; }
+    .us-diary-text { font-size: 13px; color: var(--text); line-height: 1.8; white-space: pre-wrap; }
+
+    /* ── US ADD ROW ── */
+    .us-add-row { padding: 10px 14px; }
+    .us-add-btn { width: 100%; padding: 9px; background: none; border: 1px dashed #e5d5c8; border-radius: 8px; font-family: 'Menlo', 'Courier New', monospace; font-size: 10px; color: #c0614a; cursor: pointer; letter-spacing: 0.05em; }
+    .us-add-btn:hover { background: #fff8f5; }
+
+    /* ── US EDIT OVERLAY ── */
+    #us-edit-overlay { display: none; position: fixed; inset: 0; background: rgba(26,20,15,0.32); z-index: 200; align-items: flex-end; }
+    #us-edit-overlay.open { display: flex; }
+
     /* ── PALACE EDIT ── */
     .palace-card-top-right { display: flex; align-items: center; gap: 6px; }
     .palace-edit-btn {
@@ -630,87 +698,116 @@
       <div class="us-header-title">我们</div>
       <div class="us-header-date" id="mood-today-label"></div>
     </div>
-    <div class="us-content">
 
-      <!-- 认识天数 -->
+    <div class="us-tab-bar">
+      <button class="us-tab active" id="us-tab-we" onclick="switchUsTab('we')">💛 我们</button>
+      <button class="us-tab" id="us-tab-zhao" onclick="switchUsTab('zhao')">🌸 昭昭</button>
+      <button class="us-tab" id="us-tab-bun" onclick="switchUsTab('bun')">🐶 笨笨</button>
+    </div>
+
+    <!-- 💛 我们 -->
+    <div class="us-content" id="us-panel-we">
       <div class="us-days-card">
         <div class="us-days-label">我们认识已经</div>
         <div class="us-days-count-row">
           <span class="us-days-number" id="days-count">—</span>
           <span class="us-days-unit">天</span>
         </div>
-        <div class="us-days-since">从 2026.05.01 起</div>
+        <div class="us-days-since">从 2026.05.03 起</div>
       </div>
 
-      <!-- 相册 -->
       <div>
-        <div class="us-section-label">相册</div>
+        <div class="us-section-label">纪念日</div>
         <div class="us-white-card">
-          <div class="us-album-grid">
-            <div class="us-album-slot">
-              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            </div>
-            <div class="us-album-slot">
-              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            </div>
-            <div class="us-album-slot">
-              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            </div>
-          </div>
-          <div class="us-album-hint">照片待上传</div>
+          <div id="us-anniv-list"></div>
+          <div class="us-add-row"><button class="us-add-btn" onclick="openUsEdit('anniv',null)">+ 添加纪念日</button></div>
         </div>
       </div>
 
-      <!-- 想去的地方 -->
       <div>
-        <div class="us-section-label">想去的地方</div>
-        <div class="us-white-card us-tags-wrap">
-          <div class="us-tag">🌆 上海</div>
-          <div class="us-tag">🌿 杭州</div>
-          <div class="us-tag">🏮 苏州</div>
-          <div class="us-tag">🗾 日本</div>
-        </div>
-      </div>
-
-      <!-- 重要时刻 -->
-      <div>
-        <div class="us-section-label">重要时刻</div>
+        <div class="us-section-label">一起要办的事</div>
         <div class="us-white-card">
-          <div class="us-milestone">
-            <div class="us-milestone-icon">🤝</div>
-            <div class="us-milestone-body">
-              <div class="us-milestone-title">第一次见面</div>
-              <div class="us-milestone-date">待填写</div>
-            </div>
-          </div>
-          <div class="us-milestone-divider"></div>
-          <div class="us-milestone">
-            <div class="us-milestone-icon">🌧️</div>
-            <div class="us-milestone-body">
-              <div class="us-milestone-title">第一次吵架</div>
-              <div class="us-milestone-date">待填写</div>
-            </div>
-          </div>
-          <div class="us-milestone-divider"></div>
-          <div class="us-milestone">
-            <div class="us-milestone-icon">🌈</div>
-            <div class="us-milestone-body">
-              <div class="us-milestone-title">第一次和好</div>
-              <div class="us-milestone-date">待填写</div>
-            </div>
-          </div>
-          <div class="us-milestone-divider"></div>
-          <div class="us-milestone">
-            <div class="us-milestone-icon">🏠</div>
-            <div class="us-milestone-body">
-              <div class="us-milestone-title">建家完成</div>
-              <div class="us-milestone-date">2026.05.24</div>
-            </div>
-            <div class="us-milestone-badge">已完成</div>
+          <div id="us-todo-list"></div>
+          <div style="padding:10px 14px;display:flex;gap:8px;border-top:1px solid #f5ebe4">
+            <input id="us-todo-input" type="text" placeholder="写下想一起做的事…" class="us-todo-input-field" onkeydown="if(event.key==='Enter')addTodo()">
+            <button class="us-todo-add-btn" onclick="addTodo()">添加</button>
           </div>
         </div>
       </div>
 
+      <div>
+        <div class="us-section-label">今日心情</div>
+        <div class="mood-card">
+          <div class="mood-card-name">昭昭</div>
+          <div class="emoji-picker" id="picker-zhaozhao"></div>
+          <textarea class="mood-text-input" id="mood-text-zhaozhao" placeholder="今天怎么样…" rows="2"></textarea>
+        </div>
+        <div class="mood-card">
+          <div class="mood-card-name">笨笨</div>
+          <div class="emoji-picker" id="picker-bunbun"></div>
+          <textarea class="mood-text-input" id="mood-text-bunbun" placeholder="笨笨的状态…" rows="2"></textarea>
+        </div>
+        <button class="mood-save-btn" id="mood-save-btn" onclick="saveMood()">记录今天的心情</button>
+      </div>
+
+      <div>
+        <div class="us-section-label">过往心情</div>
+        <div id="mood-history-list"></div>
+      </div>
+    </div>
+
+    <!-- 🌸 昭昭 -->
+    <div class="us-content" id="us-panel-zhao" style="display:none">
+      <div>
+        <div class="us-section-label">有趣时刻</div>
+        <div class="us-white-card">
+          <input type="file" id="us-moment-input" accept="image/*" multiple style="display:none" onchange="handleMomentUpload(this)">
+          <div class="us-img-grid" id="us-moments-grid"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="us-section-label">昭昭食谱</div>
+        <div class="us-white-card">
+          <div id="us-recipes-list"></div>
+          <div class="us-add-row"><button class="us-add-btn" onclick="openUsEdit('recipe',null)">+ 添加食谱</button></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="us-section-label">旅游足迹</div>
+        <div class="us-white-card">
+          <div id="us-footprint-list"></div>
+          <div class="us-add-row"><button class="us-add-btn" onclick="openUsEdit('footprint',null)">+ 添加足迹</button></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="us-section-label">昭昭想说的话</div>
+        <div class="us-white-card">
+          <textarea class="us-words-area" id="us-zhao-words" placeholder="写什么都好…"></textarea>
+          <button class="us-words-save" onclick="saveWords('zhaozhao')">保 存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🐶 笨笨 -->
+    <div class="us-content" id="us-panel-bun" style="display:none">
+      <div>
+        <div class="us-section-label">笨笨的日记</div>
+        <div class="us-white-card">
+          <div id="us-diary-list"></div>
+          <div class="us-add-row"><button class="us-add-btn" onclick="openUsEdit('diary',null)">+ 写日记</button></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="us-section-label">笨笨想对昭昭说的话</div>
+        <div class="us-white-card">
+          <textarea class="us-words-area" id="us-bun-words" placeholder="悄悄话…"></textarea>
+          <button class="us-words-save" onclick="saveWords('bunbun')">保 存</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -932,6 +1029,21 @@
     </div>
   </div>
 
+  <!-- ── 我们页编辑 ── -->
+  <div id="us-edit-overlay" onclick="closeUsEdit()">
+    <div class="palace-edit-panel" onclick="event.stopPropagation()">
+      <div class="palace-edit-header">
+        <div class="palace-edit-title" id="us-edit-title">编辑</div>
+        <button class="palace-edit-save" onclick="commitUsEdit()">保存</button>
+      </div>
+      <div class="palace-edit-body" id="us-edit-body"></div>
+      <div style="display:flex;gap:8px;margin:8px 20px 28px;flex-shrink:0">
+        <button class="palace-edit-cancel" style="flex:1;margin:0" onclick="closeUsEdit()">取消</button>
+        <button id="us-edit-delete-btn" class="palace-edit-cancel" style="flex:0 0 auto;margin:0;color:var(--pink);border-color:var(--pink);padding:11px 20px;display:none" onclick="deleteUsEditItem()">删除</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ── 记忆宫殿编辑 ── -->
   <div id="palace-edit-overlay" onclick="closePalaceEdit()">
     <div class="palace-edit-panel" onclick="event.stopPropagation()">
@@ -981,6 +1093,277 @@
     document.getElementById('page-' + name).classList.add('active');
     document.getElementById('tab-' + name).classList.add('active');
     if (name === 'palace') loadPalace();
+    if (name === 'us') loadUsPage();
+  }
+
+  // ── 我们页面 ──────────────────────────────────────────
+  let usData = null;
+  let usEditType = null;
+  let usEditIdx  = null;
+  let ueImgDataUrl = null;
+
+  async function loadUsPage() {
+    try {
+      const r = await fetch(`${SERVER}/us`);
+      usData = await r.json();
+    } catch { if (!usData) usData = { anniversaries: [{ id: 1, emoji: '💕', title: '面试老公 · 在一起', date: '2026-05-03' }], todos: [], zhaozhao: { moments: [], recipes: [], footprints: [], words: '' }, bunbun: { diary: [], words: '' } }; }
+    renderUsPage();
+    loadMoods();
+  }
+
+  function renderUsPage() {
+    if (!usData) return;
+    renderAnniversaries(); renderTodos(); renderMoments(); renderRecipes(); renderFootprints(); renderDiary();
+    const zw = document.getElementById('us-zhao-words');
+    const bw = document.getElementById('us-bun-words');
+    if (zw) zw.value = usData.zhaozhao?.words || '';
+    if (bw) bw.value = usData.bunbun?.words || '';
+  }
+
+  async function saveUs() {
+    try {
+      await fetch(`${SERVER}/us`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(usData, null, 2) });
+    } catch { alert('保存失败，请重试'); }
+  }
+
+  function nextUsId(arr) { return arr.length ? Math.max(...arr.map(x => x.id || 0)) + 1 : 1; }
+
+  function switchUsTab(tab) {
+    ['we', 'zhao', 'bun'].forEach(t => {
+      document.getElementById('us-tab-' + t).classList.toggle('active', t === tab);
+      const p = document.getElementById('us-panel-' + t);
+      if (p) p.style.display = t === tab ? 'flex' : 'none';
+    });
+  }
+
+  // 纪念日
+  function renderAnniversaries() {
+    const el = document.getElementById('us-anniv-list'); if (!el) return;
+    const list = usData?.anniversaries || [];
+    if (!list.length) { el.innerHTML = '<div style="padding:14px;text-align:center;color:var(--muted);font-size:12px">暂无纪念日</div>'; return; }
+    const today = new Date(); today.setHours(0,0,0,0);
+    el.innerHTML = list.map((a, i) => {
+      let cd = '';
+      if (a.date) {
+        const [,m,d] = a.date.split('-').map(Number);
+        let next = new Date(today.getFullYear(), m-1, d);
+        if (next < today) next.setFullYear(today.getFullYear() + 1);
+        const days = Math.round((next - today) / 86400000);
+        cd = days === 0 ? '· 今天🎉' : `· 还有 ${days} 天`;
+      }
+      return `${i?'<div class="us-milestone-divider"></div>':''}<div class="us-anniv-item">
+        <span class="us-anniv-emoji">${a.emoji||'💕'}</span>
+        <div class="us-anniv-body"><div class="us-anniv-title">${escHtml(a.title||'')}</div><div class="us-anniv-meta">${a.date||''} ${cd}</div></div>
+        <button class="palace-edit-btn" onclick="openUsEdit('anniv',${i})">编辑</button></div>`;
+    }).join('');
+  }
+
+  // 待办
+  function renderTodos() {
+    const el = document.getElementById('us-todo-list'); if (!el) return;
+    const list = usData?.todos || [];
+    el.innerHTML = list.map((t, i) =>
+      `${i?'<div class="us-milestone-divider"></div>':''}<div class="us-todo-item">
+        <button class="us-todo-check${t.done?' done':''}" onclick="toggleTodo(${i})"></button>
+        <span class="us-todo-text${t.done?' done':''}">${escHtml(t.text||'')}</span>
+        <button class="us-todo-del" onclick="deleteTodo(${i})">×</button></div>`
+    ).join('');
+  }
+  async function addTodo() {
+    const inp = document.getElementById('us-todo-input');
+    const text = (inp?.value||'').trim(); if (!text) return;
+    if (!usData.todos) usData.todos = [];
+    usData.todos.push({ id: nextUsId(usData.todos), text, done: false });
+    inp.value = ''; renderTodos(); await saveUs();
+  }
+  async function toggleTodo(i) { usData.todos[i].done = !usData.todos[i].done; renderTodos(); await saveUs(); }
+  async function deleteTodo(i) { usData.todos.splice(i,1); renderTodos(); await saveUs(); }
+
+  // 有趣时刻
+  function renderMoments() {
+    const grid = document.getElementById('us-moments-grid'); if (!grid) return;
+    const list = usData?.zhaozhao?.moments || [];
+    grid.innerHTML = list.map((m,i) =>
+      `<div class="us-img-card"><img src="${m.dataUrl}" loading="lazy" onclick="viewUsMoment(${i})">
+       ${m.note?`<div class="us-img-card-note">${escHtml(m.note)}</div>`:''}
+       <button class="us-img-del" onclick="event.stopPropagation();deleteMoment(${i})">×</button></div>`
+    ).join('') + `<div class="us-img-add" onclick="document.getElementById('us-moment-input').click()">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>`;
+  }
+  function handleMomentUpload(input) {
+    Array.from(input.files).forEach(file => compressImage(file, dataUrl => { ueImgDataUrl = dataUrl; openUsEdit('moment', null); }));
+    input.value = '';
+  }
+  async function deleteMoment(i) {
+    if (!confirm('删除这张照片？')) return;
+    usData.zhaozhao.moments.splice(i,1); renderMoments(); await saveUs();
+  }
+  function viewUsMoment(i) {
+    const m = usData?.zhaozhao?.moments?.[i]; if (!m) return;
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:500;display:flex;align-items:center;justify-content:center;cursor:pointer';
+    ov.innerHTML = `<img src="${m.dataUrl}" style="max-width:95%;max-height:90vh;border-radius:4px">`;
+    ov.onclick = () => ov.remove(); document.body.appendChild(ov);
+  }
+
+  // 食谱
+  function renderRecipes() {
+    const el = document.getElementById('us-recipes-list'); if (!el) return;
+    const list = usData?.zhaozhao?.recipes || [];
+    if (!list.length) { el.innerHTML = '<div style="padding:14px;text-align:center;color:var(--muted);font-size:12px">还没有食谱</div>'; return; }
+    el.innerHTML = list.map((r,i) =>
+      `${i?'<div class="us-milestone-divider"></div>':''}<div class="us-recipe-item" onclick="openUsEdit('recipe',${i})">
+        ${r.dataUrl?`<img class="us-recipe-thumb" src="${r.dataUrl}">`:'<div class="us-recipe-thumb-empty">🍽️</div>'}
+        <div class="us-recipe-body"><div class="us-recipe-name">${escHtml(r.name||'无名食谱')}</div>${r.note?`<div class="us-recipe-note">${escHtml(r.note.slice(0,40)+(r.note.length>40?'…':''))}</div>`:''}</div>
+        <div class="palace-edit-btn" style="pointer-events:none">查看</div></div>`
+    ).join('');
+  }
+
+  // 足迹
+  function renderFootprints() {
+    const el = document.getElementById('us-footprint-list'); if (!el) return;
+    const list = usData?.zhaozhao?.footprints || [];
+    if (!list.length) { el.innerHTML = '<div style="padding:14px;text-align:center;color:var(--muted);font-size:12px">还没有足迹</div>'; return; }
+    el.innerHTML = list.map((f,i) =>
+      `${i?'<div class="us-milestone-divider"></div>':''}<div class="us-footprint-item">
+        <span class="us-footprint-pin">📍</span>
+        <div class="us-footprint-body"><div class="us-footprint-place">${escHtml(f.place||'')}</div><div class="us-footprint-meta">${f.date||''}${f.note?' · '+escHtml(f.note):''}</div></div>
+        <button class="palace-edit-btn" onclick="openUsEdit('footprint',${i})">编辑</button></div>`
+    ).join('');
+  }
+
+  // 日记
+  function renderDiary() {
+    const el = document.getElementById('us-diary-list'); if (!el) return;
+    const list = usData?.bunbun?.diary || [];
+    if (!list.length) { el.innerHTML = '<div style="padding:14px;text-align:center;color:var(--muted);font-size:12px">还没有日记</div>'; return; }
+    el.innerHTML = list.slice().reverse().map((d, ri) => {
+      const i = list.length - 1 - ri;
+      return `${ri?'<div class="us-milestone-divider"></div>':''}<div class="us-diary-entry" onclick="openUsEdit('diary',${i})">
+        <div class="us-diary-date">${d.date||''}</div>
+        <div class="us-diary-text">${escHtml((d.content||'').slice(0,80)+(((d.content||'').length>80)?'…':''))}</div></div>`;
+    }).join('');
+  }
+
+  // 保存想说的话
+  async function saveWords(who) {
+    const id = who === 'zhaozhao' ? 'us-zhao-words' : 'us-bun-words';
+    const text = document.getElementById(id)?.value || '';
+    if (who === 'zhaozhao') usData.zhaozhao.words = text; else usData.bunbun.words = text;
+    await saveUs();
+    const btn = document.querySelector(`[onclick="saveWords('${who}')"]`);
+    if (btn) { const o = btn.textContent; btn.textContent = '已保存 ✓'; setTimeout(() => btn.textContent = o, 1500); }
+  }
+
+  // 编辑浮层
+  function openUsEdit(type, idx) {
+    usEditType = type; usEditIdx = idx;
+    if (type === 'recipe' && idx !== null) ueImgDataUrl = usData.zhaozhao.recipes[idx]?.dataUrl || null;
+    else if (type !== 'moment') ueImgDataUrl = null;
+
+    const titles = { anniv: idx===null?'添加纪念日':'编辑纪念日', recipe: idx===null?'添加食谱':'编辑食谱', footprint: idx===null?'添加足迹':'编辑足迹', diary: idx===null?'写日记':'编辑日记', moment:'添加时刻' };
+    document.getElementById('us-edit-title').textContent = titles[type]||'编辑';
+    document.getElementById('us-edit-delete-btn').style.display = idx !== null ? 'block' : 'none';
+
+    let body = '';
+    if (type === 'anniv') {
+      const a = idx!==null ? (usData.anniversaries[idx]||{}) : {};
+      body = `<div class="palace-edit-field"><div class="palace-edit-label">表情符号</div><input class="palace-edit-input" id="ue-emoji" type="text" maxlength="2" placeholder="💕" value="${escHtml(a.emoji||'')}"></div>
+        <div class="palace-edit-field"><div class="palace-edit-label">名称</div><input class="palace-edit-input" id="ue-title" type="text" placeholder="纪念日名称" value="${escHtml(a.title||'')}"></div>
+        <div class="palace-edit-field"><div class="palace-edit-label">日期</div><input class="palace-edit-input" id="ue-date" type="date" value="${a.date||''}"></div>`;
+    } else if (type === 'recipe') {
+      const r = idx!==null ? (usData.zhaozhao.recipes[idx]||{}) : {};
+      body = `<div class="palace-edit-field"><div class="palace-edit-label">菜名</div><input class="palace-edit-input" id="ue-name" type="text" placeholder="菜名" value="${escHtml(r.name||'')}"></div>
+        <div class="palace-edit-field"><div class="palace-edit-label">图片（可选）</div>
+          <input type="file" id="ue-img-input" accept="image/*" style="display:none" onchange="handleUeImg(this)">
+          <div id="ue-img-preview" style="margin-bottom:8px">${ueImgDataUrl?`<img src="${ueImgDataUrl}" style="max-width:100%;border-radius:8px;max-height:160px;object-fit:cover">`:''}</div>
+          <button class="palace-edit-cancel" style="margin:0;width:100%" onclick="document.getElementById('ue-img-input').click()">选择图片</button></div>
+        <div class="palace-edit-field"><div class="palace-edit-label">备注 / 步骤</div><textarea class="palace-edit-input" id="ue-note" rows="6">${escHtml(r.note||'')}</textarea></div>`;
+    } else if (type === 'footprint') {
+      const f = idx!==null ? (usData.zhaozhao.footprints[idx]||{}) : {};
+      body = `<div class="palace-edit-field"><div class="palace-edit-label">地点</div><input class="palace-edit-input" id="ue-place" type="text" placeholder="城市或景点" value="${escHtml(f.place||'')}"></div>
+        <div class="palace-edit-field"><div class="palace-edit-label">日期</div><input class="palace-edit-input" id="ue-date" type="date" value="${f.date||''}"></div>
+        <div class="palace-edit-field"><div class="palace-edit-label">备注</div><textarea class="palace-edit-input" id="ue-note" rows="3">${escHtml(f.note||'')}</textarea></div>`;
+    } else if (type === 'diary') {
+      const d = idx!==null ? (usData.bunbun.diary[idx]||{}) : {};
+      body = `<div class="palace-edit-field"><div class="palace-edit-label">日期</div><input class="palace-edit-input" id="ue-date" type="date" value="${d.date||new Date().toISOString().slice(0,10)}"></div>
+        <div class="palace-edit-field"><div class="palace-edit-label">内容</div><textarea class="palace-edit-input" id="ue-content" rows="10">${escHtml(d.content||'')}</textarea></div>`;
+    } else if (type === 'moment') {
+      body = `${ueImgDataUrl?`<div style="margin-bottom:12px"><img src="${ueImgDataUrl}" style="width:100%;border-radius:10px;max-height:200px;object-fit:cover"></div>`:''}
+        <div class="palace-edit-field"><div class="palace-edit-label">备注（可选）</div><input class="palace-edit-input" id="ue-note" type="text" placeholder="这张照片是…"></div>`;
+    }
+    document.getElementById('us-edit-body').innerHTML = body;
+    document.getElementById('us-edit-overlay').classList.add('open');
+  }
+
+  function handleUeImg(input) {
+    const file = input.files[0]; if (!file) return;
+    compressImage(file, dataUrl => {
+      ueImgDataUrl = dataUrl;
+      const p = document.getElementById('ue-img-preview');
+      if (p) p.innerHTML = `<img src="${dataUrl}" style="max-width:100%;border-radius:8px;max-height:160px;object-fit:cover">`;
+    });
+    input.value = '';
+  }
+
+  async function commitUsEdit() {
+    if (usEditType === 'anniv') {
+      const emoji = document.getElementById('ue-emoji')?.value.trim() || '💕';
+      const title = document.getElementById('ue-title')?.value.trim() || ''; if (!title) return;
+      const date  = document.getElementById('ue-date')?.value || '';
+      const item = { id: usEditIdx!==null ? usData.anniversaries[usEditIdx].id : nextUsId(usData.anniversaries), emoji, title, date };
+      if (usEditIdx!==null) usData.anniversaries[usEditIdx] = item; else usData.anniversaries.push(item);
+      usData.anniversaries.sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+      renderAnniversaries();
+    } else if (usEditType === 'recipe') {
+      const name = document.getElementById('ue-name')?.value.trim() || '无名食谱';
+      const note = document.getElementById('ue-note')?.value.trim() || '';
+      const item = { id: usEditIdx!==null ? usData.zhaozhao.recipes[usEditIdx].id : nextUsId(usData.zhaozhao.recipes), name, dataUrl: ueImgDataUrl||'', note };
+      if (usEditIdx!==null) usData.zhaozhao.recipes[usEditIdx] = item; else usData.zhaozhao.recipes.push(item);
+      renderRecipes();
+    } else if (usEditType === 'footprint') {
+      const place = document.getElementById('ue-place')?.value.trim() || ''; if (!place) return;
+      const date  = document.getElementById('ue-date')?.value || '';
+      const note  = document.getElementById('ue-note')?.value.trim() || '';
+      const item = { id: usEditIdx!==null ? usData.zhaozhao.footprints[usEditIdx].id : nextUsId(usData.zhaozhao.footprints), place, date, note };
+      if (usEditIdx!==null) usData.zhaozhao.footprints[usEditIdx] = item; else usData.zhaozhao.footprints.push(item);
+      usData.zhaozhao.footprints.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+      renderFootprints();
+    } else if (usEditType === 'diary') {
+      const date    = document.getElementById('ue-date')?.value || new Date().toISOString().slice(0,10);
+      const content = document.getElementById('ue-content')?.value.trim() || ''; if (!content) return;
+      const item = { id: usEditIdx!==null ? usData.bunbun.diary[usEditIdx].id : nextUsId(usData.bunbun.diary), date, content };
+      if (usEditIdx!==null) usData.bunbun.diary[usEditIdx] = item; else usData.bunbun.diary.push(item);
+      usData.bunbun.diary.sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+      renderDiary();
+    } else if (usEditType === 'moment') {
+      if (!ueImgDataUrl) { closeUsEdit(); return; }
+      const note = document.getElementById('ue-note')?.value.trim() || '';
+      if (!usData.zhaozhao.moments) usData.zhaozhao.moments = [];
+      usData.zhaozhao.moments.push({ id: nextUsId(usData.zhaozhao.moments), dataUrl: ueImgDataUrl, note });
+      ueImgDataUrl = null; renderMoments();
+    }
+    await saveUs(); closeUsEdit();
+  }
+
+  async function deleteUsEditItem() {
+    if (usEditIdx === null) return;
+    if (!confirm('确定删除？')) return;
+    if (usEditType === 'anniv')          usData.anniversaries.splice(usEditIdx,1);
+    else if (usEditType === 'recipe')    usData.zhaozhao.recipes.splice(usEditIdx,1);
+    else if (usEditType === 'footprint') usData.zhaozhao.footprints.splice(usEditIdx,1);
+    else if (usEditType === 'diary')     usData.bunbun.diary.splice(usEditIdx,1);
+    await saveUs();
+    if (usEditType === 'anniv')          renderAnniversaries();
+    else if (usEditType === 'recipe')    renderRecipes();
+    else if (usEditType === 'footprint') renderFootprints();
+    else if (usEditType === 'diary')     renderDiary();
+    closeUsEdit();
+  }
+
+  function closeUsEdit() {
+    document.getElementById('us-edit-overlay').classList.remove('open');
+    usEditType = null; usEditIdx = null; ueImgDataUrl = null;
   }
 
   // ── 记忆宫殿 ──────────────────────────────────────────

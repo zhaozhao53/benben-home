@@ -193,6 +193,27 @@ const server = http.createServer(async (req, res) => {
     return res.end(JSON.stringify({ ok: true }));
   }
 
+  // 我们页数据
+  if (req.method === 'GET' && pathname === '/us') {
+    const f = path.join(__dirname, 'history', 'us.json');
+    try {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(fs.readFileSync(f, 'utf8'));
+    } catch {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ anniversaries: [], todos: [], zhaozhao: { moments: [], recipes: [], footprints: [], words: '' }, bunbun: { diary: [], words: '' } }));
+    }
+  }
+  if (req.method === 'POST' && pathname === '/us') {
+    const body = await readBody(req);
+    try {
+      JSON.parse(body);
+      fs.writeFileSync(path.join(__dirname, 'history', 'us.json'), body);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: true }));
+    } catch { res.writeHead(400); return res.end('invalid json'); }
+  }
+
   // 记忆文件读取
   if (req.method === 'GET' && /^\/memory\/(core|long|recent)$/.test(pathname)) {
     const name = pathname.replace('/memory/', '');
