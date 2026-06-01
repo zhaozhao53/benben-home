@@ -78,8 +78,19 @@
     @keyframes typingBounce { 0%,60%,100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-5px); opacity: 1; } }
 
     /* ── INPUT ── */
-    .input-area { padding: 20px 24px; border-top: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
-    .input-row { display: flex; gap: 12px; align-items: flex-end; }
+    .input-area { padding: 12px 24px 20px; border-top: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
+    .attach-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .attach-preview-item { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+    .attach-preview-img { width: 60px; height: 60px; object-fit: cover; display: block; }
+    .attach-preview-file { padding: 8px 10px; background: var(--card); font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--sub); max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.6; }
+    .attach-preview-del { position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: rgba(0,0,0,0.5); color: #fff; border: none; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1; }
+    .input-row { display: flex; gap: 8px; align-items: flex-end; }
+    .attach-btn { width: 48px; height: 48px; background: none; border: 1px solid var(--border); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: color 0.2s, border-color 0.2s; }
+    .attach-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .attach-btn svg { width: 18px; height: 18px; }
+    .msg-image { max-width: 200px; max-height: 200px; border-radius: 6px; display: block; margin-bottom: 4px; cursor: pointer; }
+    .msg-file { display: flex; align-items: center; gap: 6px; padding: 7px 10px; background: rgba(0,0,0,0.05); border-radius: 6px; font-family: 'Menlo', 'Courier New', monospace; font-size: 10px; color: var(--sub); }
+    .msg-file svg { flex-shrink: 0; }
     #user-input {
       flex: 1; background: var(--card); border: 1px solid var(--border); color: var(--text);
       font-family: 'PingFang SC', 'Hiragino Sans GB', sans-serif; font-size: 14px; padding: 12px 16px; resize: none;
@@ -586,7 +597,14 @@
     </div>
     <div id="messages"></div>
     <div class="input-area">
+      <div class="attach-preview" id="attach-preview" style="display:none"></div>
       <div class="input-row">
+        <input type="file" id="attach-input" accept="image/*,*/*" multiple style="display:none" onchange="handleAttachFile(this)">
+        <button class="attach-btn" onclick="document.getElementById('attach-input').click()" title="发送图片或文件">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+          </svg>
+        </button>
         <textarea id="user-input" placeholder="说点什么…" rows="1" disabled></textarea>
         <button id="send-btn" onclick="sendMessage()" disabled>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1173,18 +1191,101 @@
     document.getElementById('conn-dot').className = 'header-dot' + (online ? ' online' : '');
   }
 
+  // ── 附件 ─────────────────────────────────────────────
+  let pendingAttachments = [];
+
+  function handleAttachFile(input) {
+    Array.from(input.files).forEach(file => {
+      if (file.type.startsWith('image/')) {
+        compressImage(file, dataUrl => {
+          pendingAttachments.push({ type: 'image', name: file.name, dataUrl });
+          renderAttachPreview();
+        });
+      } else {
+        pendingAttachments.push({ type: 'file', name: file.name, size: formatFileSize(file.size) });
+        renderAttachPreview();
+      }
+    });
+    input.value = '';
+  }
+
+  function compressImage(file, cb) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 800;
+        let w = img.width, h = img.height;
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+          else { w = Math.round(w * MAX / h); h = MAX; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        cb(canvas.toDataURL('image/jpeg', 0.72));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
+  }
+
+  function renderAttachPreview() {
+    const area = document.getElementById('attach-preview');
+    if (!pendingAttachments.length) { area.style.display = 'none'; area.innerHTML = ''; return; }
+    area.style.display = 'flex';
+    area.innerHTML = pendingAttachments.map((a, i) => a.type === 'image'
+      ? `<div class="attach-preview-item"><img class="attach-preview-img" src="${a.dataUrl}"><button class="attach-preview-del" onclick="removeAttach(${i})">×</button></div>`
+      : `<div class="attach-preview-item"><div class="attach-preview-file">📎 ${escHtml(a.name)}<br>${a.size}</div><button class="attach-preview-del" onclick="removeAttach(${i})">×</button></div>`
+    ).join('');
+  }
+
+  function removeAttach(i) { pendingAttachments.splice(i, 1); renderAttachPreview(); }
+
+  function renderMsgContent(text) {
+    const re = /(\[img\][\s\S]*?\[\/img\]|\[file\][\s\S]*?\[\/file\])/g;
+    const parts = []; let last = 0, m;
+    while ((m = re.exec(text)) !== null) {
+      if (m.index > last) parts.push({ t: 'text', v: text.slice(last, m.index) });
+      if (m[1].startsWith('[img]')) parts.push({ t: 'image', v: m[1].slice(5, -6) });
+      else parts.push({ t: 'file', v: m[1].slice(6, -7) });
+      last = m.index + m[1].length;
+    }
+    if (last < text.length) parts.push({ t: 'text', v: text.slice(last) });
+    return parts.map(p => {
+      if (p.t === 'text') return escHtml(p.v.replace(/^\n+|\n+$/g, '')).replace(/\n/g, '<br>');
+      if (p.t === 'image') return `<img class="msg-image" src="${p.v}" onclick="this.style.maxWidth=this.style.maxWidth?'':'100%'">`;
+      const [name, size] = p.v.split(' | ');
+      return `<div class="msg-file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${escHtml(name || p.v)}${size ? ' <span style="opacity:.55">'+escHtml(size)+'</span>' : ''}</div>`;
+    }).join('');
+  }
+
   async function sendMessage() {
     const ta = document.getElementById('user-input');
     const text = ta.value.trim();
-    if (!text || isWaiting) return;
+    const hasAttach = pendingAttachments.length > 0;
+    if ((!text && !hasAttach) || isWaiting) return;
+
+    let fullText = pendingAttachments.map(a =>
+      a.type === 'image' ? `[img]${a.dataUrl}[/img]` : `[file]${a.name} | ${a.size}[/file]`
+    ).join('\n');
+    if (text) fullText = fullText ? fullText + '\n' + text : text;
+
+    pendingAttachments = []; renderAttachPreview();
     ta.value = ''; ta.style.height = 'auto';
     isWaiting = true;
     document.getElementById('send-btn').disabled = true;
     document.getElementById('user-input').disabled = true;
-    appendMessage('user', text);
+    appendMessage('user', fullText);
     showTyping();
     try {
-      await fetch(`${SERVER}/send`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
+      await fetch(`${SERVER}/send`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: fullText }) });
     } catch {
       removeTyping();
       appendNotice('发送失败，检查服务器是否在线', true);
@@ -1198,7 +1299,7 @@
     const c = document.getElementById('messages');
     const div = document.createElement('div');
     div.className = `message ${role}`;
-    div.innerHTML = `<div class="msg-label">${role === 'user' ? '昭昭' : '笨笨'}</div><div class="msg-bubble">${escHtml(text).replace(/\n/g, '<br>')}</div>`;
+    div.innerHTML = `<div class="msg-label">${role === 'user' ? '昭昭' : '笨笨'}</div><div class="msg-bubble">${renderMsgContent(text)}</div>`;
     c.appendChild(div); scrollBottom();
   }
 
