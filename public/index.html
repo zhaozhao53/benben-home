@@ -70,6 +70,13 @@
     .message.user .msg-bubble { background: var(--user-bg); border-color: var(--user-border); color: var(--text); }
     .message.assistant .msg-bubble { background: var(--ai-bg); border-color: var(--ai-border); color: var(--text); }
 
+    /* ── TIME DIVIDER ── */
+    .msg-time {
+      align-self: center; font-family: 'Menlo', 'Courier New', monospace;
+      font-size: 10px; color: var(--muted); letter-spacing: 0.04em;
+      margin: 2px 0 -14px; user-select: none; pointer-events: none;
+    }
+
     /* ── TYPING ── */
     .typing-bubble { background: var(--ai-bg); border: 1px solid var(--ai-border); padding: 16px 20px; display: flex; gap: 6px; align-items: center; }
     .typing-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--pink); animation: typingBounce 1.2s infinite; }
@@ -1149,7 +1156,7 @@
     try {
       const res = await fetch(`${SERVER}/history`);
       const msgs = await res.json();
-      msgs.forEach(m => appendMessage(m.role === 'user' ? 'user' : 'assistant', m.text));
+      msgs.forEach(m => appendMessage(m.role === 'user' ? 'user' : 'assistant', m.text, m.timestamp));
     } catch {}
   }
 
@@ -1168,9 +1175,10 @@
         setStatus('在线 · 记得你', true);
       } else if (data.type === 'cleared') {
         document.getElementById('messages').innerHTML = '';
+        lastMsgTimestamp = 0;
       } else if (data.type === 'reply') {
         removeTyping();
-        appendMessage('assistant', data.text);
+        appendMessage('assistant', data.text, Date.now());
         isWaiting = false;
         document.getElementById('send-btn').disabled = false;
         document.getElementById('user-input').disabled = false;
@@ -1282,7 +1290,7 @@
     isWaiting = true;
     document.getElementById('send-btn').disabled = true;
     document.getElementById('user-input').disabled = true;
-    appendMessage('user', fullText);
+    appendMessage('user', fullText, Date.now());
     showTyping();
     try {
       await fetch(`${SERVER}/send`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: fullText }) });
@@ -1295,8 +1303,36 @@
     }
   }
 
-  function appendMessage(role, text) {
+  // ── 时间分隔 ──────────────────────────────────────────
+  let lastMsgTimestamp = 0;
+  const TIME_GAP_MS = 5 * 60 * 1000;
+
+  function formatMsgTime(ts) {
+    const d = new Date(ts);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const yesterday = today - 86400000;
+    const msgDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    const hhmm = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    if (msgDay >= today)     return '今天 ' + hhmm;
+    if (msgDay >= yesterday) return '昨天 ' + hhmm;
+    if (d.getFullYear() === now.getFullYear()) return (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + hhmm;
+    return d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + hhmm;
+  }
+
+  function maybeInsertTime(c, ts) {
+    if (!ts || (lastMsgTimestamp && ts - lastMsgTimestamp < TIME_GAP_MS)) return;
+    const el = document.createElement('div');
+    el.className = 'msg-time';
+    el.textContent = formatMsgTime(ts);
+    c.appendChild(el);
+    lastMsgTimestamp = ts;
+  }
+
+  function appendMessage(role, text, ts) {
     const c = document.getElementById('messages');
+    maybeInsertTime(c, ts || 0);
+    if (ts) lastMsgTimestamp = ts;
     const div = document.createElement('div');
     div.className = `message ${role}`;
     div.innerHTML = `<div class="msg-label">${role === 'user' ? '昭昭' : '笨笨'}</div><div class="msg-bubble">${renderMsgContent(text)}</div>`;
@@ -1325,6 +1361,7 @@
     try { await fetch(`${SERVER}/clear`, { method: 'POST' }); }
     catch { appendNotice('清空失败，检查服务器是否在线', true); return; }
     document.getElementById('messages').innerHTML = '';
+    lastMsgTimestamp = 0;
   }
 
   function scrollBottom() { const c = document.getElementById('messages'); setTimeout(() => c.scrollTop = c.scrollHeight, 50); }
