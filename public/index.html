@@ -991,7 +991,7 @@
       fields: [{ key: '相识', multi: true }, { key: '在一起' }, { key: '第一次', multi: true }]
     },
     favorites: { title: '收藏时刻', file: 'long', dataPath: ['palace', 'favorites'], type: 'list' },
-    recent:    { title: '最近发生', file: 'recent', dataPath: ['summaries'], type: 'timeline' }
+    recent:    { title: '最近发生', file: 'recent', dataPath: ['daily_summaries'], type: 'timeline' }
   };
 
   let palaceData = { long: null, recent: null };
@@ -1039,7 +1039,7 @@
         </div>`).join('');
     } else if (card.type === 'timeline') {
       const summaries = data || [];
-      const items = summaries.slice(-5).reverse();
+      const items = summaries.slice(-7).reverse();
       el.innerHTML = items.length
         ? items.map(s => `
             <div class="palace-timeline-item">

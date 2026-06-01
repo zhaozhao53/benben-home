@@ -140,7 +140,99 @@ function appendRecent(msgText) {
   fs.writeFileSync(recentPath, JSON.stringify(data, null, 2));
 }
 
+// ── 每日自动总结 ──────────────────────────────────────
+let lastDailySummaryDate = null;
+
+function getDateCST(offsetDays = 0) {
+  const cst = new Date(Date.now() + 8 * 3600 * 1000 + offsetDays * 86400000);
+  return cst.toISOString().slice(0, 10);
+}
+
+async function checkDailySummary() {
+  const cst = new Date(Date.now() + 8 * 3600 * 1000);
+  const hourCST = cst.getUTCHours();
+  const minCST  = cst.getUTCMinutes();
+
+  // 只在 CST 00:00–00:10 执行
+  if (hourCST !== 0 || minCST > 10) return;
+
+  const yesterday = getDateCST(-1);
+  if (lastDailySummaryDate === yesterday) return;
+
+  // 检查是否已存在这天的总结
+  const recentData = readMemory('recent.json');
+  if ((recentData.daily_summaries || []).some(s => s.date === yesterday)) {
+    lastDailySummaryDate = yesterday;
+    return;
+  }
+
+  lastDailySummaryDate = yesterday; // 提前标记，防止并发重入
+
+  // 拉取聊天记录
+  let history;
+  try {
+    history = await fetchJSON(`${BASE_URL}/history`);
+  } catch (err) {
+    process.stderr.write(`[daily-summary] 获取历史失败: ${err.message}\n`);
+    lastDailySummaryDate = null; // 失败则下次重试
+    return;
+  }
+
+  // 过滤昨天的消息（以 CST 日期为准）
+  const msgs = history.filter(m => {
+    const d = new Date(m.timestamp + 8 * 3600 * 1000);
+    return d.toISOString().slice(0, 10) === yesterday;
+  });
+
+  if (!msgs.length) {
+    process.stdout.write(`[daily-summary] ${yesterday} 无聊天记录，跳过\n`);
+    return;
+  }
+
+  const msgText = msgs.map(m => {
+    const role = m.role === 'user' ? '昭昭' : '笨笨';
+    const text = (m.text || '')
+      .replace(/\[img\][\s\S]*?\[\/img\]/g, '[图片]')
+      .replace(/\[file\][\s\S]*?\[\/file\]/g, '[文件]');
+    return `${role}：${text}`;
+  }).join('\n');
+
+  process.stdout.write(`[daily-summary] 开始总结 ${yesterday}（${msgs.length} 条）...\n`);
+
+  const result = spawnSync(
+    'claude',
+    ['-p',
+     `以下是昭昭和笨笨${yesterday}的聊天记录：\n\n${msgText}\n\n请用一句话总结这一天发生了什么，格式严格为"昭昭和笨笨今天XXX"，不超过25字，只输出这一句话：`,
+     '--tools', '', '--no-session-persistence'],
+    { encoding: 'utf8', timeout: 30000 }
+  );
+
+  const raw = (result.stdout || '').trim();
+  if (!raw) {
+    process.stderr.write('[daily-summary] claude 返回空，跳过\n');
+    return;
+  }
+
+  const summary = raw.startsWith('昭昭和笨笨') ? raw : '昭昭和笨笨今天' + raw;
+
+  const recentPath = path.join(MEMORY_DIR, 'recent.json');
+  const data = readMemory('recent.json');
+  if (!data.daily_summaries) data.daily_summaries = [];
+
+  // 去重 + 追加 + 保留最近 7 条
+  data.daily_summaries = data.daily_summaries.filter(s => s.date !== yesterday);
+  data.daily_summaries.push({ date: yesterday, summary });
+  data.daily_summaries.sort((a, b) => a.date.localeCompare(b.date));
+  if (data.daily_summaries.length > 7) data.daily_summaries = data.daily_summaries.slice(-7);
+  data.last_updated = yesterday;
+
+  fs.writeFileSync(recentPath, JSON.stringify(data, null, 2));
+  process.stdout.write(`[daily-summary] ✓ ${yesterday}: ${summary}\n`);
+}
+
 async function poll() {
+  await checkDailySummary();
+
   let pending;
   try {
     pending = await fetchJSON(`${BASE_URL}/pending`);
