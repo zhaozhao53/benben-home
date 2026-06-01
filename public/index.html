@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>昭昭和笨笨的家</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap');
-
     :root {
       --bg: #f9f9f7;
       --surface: #ffffff;
@@ -28,7 +26,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Noto Serif SC', serif; overflow: hidden; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'PingFang SC', 'Hiragino Sans GB', 'Noto Serif SC', sans-serif; overflow: hidden; }
 
     #app { display: flex; height: 100vh; flex-direction: column; }
 
@@ -47,10 +45,10 @@
     .header-dot.online { background: var(--pink); animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
     .header-name { font-size: 15px; color: var(--text); font-weight: 300; letter-spacing: 0.05em; }
-    .header-status { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--sub); letter-spacing: 0.1em; }
+    .header-status { font-family: 'Menlo', 'Courier New', monospace; font-size: 10px; color: var(--sub); letter-spacing: 0.1em; }
     .header-right { display: flex; align-items: center; gap: 16px; }
     .clear-btn {
-      font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted);
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 10px; color: var(--muted);
       background: none; border: 1px solid var(--border); padding: 4px 10px; cursor: pointer;
       letter-spacing: 0.05em; transition: color 0.2s, border-color 0.2s;
     }
@@ -67,7 +65,7 @@
     @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .message.user { align-self: flex-end; align-items: flex-end; }
     .message.assistant { align-self: flex-start; align-items: flex-start; }
-    .msg-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.15em; color: var(--muted); margin-bottom: 8px; }
+    .msg-label { font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; letter-spacing: 0.15em; color: var(--muted); margin-bottom: 8px; }
     .msg-bubble { padding: 16px 20px; font-size: 14px; line-height: 2; border: 1px solid; }
     .message.user .msg-bubble { background: var(--user-bg); border-color: var(--user-border); color: var(--text); }
     .message.assistant .msg-bubble { background: var(--ai-bg); border-color: var(--ai-border); color: var(--text); }
@@ -84,7 +82,7 @@
     .input-row { display: flex; gap: 12px; align-items: flex-end; }
     #user-input {
       flex: 1; background: var(--card); border: 1px solid var(--border); color: var(--text);
-      font-family: 'Noto Serif SC', serif; font-size: 14px; padding: 12px 16px; resize: none;
+      font-family: 'PingFang SC', 'Hiragino Sans GB', sans-serif; font-size: 14px; padding: 12px 16px; resize: none;
       outline: none; line-height: 1.7; max-height: 160px; min-height: 48px; transition: border-color 0.2s;
     }
     #user-input:focus { border-color: var(--accent); }
@@ -98,11 +96,11 @@
     #send-btn:hover { opacity: 0.85; }
     #send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
     #send-btn svg { width: 18px; height: 18px; }
-    .input-hint { margin-top: 8px; font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.1em; }
+    .input-hint { margin-top: 8px; font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.1em; }
 
     /* ── NOTICE ── */
     .conn-notice {
-      align-self: center; font-family: 'Space Mono', monospace; font-size: 10px;
+      align-self: center; font-family: 'Menlo', 'Courier New', monospace; font-size: 10px;
       color: var(--muted); letter-spacing: 0.1em; padding: 8px 16px;
       border: 1px solid var(--border); text-align: center;
     }
@@ -115,7 +113,7 @@
       display: flex; align-items: center; justify-content: space-between;
     }
     .us-header-title { font-size: 15px; font-weight: 300; letter-spacing: 0.05em; }
-    .us-header-date { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--sub); letter-spacing: 0.08em; }
+    .us-header-date { font-family: 'Menlo', 'Courier New', monospace; font-size: 10px; color: var(--sub); letter-spacing: 0.08em; }
 
     .us-content {
       flex: 1; overflow-y: auto; padding: 20px 16px 32px;
@@ -125,7 +123,7 @@
     .us-content::-webkit-scrollbar-thumb { background: #e5d5c8; }
 
     .mood-section-label {
-      font-family: 'Space Mono', monospace; font-size: 9px;
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 9px;
       letter-spacing: 0.2em; color: var(--muted); margin-bottom: 14px;
     }
 
@@ -150,7 +148,7 @@
 
     .mood-text-input {
       width: 100%; background: var(--card); border: 1px solid var(--border);
-      color: var(--text); font-family: 'Noto Serif SC', serif; font-size: 13px;
+      color: var(--text); font-family: 'PingFang SC', 'Hiragino Sans GB', sans-serif; font-size: 13px;
       padding: 10px 14px; resize: none; outline: none;
       line-height: 1.7; max-height: 72px; min-height: 42px;
       transition: border-color 0.2s;
@@ -160,7 +158,7 @@
 
     .mood-save-btn {
       width: 100%; background: #2a2420; color: #f9f9f7; border: none;
-      padding: 14px; cursor: pointer; font-family: 'Noto Serif SC', serif;
+      padding: 14px; cursor: pointer; font-family: 'PingFang SC', 'Hiragino Sans GB', sans-serif;
       font-size: 13px; letter-spacing: 0.12em; transition: opacity 0.2s, background 0.3s;
       margin-top: 6px;
     }
@@ -174,7 +172,7 @@
     }
     .mood-history-entry:last-child { margin-bottom: 0; }
     .mood-history-date {
-      font-family: 'Space Mono', monospace; font-size: 9px;
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 9px;
       letter-spacing: 0.15em; color: var(--muted);
     }
     .mood-history-row { display: flex; align-items: baseline; gap: 10px; }
@@ -182,7 +180,7 @@
     .mood-history-emoji { font-size: 18px; line-height: 1.2; flex-shrink: 0; }
     .mood-history-text { font-size: 13px; color: var(--text); line-height: 1.7; }
     .mood-empty {
-      font-family: 'Space Mono', monospace; font-size: 10px;
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 10px;
       color: var(--muted); letter-spacing: 0.12em; text-align: center; padding: 28px 0;
     }
 
@@ -195,14 +193,14 @@
     .us-days-label { font-size: 12px; color: var(--sub); letter-spacing: 0.1em; }
     .us-days-count-row { display: flex; align-items: baseline; gap: 8px; margin: 4px 0; }
     .us-days-number {
-      font-family: 'Space Mono', monospace; font-size: 56px; font-weight: 400;
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 56px; font-weight: 400;
       color: var(--text); line-height: 1; letter-spacing: -2px;
     }
     .us-days-unit { font-size: 18px; color: var(--sub); font-weight: 300; }
-    .us-days-since { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.15em; }
+    .us-days-since { font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.15em; }
 
     .us-section-label {
-      font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.2em;
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; letter-spacing: 0.2em;
       color: var(--muted); margin-bottom: 8px; padding: 0 4px;
     }
     .us-white-card { background: #fff; border-radius: 14px; border: 1px solid #eeddd3; overflow: hidden; }
@@ -213,7 +211,7 @@
       border: 1.5px dashed #e5d5c8; display: flex; align-items: center; justify-content: center;
     }
     .us-album-slot svg { width: 20px; height: 20px; stroke: #d5c5bc; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-    .us-album-hint { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.1em; text-align: center; padding: 0 14px 12px; }
+    .us-album-hint { font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.1em; text-align: center; padding: 0 14px 12px; }
 
     .us-tags-wrap { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px; }
     .us-tag {
@@ -225,10 +223,10 @@
     .us-milestone-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
     .us-milestone-body { flex: 1; }
     .us-milestone-title { font-size: 13px; color: var(--text); font-weight: 300; letter-spacing: 0.04em; }
-    .us-milestone-date { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.1em; margin-top: 3px; }
+    .us-milestone-date { font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.1em; margin-top: 3px; }
     .us-milestone-divider { height: 1px; background: #f5ebe4; margin: 0 16px; }
     .us-milestone-badge {
-      font-family: 'Space Mono', monospace; font-size: 8px; color: #c0614a;
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 8px; color: #c0614a;
       background: #fff0eb; padding: 3px 9px; border-radius: 20px; flex-shrink: 0; letter-spacing: 0.08em;
     }
 
@@ -242,7 +240,7 @@
     .placeholder-icon svg { width: 100%; height: 100%; stroke: var(--text); }
     .placeholder-title { font-size: 17px; font-weight: 300; color: var(--text); letter-spacing: 0.12em; }
     .placeholder-sub {
-      font-family: 'Space Mono', monospace; font-size: 10px;
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 10px;
       color: var(--muted); letter-spacing: 0.2em;
       border: 1px solid var(--border); padding: 4px 12px;
     }
@@ -258,7 +256,7 @@
       align-items: center; justify-content: center; gap: 4px;
       border: none; background: none; cursor: pointer;
       color: var(--nav-inactive); transition: color 0.18s;
-      font-family: 'Noto Serif SC', serif; font-size: 10px;
+      font-family: 'PingFang SC', 'Hiragino Sans GB', sans-serif; font-size: 10px;
       letter-spacing: 0.08em; padding: 0;
     }
     .nav-tab svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
@@ -327,7 +325,7 @@
     .history-panel-body::-webkit-scrollbar-thumb { background: #e5d5c8; }
 
     .history-date-label {
-      font-family: 'Space Mono', monospace; font-size: 9px;
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 9px;
       letter-spacing: 0.2em; color: var(--muted); margin-bottom: 8px; padding: 0 2px;
     }
     .history-date-card {
@@ -339,13 +337,13 @@
     }
     .history-msg-row:last-child { border-bottom: none; }
     .history-msg-role {
-      font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.1em;
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; letter-spacing: 0.1em;
       color: var(--muted); flex-shrink: 0; padding-top: 3px; min-width: 28px;
     }
     .history-msg-role.is-user { color: #c0614a; }
     .history-msg-text { font-size: 13px; color: var(--text); line-height: 1.85; word-break: break-all; }
     .history-empty {
-      font-family: 'Space Mono', monospace; font-size: 10px;
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 10px;
       color: var(--muted); letter-spacing: 0.15em; text-align: center; padding: 48px 0;
     }
 
@@ -373,7 +371,7 @@
     .palace-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
     .palace-card-emoji { font-size: 22px; line-height: 1; }
     .palace-card-tag {
-      font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.15em;
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 8px; letter-spacing: 0.15em;
       color: #c0614a; background: #fff0eb; padding: 3px 8px; border-radius: 20px;
     }
     .palace-card-title {
@@ -384,7 +382,7 @@
     .palace-card-body { display: flex; flex-direction: column; gap: 5px; }
     .palace-card-line { display: flex; gap: 8px; align-items: baseline; }
     .palace-card-label {
-      font-family: 'Space Mono', monospace; font-size: 8px; color: var(--muted);
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 8px; color: var(--muted);
       letter-spacing: 0.08em; flex-shrink: 0; padding-top: 1px; min-width: 32px;
     }
     .palace-card-val { font-size: 12px; color: var(--text); line-height: 1.85; }
@@ -396,7 +394,7 @@
     .palace-timeline { display: flex; flex-direction: column; gap: 12px; }
     .palace-timeline-item { display: flex; gap: 14px; align-items: flex-start; }
     .palace-timeline-date {
-      font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted);
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted);
       letter-spacing: 0.08em; flex-shrink: 0; padding-top: 2px; min-width: 72px;
     }
     .palace-timeline-text { font-size: 13px; color: var(--text); line-height: 1.8; }
@@ -417,7 +415,7 @@
     .settings-content::-webkit-scrollbar-thumb { background: #e5d5c8; }
 
     .settings-section-label {
-      font-family: 'Space Mono', monospace; font-size: 9px;
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 9px;
       letter-spacing: 0.2em; color: var(--muted);
       padding: 0 4px; margin-top: 20px; margin-bottom: 8px;
     }
@@ -445,7 +443,7 @@
 
     .settings-item-text { flex: 1; min-width: 0; }
     .settings-item-title { font-size: 14px; color: var(--text); font-weight: 300; letter-spacing: 0.04em; }
-    .settings-item-desc { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.08em; margin-top: 3px; }
+    .settings-item-desc { font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.08em; margin-top: 3px; }
 
     .settings-item-arrow { font-size: 18px; color: var(--muted); flex-shrink: 0; line-height: 1; }
 
@@ -455,6 +453,51 @@
     .settings-card-danger .settings-item-icon svg { stroke: var(--pink); }
     .settings-card-danger .settings-item-title { color: var(--pink); }
     .settings-card-danger .settings-item:hover { background: #fff5f7; }
+
+    /* ── THEMES ── */
+    body.theme-warm {
+      --bg: #f5ede2; --surface: #fdf6ee; --card: #f0e4d5; --nav-bg: #f5ede2; --nav-border: #dcc9b2;
+      background-image: url('/texture-warm.jpg');
+      background-repeat: repeat; background-attachment: local;
+    }
+    body.theme-cool {
+      --bg: #e8e8e6; --surface: #f5f5f3; --card: #e0e0dd; --nav-bg: #e8e8e6; --nav-border: #c8c8c4;
+      background-image: url('/texture-cool.jpg');
+      background-repeat: repeat; background-attachment: local;
+    }
+    body.theme-warm #app, body.theme-cool #app { background: transparent; }
+    body.theme-warm .header, body.theme-cool .header { background: var(--surface); }
+    body.theme-warm .msg-area, body.theme-cool .msg-area { background: transparent; }
+
+    /* ── APPEARANCE MODAL ── */
+    #appearance-overlay { display: none; position: fixed; inset: 0; background: rgba(26,20,15,0.32); z-index: 200; align-items: flex-end; }
+    #appearance-overlay.open { display: flex; }
+    .appearance-panel {
+      width: 100%; background: #FFF7F0; border-radius: 20px 20px 0 0;
+      padding: 24px 20px 36px; animation: panelSlideUp 0.22s ease;
+    }
+    .appearance-panel-title { font-size: 15px; font-weight: 300; letter-spacing: 0.06em; margin-bottom: 20px; }
+    .appearance-section-label { font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px; }
+    .theme-options { display: flex; gap: 12px; margin-bottom: 28px; }
+    .theme-option {
+      flex: 1; border-radius: 12px; border: 2px solid transparent; overflow: hidden;
+      cursor: pointer; transition: border-color 0.2s;
+    }
+    .theme-option.active { border-color: #c0614a; }
+    .theme-option-preview {
+      height: 72px; display: flex; align-items: flex-end; padding: 8px;
+      background-size: 200px; background-repeat: repeat;
+    }
+    .theme-option-preview.warm { background-image: url('/texture-warm.jpg'); background-color: #f5ede2; }
+    .theme-option-preview.cool { background-image: url('/texture-cool.jpg'); background-color: #e8e8e6; }
+    .theme-option-preview.plain { background-color: #f9f9f7; }
+    .theme-option-label { font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; letter-spacing: 0.1em; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+    .theme-option-label.dark { color: #555; text-shadow: none; }
+    .appearance-close {
+      width: 100%; padding: 12px; background: none; border: 1px solid #dcc9b2;
+      border-radius: 10px; font-family: 'Menlo', 'Courier New', monospace; font-size: 11px;
+      color: #c0614a; cursor: pointer; letter-spacing: 0.05em;
+    }
   </style>
 </head>
 <body>
@@ -846,6 +889,32 @@
     </div>
   </div>
 
+  <!-- ── 外观设置 ── -->
+  <div id="appearance-overlay" onclick="closeAppearance()">
+    <div class="appearance-panel" onclick="event.stopPropagation()">
+      <div class="appearance-panel-title">外观设置</div>
+      <div class="appearance-section-label">背景纹理</div>
+      <div class="theme-options">
+        <div class="theme-option" id="theme-opt-plain" onclick="applyTheme('plain')">
+          <div class="theme-option-preview plain">
+            <span class="theme-option-label dark">默认</span>
+          </div>
+        </div>
+        <div class="theme-option" id="theme-opt-warm" onclick="applyTheme('warm')">
+          <div class="theme-option-preview warm">
+            <span class="theme-option-label">暖米</span>
+          </div>
+        </div>
+        <div class="theme-option" id="theme-opt-cool" onclick="applyTheme('cool')">
+          <div class="theme-option-preview cool">
+            <span class="theme-option-label">冷灰</span>
+          </div>
+        </div>
+      </div>
+      <button class="appearance-close" onclick="closeAppearance()">关闭</button>
+    </div>
+  </div>
+
   <!-- ── 底部导航 ── -->
   <nav class="bottom-nav">
     <button class="nav-tab active" id="tab-chat" onclick="switchTab('chat')">
@@ -1169,7 +1238,28 @@
     } catch { alert('读取文件失败'); }
   }
 
-  function showAppearance() { alert('外观设置即将开放'); }
+  const THEMES = ['plain', 'warm', 'cool'];
+  function applyTheme(name) {
+    THEMES.forEach(t => {
+      document.body.classList.remove('theme-' + t);
+      const opt = document.getElementById('theme-opt-' + t);
+      if (opt) opt.classList.remove('active');
+    });
+    if (name !== 'plain') document.body.classList.add('theme-' + name);
+    const active = document.getElementById('theme-opt-' + name);
+    if (active) active.classList.add('active');
+    localStorage.setItem('benben_theme', name);
+  }
+  function initTheme() {
+    const saved = localStorage.getItem('benben_theme') || 'plain';
+    applyTheme(saved);
+  }
+  function showAppearance() {
+    document.getElementById('appearance-overlay').classList.add('open');
+  }
+  function closeAppearance() {
+    document.getElementById('appearance-overlay').classList.remove('open');
+  }
   function showPersonality() { alert('人格设置即将开放'); }
 
   async function clearAllConversations() {
@@ -1183,13 +1273,14 @@
 
   // ── 认识天数 ──────────────────────────────────────────
   function calcDays() {
-    const start = new Date('2026-05-01T00:00:00');
+    const start = new Date('2026-05-03T00:00:00');
     const diff = Math.floor((Date.now() - start) / 86400000);
     const el = document.getElementById('days-count');
     if (el) el.textContent = diff;
   }
 
   // ── 初始化 ────────────────────────────────────────────
+  initTheme();
   calcDays();
   document.getElementById('mood-today-label').textContent = getTodayLabel();
   loadHistory().then(() => connect());

@@ -70,6 +70,19 @@ const server = http.createServer(async (req, res) => {
 
   const pathname = req.url.split('?')[0];
 
+  // 静态资源（public/ 目录下的图片等）
+  if (req.method === 'GET' && pathname !== '/' && !pathname.includes('..')) {
+    const ext = path.extname(pathname).toLowerCase();
+    const mime = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.ico': 'image/x-icon', '.webp': 'image/webp' }[ext];
+    if (mime) {
+      try {
+        const data = fs.readFileSync(path.join(__dirname, 'public', pathname));
+        res.writeHead(200, { 'Content-Type': mime, 'Cache-Control': 'public, max-age=86400' });
+        return res.end(data);
+      } catch {}
+    }
+  }
+
   // 服务 Web UI
   if (req.method === 'GET' && pathname === '/') {
     try {
