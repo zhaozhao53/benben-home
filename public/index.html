@@ -504,6 +504,29 @@
 
     .settings-divider { height: 1px; background: #f0e0d6; margin: 0 16px; }
 
+    /* ── 导出日期选择区 ── */
+    .settings-export-wrap { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+    .settings-export-label { font-size: 14px; color: var(--text); font-weight: 300; letter-spacing: 0.04em; }
+    .settings-export-hint { font-family: 'Menlo','Courier New',monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.08em; }
+    .settings-export-dates { display: flex; align-items: center; gap: 8px; }
+    .settings-export-date {
+      flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+      padding: 7px 8px; font-size: 12px; color: var(--text); outline: none;
+      font-family: 'Menlo','Courier New',monospace; letter-spacing: 0.03em; min-width: 0;
+    }
+    .settings-export-date:focus { border-color: var(--accent); }
+    .settings-export-sep { font-family: 'Menlo',monospace; font-size: 10px; color: var(--muted); flex-shrink: 0; }
+    .settings-export-btns { display: flex; gap: 8px; }
+    .settings-export-btn {
+      flex: 1; padding: 9px 6px; border-radius: 7px; cursor: pointer;
+      font-family: 'Menlo','Courier New',monospace; font-size: 10px; letter-spacing: 0.05em;
+      transition: opacity 0.15s, background 0.15s;
+    }
+    .settings-export-btn-all { background: none; border: 1px solid var(--border); color: var(--sub); }
+    .settings-export-btn-all:hover { background: var(--card); }
+    .settings-export-btn-range { background: #2a2420; border: none; color: #f9f9f7; }
+    .settings-export-btn-range:hover { opacity: 0.82; }
+
     .settings-card-danger .settings-item-icon { background: #fff0f0; }
     .settings-card-danger .settings-item-icon svg { stroke: var(--pink); }
     .settings-card-danger .settings-item-title { color: var(--pink); }
@@ -1118,15 +1141,18 @@
 
       <div class="settings-section-label">数据</div>
       <div class="settings-card">
-        <div class="settings-item" onclick="exportChat()">
-          <div class="settings-item-icon">
-            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <div class="settings-export-wrap">
+          <div class="settings-export-label">导出留言记录</div>
+          <div class="settings-export-hint">选择日期范围后点「导出选定」，留空则「全部导出」</div>
+          <div class="settings-export-dates">
+            <input type="date" id="export-from" class="settings-export-date" title="开始日期">
+            <span class="settings-export-sep">至</span>
+            <input type="date" id="export-to" class="settings-export-date" title="结束日期">
           </div>
-          <div class="settings-item-text">
-            <div class="settings-item-title">导出留言记录</div>
-            <div class="settings-item-desc">下载全部对话为 JSON 文件</div>
+          <div class="settings-export-btns">
+            <button class="settings-export-btn settings-export-btn-all" onclick="exportChat(false)">全部导出</button>
+            <button class="settings-export-btn settings-export-btn-range" onclick="exportChat(true)">导出选定</button>
           </div>
-          <div class="settings-item-arrow">›</div>
         </div>
         <div class="settings-divider"></div>
         <div class="settings-item" onclick="backupData()">
@@ -2272,14 +2298,32 @@
 
 
   // ── 设置功能 ──────────────────────────────────────────
-  async function exportChat() {
+  async function exportChat(rangeOnly) {
+    const from = document.getElementById('export-from')?.value || '';
+    const to   = document.getElementById('export-to')?.value   || '';
+
+    if (rangeOnly && !from && !to) {
+      alert('请先选择开始或结束日期');
+      return;
+    }
+
     try {
-      const res = await fetch(`${SERVER}/messages`);
+      const params = new URLSearchParams();
+      if (rangeOnly && from) params.set('from', from);
+      if (rangeOnly && to)   params.set('to',   to);
+      const qs  = params.toString() ? '?' + params.toString() : '';
+      const res = await fetch(`${SERVER}/messages${qs}`);
       const msgs = await res.json();
+
+      if (!msgs.length) { alert('所选范围内没有留言记录'); return; }
+
+      const suffix = rangeOnly
+        ? `${from || 'start'}_${to || 'end'}`
+        : getTodayISO();
       const blob = new Blob([JSON.stringify(msgs, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = `messages-${getTodayISO()}.json`;
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = `messages-${suffix}.json`;
       a.click(); URL.revokeObjectURL(url);
     } catch { alert('导出失败，检查服务器是否在线'); }
   }

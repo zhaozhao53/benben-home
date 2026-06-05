@@ -122,10 +122,22 @@ const server = http.createServer(async (req, res) => {
 
   // ── 留言板 ──────────────────────────────────────────────
 
-  // 获取留言列表
+  // 获取留言列表（可选 ?from=YYYY-MM-DD&to=YYYY-MM-DD 过滤）
   if (req.method === 'GET' && pathname === '/messages') {
+    const qs     = new URL(req.url, 'http://localhost').searchParams;
+    const from   = qs.get('from');
+    const to     = qs.get('to');
+    let msgs = state.messages;
+    if (from || to) {
+      msgs = msgs.filter(m => {
+        const d = new Date(m.timestamp).toISOString().slice(0, 10);
+        if (from && d < from) return false;
+        if (to   && d > to)   return false;
+        return true;
+      });
+    }
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    return res.end(JSON.stringify(state.messages));
+    return res.end(JSON.stringify(msgs));
   }
 
   // 新增留言
