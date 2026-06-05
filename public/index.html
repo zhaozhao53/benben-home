@@ -913,14 +913,12 @@
   <div id="page-us" class="page">
     <div class="us-header">
       <div class="us-header-title">我们</div>
-      <div class="us-header-date" id="mood-today-label"></div>
     </div>
 
     <div class="us-tab-bar">
       <button class="us-tab active" id="us-tab-we" onclick="switchUsTab('we')">💛 我们</button>
       <button class="us-tab us-tab-has-avatar" id="us-tab-zhao" onclick="switchUsTab('zhao')"><img id="tab-avatar-zhaozhao" class="us-tab-avatar-img" alt="昭昭"></button>
       <button class="us-tab us-tab-has-avatar" id="us-tab-bun" onclick="switchUsTab('bun')"><img id="tab-avatar-bunbun" class="us-tab-avatar-img" alt="笨笨"></button>
-      <button class="us-tab" id="us-tab-mood" onclick="switchUsTab('mood')">💕 心情</button>
     </div>
 
     <!-- 💛 我们 -->
@@ -1033,42 +1031,6 @@
       </div>
     </div>
 
-    <!-- 💕 心情 -->
-    <div class="us-content" id="us-panel-mood" style="display:none">
-      <!-- 今日记录 -->
-      <div>
-        <div class="us-section-label">今日心情</div>
-        <div class="mood-card">
-          <div class="mood-card-name">昭昭</div>
-          <div class="emoji-picker" id="picker-zhaozhao"></div>
-          <textarea class="mood-text-input" id="mood-text-zhaozhao" placeholder="今天怎么样…" rows="2"></textarea>
-        </div>
-        <div class="mood-card">
-          <div class="mood-card-name">笨笨</div>
-          <div class="emoji-picker" id="picker-bunbun"></div>
-          <textarea class="mood-text-input" id="mood-text-bunbun" placeholder="笨笨的状态…" rows="2"></textarea>
-        </div>
-        <button class="mood-save-btn" id="mood-save-btn" onclick="saveMood()">记录今天的心情</button>
-      </div>
-
-      <!-- 日历 -->
-      <div>
-        <div class="mood-cal-nav">
-          <button class="mood-cal-nav-btn" onclick="moodCalPrev()">‹</button>
-          <span class="mood-cal-title" id="mood-cal-title"></span>
-          <button class="mood-cal-nav-btn" onclick="moodCalNext()">›</button>
-        </div>
-        <div class="mood-calendar">
-          <div class="mood-cal-weekdays">
-            <div class="mood-cal-wd">日</div><div class="mood-cal-wd">一</div>
-            <div class="mood-cal-wd">二</div><div class="mood-cal-wd">三</div>
-            <div class="mood-cal-wd">四</div><div class="mood-cal-wd">五</div>
-            <div class="mood-cal-wd">六</div>
-          </div>
-          <div id="mood-cal-grid" class="mood-cal-grid"></div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- ── 心情详情弹窗 ── -->
@@ -1144,12 +1106,49 @@
 
   <!-- ── 互动 ── -->
   <div id="page-play" class="page">
-    <div class="placeholder-page">
-      <div class="placeholder-icon">
-        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <div class="us-header">
+      <div class="us-header-title">互动</div>
+      <div class="us-header-date" id="mood-today-label"></div>
+    </div>
+    <div class="us-tab-bar">
+      <button class="us-tab active" id="play-tab-mood" onclick="switchPlayTab('mood')">💕 心情</button>
+    </div>
+
+    <!-- 💕 心情 -->
+    <div class="us-content" id="play-panel-mood">
+      <!-- 今日记录 -->
+      <div>
+        <div class="us-section-label">今日心情</div>
+        <div class="mood-card">
+          <div class="mood-card-name">昭昭</div>
+          <div class="emoji-picker" id="picker-zhaozhao"></div>
+          <textarea class="mood-text-input" id="mood-text-zhaozhao" placeholder="今天怎么样…" rows="2"></textarea>
+        </div>
+        <div class="mood-card">
+          <div class="mood-card-name">笨笨</div>
+          <div class="emoji-picker" id="picker-bunbun"></div>
+          <textarea class="mood-text-input" id="mood-text-bunbun" placeholder="笨笨的状态…" rows="2"></textarea>
+        </div>
+        <button class="mood-save-btn" id="mood-save-btn" onclick="saveMood()">记录今天的心情</button>
       </div>
-      <div class="placeholder-title">互动</div>
-      <div class="placeholder-sub">即将开放</div>
+
+      <!-- 日历 -->
+      <div>
+        <div class="mood-cal-nav">
+          <button class="mood-cal-nav-btn" onclick="moodCalPrev()">‹</button>
+          <span class="mood-cal-title" id="mood-cal-title"></span>
+          <button class="mood-cal-nav-btn" onclick="moodCalNext()">›</button>
+        </div>
+        <div class="mood-calendar">
+          <div class="mood-cal-weekdays">
+            <div class="mood-cal-wd">日</div><div class="mood-cal-wd">一</div>
+            <div class="mood-cal-wd">二</div><div class="mood-cal-wd">三</div>
+            <div class="mood-cal-wd">四</div><div class="mood-cal-wd">五</div>
+            <div class="mood-cal-wd">六</div>
+          </div>
+          <div id="mood-cal-grid" class="mood-cal-grid"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1286,7 +1285,7 @@
       <span>记忆宫殿</span>
     </button>
     <button class="nav-tab" id="tab-play" onclick="switchTab('play')">
-      <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9" stroke-linecap="round" stroke-width="3"/><line x1="15" y1="9" x2="15.01" y2="9" stroke-linecap="round" stroke-width="3"/></svg>
       <span>互动</span>
     </button>
     <button class="nav-tab" id="tab-settings" onclick="switchTab('settings')">
@@ -1307,6 +1306,7 @@
     document.getElementById('tab-' + name).classList.add('active');
     if (name === 'palace') loadPalace();
     if (name === 'us') loadUsPage();
+    if (name === 'play') loadPlayPage();
   }
 
   // ── 我们页面 ──────────────────────────────────────────
@@ -1321,6 +1321,9 @@
       usData = await r.json();
     } catch { if (!usData) usData = { anniversaries: [{ id: 1, emoji: '💕', title: '面试老公 · 在一起', date: '2026-05-03' }], todos: [], zhaozhao: { moments: [], recipes: [], footprints: [], words: '' }, bunbun: { diary: [], words: '' } }; }
     renderUsPage();
+  }
+
+  function loadPlayPage() {
     loadMoods();
   }
 
@@ -1342,12 +1345,19 @@
   function nextUsId(arr) { return arr.length ? Math.max(...arr.map(x => x.id || 0)) + 1 : 1; }
 
   function switchUsTab(tab) {
-    ['we', 'zhao', 'bun', 'mood'].forEach(t => {
+    ['we', 'zhao', 'bun'].forEach(t => {
       document.getElementById('us-tab-' + t).classList.toggle('active', t === tab);
       const p = document.getElementById('us-panel-' + t);
       if (p) p.style.display = t === tab ? 'flex' : 'none';
     });
-    // 心情 tab：确保 emoji 选择器已渲染（loadMoods 可能还未被调用）
+  }
+
+  function switchPlayTab(tab) {
+    ['mood'].forEach(t => {
+      document.getElementById('play-tab-' + t).classList.toggle('active', t === tab);
+      const p = document.getElementById('play-panel-' + t);
+      if (p) p.style.display = t === tab ? 'flex' : 'none';
+    });
     if (tab === 'mood') {
       const picker = document.getElementById('picker-zhaozhao');
       if (picker && !picker.children.length) {
