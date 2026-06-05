@@ -496,9 +496,9 @@
     }
     .settings-item-icon svg { width: 16px; height: 16px; stroke: var(--accent); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
-    .settings-item-text { flex: 1; min-width: 0; }
-    .settings-item-title { font-size: 14px; color: var(--text); font-weight: 300; letter-spacing: 0.04em; }
-    .settings-item-desc { font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.08em; margin-top: 3px; }
+    .settings-item-text { flex: 1; min-width: 0; overflow: hidden; }
+    .settings-item-title { font-size: 14px; color: var(--text); font-weight: 300; letter-spacing: 0.04em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .settings-item-desc { font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.08em; margin-top: 3px; overflow-wrap: break-word; word-break: break-word; white-space: normal; }
 
     .settings-item-arrow { font-size: 18px; color: var(--muted); flex-shrink: 0; line-height: 1; }
 
@@ -1187,31 +1187,6 @@
           <div class="settings-item-text">
             <div class="settings-item-title">外观设置</div>
             <div class="settings-item-desc">主题色 · 字号 · 显示密度</div>
-          </div>
-          <div class="settings-item-arrow">›</div>
-        </div>
-        <div class="settings-divider"></div>
-        <div class="settings-item" onclick="showPersonality()">
-          <div class="settings-item-icon">
-            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          </div>
-          <div class="settings-item-text">
-            <div class="settings-item-title">人格设置</div>
-            <div class="settings-item-desc">调整笨笨的回应风格</div>
-          </div>
-          <div class="settings-item-arrow">›</div>
-        </div>
-      </div>
-
-      <div class="settings-section-label">危险区域</div>
-      <div class="settings-card settings-card-danger">
-        <div class="settings-item" onclick="clearAllConversations()">
-          <div class="settings-item-icon">
-            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-          </div>
-          <div class="settings-item-text">
-            <div class="settings-item-title">清空全部对话</div>
-            <div class="settings-item-desc">删除所有留言记录，不可恢复</div>
           </div>
           <div class="settings-item-arrow">›</div>
         </div>
