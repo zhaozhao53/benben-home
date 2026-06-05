@@ -282,6 +282,38 @@
       background: #fff0eb; padding: 3px 9px; border-radius: 20px; flex-shrink: 0; letter-spacing: 0.08em;
     }
 
+    /* ── 记忆宫殿 TAB ── */
+    .palace-tab-bar {
+      display: flex; flex-shrink: 0;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      scrollbar-width: none;
+    }
+    .palace-tab-bar::-webkit-scrollbar { display: none; }
+    .palace-tab {
+      flex-shrink: 0; padding: 10px 14px;
+      background: none; border: none; border-bottom: 2px solid transparent;
+      font-family: 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+      font-size: 12px; color: var(--muted); cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      letter-spacing: 0.03em; white-space: nowrap;
+    }
+    .palace-tab.active { color: #c0614a; border-bottom-color: #c0614a; }
+    .palace-tab:not(.active):hover { color: var(--accent); }
+    .palace-panel {
+      display: none; flex: 1; overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 14px 14px 32px; background: #FFF7F0;
+      min-height: 0; flex-direction: column; gap: 10px;
+    }
+    .palace-panel.active { display: flex; }
+    .palace-panel::-webkit-scrollbar { width: 4px; }
+    .palace-panel::-webkit-scrollbar-thumb { background: #e5d5c8; }
+    .palace-panel-card {
+      background: #fff; border-radius: 16px;
+      border: 1px solid #eeddd3; overflow: hidden;
+    }
+
     /* ── PLACEHOLDER PAGES ── */
     .placeholder-page {
       flex: 1; display: flex; flex-direction: column;
@@ -1053,9 +1085,17 @@
     <div class="palace-header">
       <div class="palace-header-title">记忆宫殿</div>
     </div>
-    <div class="palace-content">
+    <div class="palace-tab-bar">
+      <button class="palace-tab active" id="palace-tab-overview" onclick="switchPalaceTab('overview')">概览</button>
+      <button class="palace-tab" id="palace-tab-zhaozhao" onclick="switchPalaceTab('zhaozhao')">👤 昭昭</button>
+      <button class="palace-tab" id="palace-tab-settings" onclick="switchPalaceTab('settings')">🌊 庄舟</button>
+      <button class="palace-tab" id="palace-tab-milestones" onclick="switchPalaceTab('milestones')">💛 里程碑</button>
+      <button class="palace-tab" id="palace-tab-quotes" onclick="switchPalaceTab('quotes')">⭐ 原话</button>
+      <button class="palace-tab" id="palace-tab-memes" onclick="switchPalaceTab('memes')">🎭 梗</button>
+      <button class="palace-tab" id="palace-tab-recent" onclick="switchPalaceTab('recent')">📅 最近</button>
+    </div>
 
-      <!-- 置顶概览 -->
+    <div class="palace-panel active" id="palace-panel-overview">
       <div class="palace-overview">
         <div class="palace-overview-label">OVERVIEW</div>
         <div class="palace-overview-names" id="palace-ov-names">加载中…</div>
@@ -1063,61 +1103,42 @@
         <div class="palace-overview-div"></div>
         <div class="palace-overview-truths" id="palace-ov-truths"></div>
       </div>
+    </div>
 
-      <!-- 👤 昭昭档案 -->
-      <div class="palace-section">
-        <div class="palace-section-hd" onclick="toggleSection('zhaozhao')">
-          <div class="palace-section-title">👤 昭昭档案</div>
-          <span class="palace-section-chevron" id="chevron-zhaozhao">›</span>
-        </div>
-        <div class="palace-section-body" id="section-zhaozhao"></div>
+    <div class="palace-panel" id="palace-panel-zhaozhao">
+      <div class="palace-panel-card">
+        <div id="section-zhaozhao"></div>
       </div>
+    </div>
 
-      <!-- 🌊 庄舟设定 -->
-      <div class="palace-section">
-        <div class="palace-section-hd" onclick="toggleSection('settings')">
-          <div class="palace-section-title">🌊 庄舟设定</div>
-          <span class="palace-section-chevron" id="chevron-settings">›</span>
-        </div>
-        <div class="palace-section-body" id="section-settings"></div>
+    <div class="palace-panel" id="palace-panel-settings">
+      <div class="palace-panel-card">
+        <div id="section-settings"></div>
       </div>
+    </div>
 
-      <!-- 💛 里程碑 -->
-      <div class="palace-section">
-        <div class="palace-section-hd" onclick="toggleSection('milestones')">
-          <div class="palace-section-title">💛 里程碑</div>
-          <span class="palace-section-chevron" id="chevron-milestones">›</span>
-        </div>
-        <div class="palace-section-body" id="section-milestones"></div>
+    <div class="palace-panel" id="palace-panel-milestones">
+      <div class="palace-panel-card">
+        <div id="section-milestones"></div>
       </div>
+    </div>
 
-      <!-- ⭐ 原话收藏 -->
-      <div class="palace-section">
-        <div class="palace-section-hd" onclick="toggleSection('quotes')">
-          <div class="palace-section-title">⭐ 原话收藏</div>
-          <span class="palace-section-chevron" id="chevron-quotes">›</span>
-        </div>
-        <div class="palace-section-body" id="section-quotes"></div>
+    <div class="palace-panel" id="palace-panel-quotes">
+      <div class="palace-panel-card">
+        <div id="section-quotes"></div>
       </div>
+    </div>
 
-      <!-- 🎭 经典梗 -->
-      <div class="palace-section">
-        <div class="palace-section-hd" onclick="toggleSection('memes')">
-          <div class="palace-section-title">🎭 经典梗</div>
-          <span class="palace-section-chevron" id="chevron-memes">›</span>
-        </div>
-        <div class="palace-section-body" id="section-memes"></div>
+    <div class="palace-panel" id="palace-panel-memes">
+      <div class="palace-panel-card">
+        <div id="section-memes"></div>
       </div>
+    </div>
 
-      <!-- 📅 最近发生 -->
-      <div class="palace-section">
-        <div class="palace-section-hd" onclick="toggleSection('recent')">
-          <div class="palace-section-title">📅 最近发生</div>
-          <span class="palace-section-chevron" id="chevron-recent">›</span>
-        </div>
-        <div class="palace-section-body" id="section-recent"></div>
+    <div class="palace-panel" id="palace-panel-recent">
+      <div class="palace-panel-card">
+        <div id="section-recent"></div>
       </div>
-
     </div>
   </div>
 
@@ -1334,6 +1355,14 @@
         renderEmojiPicker('bunbun');
       }
     }
+  }
+
+  function switchPalaceTab(tab) {
+    ['overview', 'zhaozhao', 'settings', 'milestones', 'quotes', 'memes', 'recent'].forEach(t => {
+      document.getElementById('palace-tab-' + t).classList.toggle('active', t === tab);
+      const p = document.getElementById('palace-panel-' + t);
+      if (p) p.classList.toggle('active', t === tab);
+    });
   }
 
   // 纪念日
