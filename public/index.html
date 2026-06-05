@@ -47,36 +47,65 @@
 
     /* ── 留言列表 ── */
     #messages {
-      flex: 1; overflow-y: auto; padding: 20px 20px 16px;
-      display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth;
+      flex: 1; overflow-y: auto; padding: 16px 16px 12px;
+      display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth;
     }
     #messages::-webkit-scrollbar { width: 4px; }
     #messages::-webkit-scrollbar-thumb { background: var(--border); }
 
-    .msg-card {
-      background: var(--surface); border: 1px solid var(--border);
-      padding: 14px 16px; animation: fadeUp 0.25s ease;
-      position: relative;
-    }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-    .msg-card-meta {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 10px;
+
+    /* 气泡行 */
+    .msg-row { display: flex; gap: 8px; align-items: flex-end; animation: fadeUp 0.25s ease; }
+    .msg-row.from-zhao { flex-direction: row-reverse; }
+
+    /* 头像圆圈 */
+    .msg-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; line-height: 1; flex-shrink: 0;
     }
-    .msg-card-time {
+    .msg-avatar-zhao { background: #fde8df; }
+    .msg-avatar-bun  { background: #eff0ec; }
+
+    /* 气泡容器（含气泡+底部时间行） */
+    .msg-bubble-wrap {
+      max-width: 76%; display: flex; flex-direction: column; gap: 4px;
+    }
+    .msg-row.from-zhao .msg-bubble-wrap { align-items: flex-end; }
+
+    /* 气泡正文 */
+    .msg-bubble {
+      padding: 10px 14px; font-size: 14px; line-height: 1.85;
+      color: var(--text); white-space: pre-wrap; word-break: break-all;
+    }
+    .msg-bubble-zhao {
+      background: #fad5c2;
+      border-radius: 16px 4px 16px 16px;
+    }
+    .msg-bubble-bun {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 4px 16px 16px 16px;
+    }
+
+    /* 气泡底部：时间 + 收藏 */
+    .msg-bubble-footer {
+      display: flex; align-items: center; gap: 5px; padding: 0 2px;
+    }
+    .msg-row.from-zhao .msg-bubble-footer { flex-direction: row-reverse; }
+    .msg-bubble-time {
       font-family: 'Menlo', 'Courier New', monospace; font-size: 9px;
-      color: var(--muted); letter-spacing: 0.1em;
+      color: var(--muted); letter-spacing: 0.08em;
     }
-    .msg-card-star {
+    .msg-bubble-star {
       background: none; border: none; cursor: pointer;
-      font-size: 16px; line-height: 1; padding: 2px 4px;
+      font-size: 13px; line-height: 1; padding: 1px 2px;
       color: var(--muted); transition: transform 0.15s;
-      flex-shrink: 0;
     }
-    .msg-card-star:hover { transform: scale(1.2); }
-    .msg-card-star.starred { color: #f0b429; }
-    .msg-card-body { font-size: 14px; color: var(--text); line-height: 2; white-space: pre-wrap; word-break: break-all; }
-    .msg-image { max-width: 200px; max-height: 200px; border-radius: 4px; display: block; margin-top: 8px; cursor: pointer; }
+    .msg-bubble-star:hover { transform: scale(1.2); }
+    .msg-bubble-star.starred { color: #f0b429; }
+
+    .msg-image { max-width: 200px; max-height: 200px; border-radius: 8px; display: block; margin-top: 8px; cursor: pointer; }
     .msg-file { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
       padding: 6px 10px; background: var(--card); font-family: 'Menlo', 'Courier New', monospace; font-size: 10px; color: var(--sub); }
 
@@ -637,7 +666,7 @@
   <div id="page-chat" class="page active">
     <div class="header">
       <div class="header-left">
-        <div class="header-name">给笨笨留言</div>
+        <div class="header-name">留言板</div>
       </div>
     </div>
 
@@ -1634,22 +1663,28 @@
     const list = allMessages;
 
     if (!list.length) {
-      c.innerHTML = `<div class="msg-empty">还没有留言\n笨笨不在的时候，把想说的话留在这里</div>`;
+      c.innerHTML = `<div class="msg-empty">还没有留言\n把想说的话留在这里</div>`;
       return;
     }
 
-    c.innerHTML = list.map(msg => `
-      <div class="msg-card" id="msg-${msg.id}">
-        <div class="msg-card-meta">
-          <span class="msg-card-time">${formatMsgTime(msg.timestamp)}</span>
-          <button class="msg-card-star${msg.starred ? ' starred' : ''}" onclick="toggleStar(${msg.id})" title="${msg.starred ? '取消收藏' : '收藏'}">
-            ${msg.starred ? '⭐' : '☆'}
-          </button>
+    c.innerHTML = list.map(msg => {
+      const from = msg.from || '昭昭';
+      const isZhao = from === '昭昭';
+      const rowCls    = isZhao ? 'from-zhao' : 'from-bun';
+      const avatarCls = isZhao ? 'msg-avatar-zhao' : 'msg-avatar-bun';
+      const avatarEmoji = isZhao ? '🌸' : '🐶';
+      const bubbleCls = isZhao ? 'msg-bubble-zhao' : 'msg-bubble-bun';
+      return `<div class="msg-row ${rowCls}" id="msg-${msg.id}">
+        <div class="msg-avatar ${avatarCls}">${avatarEmoji}</div>
+        <div class="msg-bubble-wrap">
+          <div class="msg-bubble ${bubbleCls}">${escHtml(msg.content || '')}${renderAttachContent(msg.attachments)}</div>
+          <div class="msg-bubble-footer">
+            <span class="msg-bubble-time">${formatMsgTime(msg.timestamp)}</span>
+            <button class="msg-bubble-star${msg.starred ? ' starred' : ''}" onclick="toggleStar(${msg.id})" title="${msg.starred ? '取消收藏' : '收藏'}">${msg.starred ? '⭐' : '☆'}</button>
+          </div>
         </div>
-        <div class="msg-card-body">${escHtml(msg.content || '')}</div>
-        ${renderAttachContent(msg.attachments)}
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
   }
 
   async function loadMessages() {
@@ -1747,7 +1782,7 @@
         body: JSON.stringify({ content, attachments })
       });
       const { id } = await res.json();
-      allMessages.unshift({ id, content, attachments, timestamp: Date.now(), starred: false });
+      allMessages.unshift({ id, content, attachments, from: '昭昭', timestamp: Date.now(), starred: false });
       renderMessages();
     } catch {
       ta.value = content;

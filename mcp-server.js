@@ -95,18 +95,51 @@ function createMcpServer() {
   });
 
   // 6. read_messages
-  server.tool('read_messages', '读取昭昭留给笨笨的留言',
+  server.tool('read_messages', '读取留言板（昭昭和笨笨互留的留言）',
     { limit: z.number().optional().describe('返回最新N条，默认20') },
     async ({ limit = 20 }) => {
       const data = readJSON(path.join(DATA_DIR, 'messages.json')) || { messages: [] };
       const msgs = (data.messages || []).slice(0, limit).map(m => ({
         id: m.id,
         content: m.content,
+        from: m.from || '昭昭',
         timestamp: m.timestamp,
         starred: m.starred,
         hasAttachments: !!(m.attachments && m.attachments.length)
       }));
       return { content: [{ type: 'text', text: JSON.stringify(msgs, null, 2) }] };
+    }
+  );
+
+  // 11. write_message
+  server.tool('write_message', '笨笨给昭昭留言',
+    { content: z.string().describe('留言内容') },
+    async ({ content }) => {
+      return new Promise((resolve) => {
+        const body = JSON.stringify({ content: content.trim(), from: '笨笨' });
+        const options = {
+          hostname: 'localhost',
+          port: 3000,
+          path: '/messages',
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
+        };
+        const req = http.request(options, (res) => {
+          let data = '';
+          res.on('data', chunk => data += chunk);
+          res.on('end', () => {
+            try {
+              const { id } = JSON.parse(data);
+              resolve({ content: [{ type: 'text', text: `留言已发出，id=${id}` }] });
+            } catch {
+              resolve({ content: [{ type: 'text', text: '留言已发出' }] });
+            }
+          });
+        });
+        req.on('error', (e) => resolve({ content: [{ type: 'text', text: `留言发送失败: ${e.message}` }] }));
+        req.write(body);
+        req.end();
+      });
     }
   );
 

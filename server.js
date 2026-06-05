@@ -123,7 +123,7 @@ const server = http.createServer(async (req, res) => {
     const body = await readBody(req);
     let parsed;
     try { parsed = JSON.parse(body); } catch { res.writeHead(400); return res.end('invalid json'); }
-    const { content, attachments } = parsed;
+    const { content, attachments, from } = parsed;
     if (!content && (!attachments || !attachments.length)) {
       res.writeHead(400); return res.end('missing content');
     }
@@ -132,6 +132,7 @@ const server = http.createServer(async (req, res) => {
       id,
       content: (content || '').trim(),
       attachments: attachments || [],
+      from: from === '笨笨' ? '笨笨' : '昭昭',
       timestamp: Date.now(),
       starred: false
     };
