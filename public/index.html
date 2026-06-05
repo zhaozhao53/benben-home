@@ -558,6 +558,14 @@
     .us-tab-bar { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
     .us-tab { flex: 1; padding: 11px 0; background: none; border: none; border-bottom: 2px solid transparent; font-family: 'PingFang SC', 'Hiragino Sans GB', sans-serif; font-size: 13px; color: var(--muted); cursor: pointer; transition: color 0.2s, border-color 0.2s; letter-spacing: 0.03em; }
     .us-tab.active { color: #c0614a; border-bottom-color: #c0614a; }
+    .us-tab-has-avatar { padding: 5px 0 4px; }
+    .us-tab-has-avatar.active { border-bottom-color: transparent; }
+    .us-tab-avatar-img {
+      width: 32px; height: 32px; border-radius: 50%;
+      object-fit: cover; display: block; margin: 0 auto;
+      border: 2.5px solid transparent; transition: border-color 0.18s;
+    }
+    .us-tab-has-avatar.active .us-tab-avatar-img { border-color: #c0614a; }
 
     /* ── ANNIVERSARY ── */
     .us-anniv-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
@@ -855,8 +863,8 @@
 
     <div class="us-tab-bar">
       <button class="us-tab active" id="us-tab-we" onclick="switchUsTab('we')">💛 我们</button>
-      <button class="us-tab" id="us-tab-zhao" onclick="switchUsTab('zhao')">🌸 昭昭</button>
-      <button class="us-tab" id="us-tab-bun" onclick="switchUsTab('bun')">🐶 笨笨</button>
+      <button class="us-tab us-tab-has-avatar" id="us-tab-zhao" onclick="switchUsTab('zhao')"><img id="tab-avatar-zhaozhao" class="us-tab-avatar-img" alt="昭昭"></button>
+      <button class="us-tab us-tab-has-avatar" id="us-tab-bun" onclick="switchUsTab('bun')"><img id="tab-avatar-bunbun" class="us-tab-avatar-img" alt="笨笨"></button>
       <button class="us-tab" id="us-tab-mood" onclick="switchUsTab('mood')">💕 心情</button>
     </div>
 
@@ -1883,8 +1891,13 @@
   function updateAllAvatarDisplays() {
     ['zhaozhao', 'bunbun'].forEach(who => {
       const src = getAvatarSrc(who);
-      const tabEl = document.getElementById(`avatar-display-${who}`);
-      if (tabEl) tabEl.src = src;
+      // 面板内大头像
+      const panelEl = document.getElementById(`avatar-display-${who}`);
+      if (panelEl) panelEl.src = src;
+      // tab 栏小头像
+      const tabAvatarEl = document.getElementById(`tab-avatar-${who}`);
+      if (tabAvatarEl) tabAvatarEl.src = src;
+      // 留言气泡头像
       const cls = who === 'zhaozhao' ? 'msg-avatar-zhao' : 'msg-avatar-bun';
       document.querySelectorAll(`.${cls} img`).forEach(img => { img.src = src; });
     });
@@ -2325,6 +2338,7 @@
   initTheme();
   calcDays();
   document.getElementById('mood-today-label').textContent = getTodayLabel();
+  updateAllAvatarDisplays(); // 立即用默认头像填充，避免 tab 闪白
   loadAvatars();
   loadMessages();
 </script>
