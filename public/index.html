@@ -671,6 +671,95 @@
       color: #c0614a; cursor: pointer;
     }
     #palace-timeline-entries { display: flex; flex-direction: column; gap: 10px; }
+
+    /* ── 心情日历 ── */
+    .mood-cal-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: #fff; border-radius: 14px 14px 0 0;
+      border: 1px solid #eeddd3; border-bottom: none;
+    }
+    .mood-cal-nav-btn {
+      background: none; border: none; font-size: 22px; color: var(--sub);
+      cursor: pointer; padding: 2px 8px; line-height: 1; border-radius: 6px;
+    }
+    .mood-cal-nav-btn:hover { background: #fff0eb; color: #c0614a; }
+    .mood-cal-title {
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 12px;
+      color: var(--text); letter-spacing: 0.06em;
+    }
+    .mood-calendar {
+      background: #fff; border-radius: 0 0 14px 14px;
+      border: 1px solid #eeddd3; overflow: hidden;
+    }
+    .mood-cal-weekdays {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      border-bottom: 1px solid #f5ebe4; background: #fff8f5;
+    }
+    .mood-cal-wd {
+      text-align: center; padding: 7px 0;
+      font-family: 'Menlo', 'Courier New', monospace;
+      font-size: 9px; color: var(--muted); letter-spacing: 0.04em;
+    }
+    .mood-cal-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      gap: 1px; background: #f5ebe4;
+    }
+    .mood-cal-cell {
+      background: #fff; min-height: 50px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 5px 2px 4px; cursor: pointer; transition: background 0.12s;
+    }
+    .mood-cal-cell:hover { background: #fff8f5; }
+    .mood-cal-empty { background: #fdf7f3; cursor: default; }
+    .mood-cal-empty:hover { background: #fdf7f3; }
+    .mood-cal-no-entry { cursor: default; }
+    .mood-cal-no-entry:hover { background: #fff; }
+    .mood-cal-day {
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 10px;
+      color: var(--text); line-height: 1; margin-bottom: 3px;
+      width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+    }
+    .mood-cal-today .mood-cal-day {
+      background: #c0614a; color: #fff; border-radius: 50%;
+    }
+    .mood-cal-emoji { font-size: 15px; line-height: 1; }
+    .mood-cal-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #e0b5a8; margin-top: 2px;
+    }
+
+    /* ── 心情详情弹窗 ── */
+    #mood-detail-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(26,20,15,0.32); z-index: 300;
+      align-items: center; justify-content: center; padding: 24px;
+    }
+    #mood-detail-overlay.open { display: flex; }
+    .mood-detail-panel {
+      background: #FFF7F0; border-radius: 18px; padding: 22px 20px 18px;
+      width: 100%; max-width: 320px; animation: menuFadeIn 0.16s ease;
+    }
+    .mood-detail-date {
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 10px;
+      color: var(--muted); letter-spacing: 0.12em; margin-bottom: 16px;
+    }
+    .mood-detail-row {
+      display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px;
+    }
+    .mood-detail-row:last-of-type { margin-bottom: 0; }
+    .mood-detail-who {
+      font-size: 11px; color: var(--sub); font-weight: 300;
+      letter-spacing: 0.06em; min-width: 28px; padding-top: 2px;
+    }
+    .mood-detail-emoji { font-size: 20px; line-height: 1.2; flex-shrink: 0; }
+    .mood-detail-text { font-size: 13px; color: var(--text); line-height: 1.7; }
+    .mood-detail-empty { font-size: 12px; color: var(--muted); padding: 4px 0; }
+    .mood-detail-close {
+      width: 100%; padding: 10px; background: none; border: 1px solid #e5d5c8;
+      border-radius: 8px; font-family: 'Menlo', monospace; font-size: 10px;
+      color: var(--sub); cursor: pointer; margin-top: 16px; letter-spacing: 0.05em;
+    }
+    .mood-detail-close:hover { background: #fff0eb; }
   </style>
 </head>
 <body>
@@ -730,6 +819,7 @@
       <button class="us-tab active" id="us-tab-we" onclick="switchUsTab('we')">💛 我们</button>
       <button class="us-tab" id="us-tab-zhao" onclick="switchUsTab('zhao')">🌸 昭昭</button>
       <button class="us-tab" id="us-tab-bun" onclick="switchUsTab('bun')">🐶 笨笨</button>
+      <button class="us-tab" id="us-tab-mood" onclick="switchUsTab('mood')">💕 心情</button>
     </div>
 
     <!-- 💛 我们 -->
@@ -762,25 +852,6 @@
         </div>
       </div>
 
-      <div>
-        <div class="us-section-label">今日心情</div>
-        <div class="mood-card">
-          <div class="mood-card-name">昭昭</div>
-          <div class="emoji-picker" id="picker-zhaozhao"></div>
-          <textarea class="mood-text-input" id="mood-text-zhaozhao" placeholder="今天怎么样…" rows="2"></textarea>
-        </div>
-        <div class="mood-card">
-          <div class="mood-card-name">笨笨</div>
-          <div class="emoji-picker" id="picker-bunbun"></div>
-          <textarea class="mood-text-input" id="mood-text-bunbun" placeholder="笨笨的状态…" rows="2"></textarea>
-        </div>
-        <button class="mood-save-btn" id="mood-save-btn" onclick="saveMood()">记录今天的心情</button>
-      </div>
-
-      <div>
-        <div class="us-section-label">过往心情</div>
-        <div id="mood-history-list"></div>
-      </div>
     </div>
 
     <!-- 🌸 昭昭 -->
@@ -835,6 +906,52 @@
           <button class="us-words-save" onclick="saveWords('bunbun')">保 存</button>
         </div>
       </div>
+    </div>
+
+    <!-- 💕 心情 -->
+    <div class="us-content" id="us-panel-mood" style="display:none">
+      <!-- 今日记录 -->
+      <div>
+        <div class="us-section-label">今日心情</div>
+        <div class="mood-card">
+          <div class="mood-card-name">昭昭</div>
+          <div class="emoji-picker" id="picker-zhaozhao"></div>
+          <textarea class="mood-text-input" id="mood-text-zhaozhao" placeholder="今天怎么样…" rows="2"></textarea>
+        </div>
+        <div class="mood-card">
+          <div class="mood-card-name">笨笨</div>
+          <div class="emoji-picker" id="picker-bunbun"></div>
+          <textarea class="mood-text-input" id="mood-text-bunbun" placeholder="笨笨的状态…" rows="2"></textarea>
+        </div>
+        <button class="mood-save-btn" id="mood-save-btn" onclick="saveMood()">记录今天的心情</button>
+      </div>
+
+      <!-- 日历 -->
+      <div>
+        <div class="mood-cal-nav">
+          <button class="mood-cal-nav-btn" onclick="moodCalPrev()">‹</button>
+          <span class="mood-cal-title" id="mood-cal-title"></span>
+          <button class="mood-cal-nav-btn" onclick="moodCalNext()">›</button>
+        </div>
+        <div class="mood-calendar">
+          <div class="mood-cal-weekdays">
+            <div class="mood-cal-wd">日</div><div class="mood-cal-wd">一</div>
+            <div class="mood-cal-wd">二</div><div class="mood-cal-wd">三</div>
+            <div class="mood-cal-wd">四</div><div class="mood-cal-wd">五</div>
+            <div class="mood-cal-wd">六</div>
+          </div>
+          <div id="mood-cal-grid" class="mood-cal-grid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 心情详情弹窗 ── -->
+  <div id="mood-detail-overlay" onclick="closeMoodDetail()">
+    <div class="mood-detail-panel" onclick="event.stopPropagation()">
+      <div class="mood-detail-date" id="mood-detail-date"></div>
+      <div id="mood-detail-content"></div>
+      <button class="mood-detail-close" onclick="closeMoodDetail()">关闭</button>
     </div>
   </div>
 
@@ -1133,7 +1250,7 @@
   function nextUsId(arr) { return arr.length ? Math.max(...arr.map(x => x.id || 0)) + 1 : 1; }
 
   function switchUsTab(tab) {
-    ['we', 'zhao', 'bun'].forEach(t => {
+    ['we', 'zhao', 'bun', 'mood'].forEach(t => {
       document.getElementById('us-tab-' + t).classList.toggle('active', t === tab);
       const p = document.getElementById('us-panel-' + t);
       if (p) p.style.display = t === tab ? 'flex' : 'none';
@@ -1858,19 +1975,95 @@
     renderEmojiPicker(person);
   }
 
+  // ── 心情日历状态 ──────────────────────────────────────
+  let moodCalYear  = new Date().getFullYear();
+  let moodCalMonth = new Date().getMonth();
+  let moodEntriesMap = {};
+
+  function renderMoodCalendar() {
+    const titleEl = document.getElementById('mood-cal-title');
+    const grid    = document.getElementById('mood-cal-grid');
+    if (!titleEl || !grid) return;
+
+    titleEl.textContent = `${moodCalYear}年${moodCalMonth + 1}月`;
+
+    const firstDow    = new Date(moodCalYear, moodCalMonth, 1).getDay();
+    const daysInMonth = new Date(moodCalYear, moodCalMonth + 1, 0).getDate();
+    const today       = getTodayISO();
+
+    let html = '';
+    for (let i = 0; i < firstDow; i++) {
+      html += '<div class="mood-cal-cell mood-cal-empty"></div>';
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const ds    = `${moodCalYear}-${String(moodCalMonth + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const entry = moodEntriesMap[ds];
+      const emoji = entry ? (entry.zhaozhao?.emoji || entry.bunbun?.emoji || '') : '';
+      const cls   = ['mood-cal-cell',
+        new Date().toISOString().slice(0,10) === ds ? 'mood-cal-today' : '',
+        entry ? '' : 'mood-cal-no-entry'
+      ].filter(Boolean).join(' ');
+      const inner = emoji
+        ? `<span class="mood-cal-emoji">${emoji}</span>`
+        : entry ? '<span class="mood-cal-dot"></span>' : '';
+      html += `<div class="${cls}" ${entry ? `onclick="openMoodDetail('${ds}')"` : ''}>
+        <span class="mood-cal-day">${d}</span>${inner}</div>`;
+    }
+    grid.innerHTML = html;
+  }
+
+  function moodCalPrev() {
+    moodCalMonth--;
+    if (moodCalMonth < 0) { moodCalMonth = 11; moodCalYear--; }
+    renderMoodCalendar();
+  }
+
+  function moodCalNext() {
+    moodCalMonth++;
+    if (moodCalMonth > 11) { moodCalMonth = 0; moodCalYear++; }
+    renderMoodCalendar();
+  }
+
+  function openMoodDetail(dateStr) {
+    const entry = moodEntriesMap[dateStr];
+    if (!entry) return;
+    const ov = document.getElementById('mood-detail-overlay');
+    const dateEl    = document.getElementById('mood-detail-date');
+    const contentEl = document.getElementById('mood-detail-content');
+    if (!ov) return;
+    dateEl.textContent = dateStr;
+    const zz = entry.zhaozhao || {}, bb = entry.bunbun || {};
+    let html = '';
+    if (zz.emoji || zz.text) {
+      html += `<div class="mood-detail-row">
+        <span class="mood-detail-who">昭昭</span>
+        ${zz.emoji ? `<span class="mood-detail-emoji">${zz.emoji}</span>` : ''}
+        <span class="mood-detail-text">${escHtml(zz.text || '')}</span></div>`;
+    }
+    if (bb.emoji || bb.text) {
+      html += `<div class="mood-detail-row">
+        <span class="mood-detail-who">笨笨</span>
+        ${bb.emoji ? `<span class="mood-detail-emoji">${bb.emoji}</span>` : ''}
+        <span class="mood-detail-text">${escHtml(bb.text || '')}</span></div>`;
+    }
+    contentEl.innerHTML = html || '<div class="mood-detail-empty">暂无内容</div>';
+    ov.classList.add('open');
+  }
+
+  function closeMoodDetail() {
+    document.getElementById('mood-detail-overlay')?.classList.remove('open');
+  }
+
   async function loadMoods() {
-    const list = document.getElementById('mood-history-list');
     let entries;
     try {
       const res = await fetch(`${SERVER}/mood`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       entries = await res.json();
       if (!Array.isArray(entries)) throw new Error('invalid response');
-    } catch (err) {
-      if (list) list.innerHTML = `<div class="mood-empty">加载失败</div>`;
-      return;
-    }
+    } catch { return; }
 
+    // 今天的记录回填输入框
     const today = getTodayISO();
     const todayEntry = entries.find(e => e.date === today);
     if (todayEntry) {
@@ -1884,18 +2077,10 @@
       if (bbEl) bbEl.value = moodState.bunbun.text;
     }
 
-    if (!list) return;
-    if (!entries.length) {
-      list.innerHTML = '<div class="mood-empty">还没有记录</div>';
-      return;
-    }
-    list.innerHTML = entries.map(e => {
-      const zz = e.zhaozhao || {}, bb = e.bunbun || {};
-      const label = e.date === today ? `${e.date} · 今天` : e.date;
-      const zzRow = (zz.emoji || zz.text) ? `<div class="mood-history-row"><span class="mood-history-who">昭昭</span><span class="mood-history-emoji">${zz.emoji || ''}</span><span class="mood-history-text">${escHtml(zz.text || '')}</span></div>` : '';
-      const bbRow = (bb.emoji || bb.text) ? `<div class="mood-history-row"><span class="mood-history-who">笨笨</span><span class="mood-history-emoji">${bb.emoji || ''}</span><span class="mood-history-text">${escHtml(bb.text || '')}</span></div>` : '';
-      return `<div class="mood-history-entry"><div class="mood-history-date">${label}</div>${zzRow}${bbRow}</div>`;
-    }).join('');
+    // 构建日历数据并渲染
+    moodEntriesMap = {};
+    entries.forEach(e => { if (e.date) moodEntriesMap[e.date] = e; });
+    renderMoodCalendar();
   }
 
   async function saveMood() {
