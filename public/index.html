@@ -1325,6 +1325,14 @@
       const p = document.getElementById('us-panel-' + t);
       if (p) p.style.display = t === tab ? 'flex' : 'none';
     });
+    // 心情 tab：确保 emoji 选择器已渲染（loadMoods 可能还未被调用）
+    if (tab === 'mood') {
+      const picker = document.getElementById('picker-zhaozhao');
+      if (picker && !picker.children.length) {
+        renderEmojiPicker('zhaozhao');
+        renderEmojiPicker('bunbun');
+      }
+    }
   }
 
   // 纪念日
@@ -2207,6 +2215,12 @@
     document.getElementById('mood-detail-overlay')?.classList.remove('open');
   }
 
+  function entryHasContent(entry) {
+    if (!entry) return false;
+    const zz = entry.zhaozhao || {}, bb = entry.bunbun || {};
+    return !!(zz.emoji || zz.text || bb.emoji || bb.text);
+  }
+
   async function loadMoods() {
     let entries;
     try {
@@ -2216,23 +2230,23 @@
       if (!Array.isArray(entries)) throw new Error('invalid response');
     } catch { return; }
 
-    // 今天的记录回填输入框
+    // 今天的记录回填输入框（无论有没有记录都渲染选择器）
     const today = getTodayISO();
     const todayEntry = entries.find(e => e.date === today);
     if (todayEntry) {
       if (todayEntry.zhaozhao) { moodState.zhaozhao.emoji = todayEntry.zhaozhao.emoji || ''; moodState.zhaozhao.text = todayEntry.zhaozhao.text || ''; }
       if (todayEntry.bunbun)   { moodState.bunbun.emoji  = todayEntry.bunbun.emoji  || ''; moodState.bunbun.text  = todayEntry.bunbun.text  || ''; }
-      renderEmojiPicker('zhaozhao');
-      renderEmojiPicker('bunbun');
       const zzEl = document.getElementById('mood-text-zhaozhao');
       const bbEl = document.getElementById('mood-text-bunbun');
       if (zzEl) zzEl.value = moodState.zhaozhao.text;
       if (bbEl) bbEl.value = moodState.bunbun.text;
     }
+    renderEmojiPicker('zhaozhao');
+    renderEmojiPicker('bunbun');
 
-    // 构建日历数据并渲染
+    // 构建日历数据并渲染（只记录有内容的条目）
     moodEntriesMap = {};
-    entries.forEach(e => { if (e.date) moodEntriesMap[e.date] = e; });
+    entries.forEach(e => { if (e.date && entryHasContent(e)) moodEntriesMap[e.date] = e; });
     renderMoodCalendar();
   }
 
