@@ -4,8 +4,18 @@ const path = require('path');
 
 const PORT = 3000;
 const MESSAGES_FILE = path.join(__dirname, 'data', 'messages.json');
-const MOOD_FILE = path.join(__dirname, 'history', 'mood.json');
-const PALACE_FILE = path.join(__dirname, 'memory', 'palace.json');
+const MOOD_FILE     = path.join(__dirname, 'history', 'mood.json');
+const PALACE_FILE   = path.join(__dirname, 'memory', 'palace.json');
+const AVATARS_FILE  = path.join(__dirname, 'data', 'avatars.json');
+
+function loadAvatars() {
+  try { return JSON.parse(fs.readFileSync(AVATARS_FILE, 'utf8')); }
+  catch { return { zhaozhao: '', bunbun: '' }; }
+}
+function saveAvatars(data) {
+  fs.mkdirSync(path.dirname(AVATARS_FILE), { recursive: true });
+  fs.writeFileSync(AVATARS_FILE, JSON.stringify(data, null, 2));
+}
 
 function loadMoods() {
   try { return JSON.parse(fs.readFileSync(MOOD_FILE, 'utf8')); }
@@ -239,6 +249,28 @@ const server = http.createServer(async (req, res) => {
     try {
       JSON.parse(body);
       fs.writeFileSync(path.join(__dirname, 'memory', name + '.json'), body);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: true }));
+    } catch { res.writeHead(400); return res.end('invalid json'); }
+  }
+
+  // ── 头像 ─────────────────────────────────────────────────
+
+  if (req.method === 'GET' && pathname === '/avatars') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify(loadAvatars()));
+  }
+
+  const avatarMatch = pathname.match(/^\/avatar\/(zhaozhao|bunbun)$/);
+  if (req.method === 'POST' && avatarMatch) {
+    const who  = avatarMatch[1];
+    const body = await readBody(req);
+    try {
+      const { dataUrl } = JSON.parse(body);
+      if (!dataUrl || !dataUrl.startsWith('data:image/')) { res.writeHead(400); return res.end('invalid image'); }
+      const data = loadAvatars();
+      data[who] = dataUrl;
+      saveAvatars(data);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ ok: true }));
     } catch { res.writeHead(400); return res.end('invalid json'); }

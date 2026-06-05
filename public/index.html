@@ -672,6 +672,44 @@
     }
     #palace-timeline-entries { display: flex; flex-direction: column; gap: 10px; }
 
+    /* ── 头像上传区 ── */
+    .us-avatar-section {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 24px 16px 16px; flex-shrink: 0;
+    }
+    .us-avatar-wrap {
+      position: relative; cursor: pointer; border-radius: 50%;
+      width: 84px; height: 84px; flex-shrink: 0;
+    }
+    .us-avatar-img {
+      width: 84px; height: 84px; border-radius: 50%;
+      object-fit: cover; display: block;
+      border: 2px solid var(--border);
+    }
+    .us-avatar-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.32);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.18s; border-radius: 50%;
+    }
+    .us-avatar-wrap:hover .us-avatar-overlay { opacity: 1; }
+    .us-avatar-overlay svg {
+      width: 22px; height: 22px; stroke: #fff; fill: none;
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .us-avatar-name {
+      margin-top: 10px; font-size: 15px; font-weight: 300;
+      letter-spacing: 0.06em; color: var(--text);
+    }
+    .us-avatar-hint {
+      margin-top: 4px; font-family: 'Menlo', 'Courier New', monospace;
+      font-size: 9px; color: var(--muted); letter-spacing: 0.1em;
+    }
+    /* msg-avatar 支持 img */
+    .msg-avatar img {
+      width: 100%; height: 100%; border-radius: 50%;
+      object-fit: cover; display: block;
+    }
+
     /* ── 心情日历 ── */
     .mood-cal-nav {
       display: flex; align-items: center; justify-content: space-between;
@@ -856,6 +894,18 @@
 
     <!-- 🌸 昭昭 -->
     <div class="us-content" id="us-panel-zhao" style="display:none">
+      <div class="us-avatar-section">
+        <input type="file" id="avatar-input-zhaozhao" accept="image/*" style="display:none" onchange="handleAvatarUpload('zhaozhao',this)">
+        <div class="us-avatar-wrap" onclick="document.getElementById('avatar-input-zhaozhao').click()">
+          <img id="avatar-display-zhaozhao" class="us-avatar-img" alt="昭昭">
+          <div class="us-avatar-overlay">
+            <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+        </div>
+        <div class="us-avatar-name">昭昭</div>
+        <div class="us-avatar-hint">点击更换头像</div>
+      </div>
+
       <div>
         <div class="us-section-label">有趣时刻</div>
         <div class="us-white-card">
@@ -891,6 +941,18 @@
 
     <!-- 🐶 笨笨 -->
     <div class="us-content" id="us-panel-bun" style="display:none">
+      <div class="us-avatar-section">
+        <input type="file" id="avatar-input-bunbun" accept="image/*" style="display:none" onchange="handleAvatarUpload('bunbun',this)">
+        <div class="us-avatar-wrap" onclick="document.getElementById('avatar-input-bunbun').click()">
+          <img id="avatar-display-bunbun" class="us-avatar-img" alt="笨笨">
+          <div class="us-avatar-overlay">
+            <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+        </div>
+        <div class="us-avatar-name">笨笨</div>
+        <div class="us-avatar-hint">点击更换头像</div>
+      </div>
+
       <div>
         <div class="us-section-label">笨笨的日记</div>
         <div class="us-white-card">
@@ -1801,15 +1863,93 @@
     }).join('');
   }
 
+  // ── 头像系统 ──────────────────────────────────────────
+  let avatarData = { zhaozhao: '', bunbun: '' };
+
+  function makeSvgAvatar(char, bg, fg) {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><circle cx="40" cy="40" r="40" fill="${bg}"/><text x="40" y="53" font-family="PingFang SC,Hiragino Sans GB,sans-serif" font-size="30" font-weight="300" text-anchor="middle" fill="${fg}">${char}</text></svg>`;
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  }
+
+  const AVATAR_DEFAULTS = {
+    zhaozhao: makeSvgAvatar('昭', '#fde8df', '#c45470'),
+    bunbun:   makeSvgAvatar('笨', '#eff0ec', '#8b7866')
+  };
+
+  function getAvatarSrc(who) {
+    return avatarData[who] || AVATAR_DEFAULTS[who];
+  }
+
+  function updateAllAvatarDisplays() {
+    ['zhaozhao', 'bunbun'].forEach(who => {
+      const src = getAvatarSrc(who);
+      const tabEl = document.getElementById(`avatar-display-${who}`);
+      if (tabEl) tabEl.src = src;
+      const cls = who === 'zhaozhao' ? 'msg-avatar-zhao' : 'msg-avatar-bun';
+      document.querySelectorAll(`.${cls} img`).forEach(img => { img.src = src; });
+    });
+  }
+
+  async function loadAvatars() {
+    try {
+      const res = await fetch(`${SERVER}/avatars`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.zhaozhao) avatarData.zhaozhao = data.zhaozhao;
+        if (data.bunbun)   avatarData.bunbun   = data.bunbun;
+      }
+    } catch {}
+    updateAllAvatarDisplays();
+  }
+
+  function handleAvatarUpload(who, input) {
+    const file = input.files[0];
+    if (!file) return;
+    input.value = '';
+    compressAvatarImage(file, async dataUrl => {
+      avatarData[who] = dataUrl;
+      updateAllAvatarDisplays();
+      try {
+        const r = await fetch(`${SERVER}/avatar/${who}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dataUrl })
+        });
+        if (!r.ok) throw new Error();
+      } catch { alert('头像保存失败，请重试'); }
+    });
+  }
+
+  function compressAvatarImage(file, cb) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const SIZE = 240;
+        const s = Math.min(img.width, img.height);
+        const canvas = document.createElement('canvas');
+        canvas.width = SIZE; canvas.height = SIZE;
+        canvas.getContext('2d').drawImage(
+          img,
+          (img.width - s) / 2, (img.height - s) / 2, s, s,
+          0, 0, SIZE, SIZE
+        );
+        cb(canvas.toDataURL('image/jpeg', 0.88));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
   function renderMsgRow(msg) {
     const from = msg.from || '昭昭';
     const isZhao = from === '昭昭';
+    const who       = isZhao ? 'zhaozhao' : 'bunbun';
     const rowCls    = isZhao ? 'from-zhao' : 'from-bun';
     const avatarCls = isZhao ? 'msg-avatar-zhao' : 'msg-avatar-bun';
-    const avatarEmoji = isZhao ? '🌸' : '🐶';
     const bubbleCls = isZhao ? 'msg-bubble-zhao' : 'msg-bubble-bun';
     return `<div class="msg-row ${rowCls}" id="msg-${msg.id}">
-      <div class="msg-avatar ${avatarCls}">${avatarEmoji}</div>
+      <div class="msg-avatar ${avatarCls}"><img src="${getAvatarSrc(who)}" alt="${from}"></div>
       <div class="msg-bubble-wrap">
         <div class="msg-bubble ${bubbleCls}">${escHtml(msg.content || '')}${renderAttachContent(msg.attachments)}</div>
         <div class="msg-bubble-footer">
@@ -2185,6 +2325,7 @@
   initTheme();
   calcDays();
   document.getElementById('mood-today-label').textContent = getTodayLabel();
+  loadAvatars();
   loadMessages();
 </script>
 <script>
