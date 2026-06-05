@@ -7,7 +7,7 @@ const { McpServer } = require('@modelcontextprotocol/sdk/server/mcp.js');
 const { StreamableHTTPServerTransport } = require('@modelcontextprotocol/sdk/server/streamableHttp.js');
 const { z } = require('zod');
 
-const TOKEN = process.env.BENBEN_MCP_TOKEN;
+const TOKEN = process.env.BENBEN_MCP_TOKEN || '';
 const PORT = 3001;
 
 const ROOT = __dirname;
@@ -23,11 +23,6 @@ function readJSON(filePath) {
 function writeJSON(filePath, data) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-}
-
-function checkAuth(req) {
-  const auth = req.headers['authorization'] || '';
-  return TOKEN && auth === `Bearer ${TOKEN}`;
 }
 
 function readBody(req) {
@@ -163,21 +158,26 @@ function createMcpServer() {
 const httpServer = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204); return res.end();
   }
 
   const pathname = req.url.split('?')[0];
-  if (pathname !== '/mcp') {
+
+  // 路径格式：/mcp 或 /mcp/{token}
+  const pathMatch = pathname.match(/^\/mcp(?:\/(.*))?$/);
+  if (!pathMatch) {
     res.writeHead(404); return res.end('not found');
   }
 
-  // Token 验证
-  if (!checkAuth(req)) {
-    res.writeHead(401, { 'Content-Type': 'application/json' });
-    return res.end(JSON.stringify({ error: 'Unauthorized' }));
+  // 有 token 时验证路径中的 token
+  if (TOKEN) {
+    const pathToken = pathMatch[1] || '';
+    if (pathToken !== TOKEN) {
+      res.writeHead(404); return res.end('not found');
+    }
   }
 
   try {
@@ -198,10 +198,11 @@ const httpServer = http.createServer(async (req, res) => {
 });
 
 httpServer.listen(PORT, () => {
+  const endpoint = TOKEN ? `/mcp/${TOKEN}` : '/mcp';
   process.stdout.write(`
 ╔══════════════════════════════════════╗
 ║   笨笨 MCP Server 已启动             ║
 ║   http://localhost:${PORT}               ║
-║   端点: POST /mcp                    ║
+║   端点: ${endpoint.slice(0, 30).padEnd(30)} ║
 ╚══════════════════════════════════════╝\n\n`);
 });
