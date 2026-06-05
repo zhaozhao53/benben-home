@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "mcp": "node mcp-server.js"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/zhaozhao53/benben-home/issues"
   },
-  "homepage": "https://github.com/zhaozhao53/benben-home#readme"
+  "homepage": "https://github.com/zhaozhao53/benben-home#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "dotenv": "^17.4.2"
+  }
 }

@@ -34,58 +34,61 @@
     .page { display: none; flex: 1; flex-direction: column; overflow: hidden; min-height: 0; }
     .page.active { display: flex; }
 
-    /* ── HEADER (chat) ── */
+    /* ── HEADER (留言板) ── */
     .header {
       padding: 16px 24px; border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
       flex-shrink: 0; background: var(--surface);
     }
     .header-left { display: flex; align-items: center; gap: 12px; }
-    .header-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); transition: background 0.3s; }
-    .header-dot.online { background: var(--pink); animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
     .header-name { font-size: 15px; color: var(--text); font-weight: 300; letter-spacing: 0.05em; }
-    .header-status { font-family: 'Menlo', 'Courier New', monospace; font-size: 10px; color: var(--sub); letter-spacing: 0.1em; }
     .header-right { display: flex; align-items: center; gap: 16px; }
-    .clear-btn {
-      font-family: 'Menlo', 'Courier New', monospace; font-size: 10px; color: var(--muted);
-      background: none; border: 1px solid var(--border); padding: 4px 10px; cursor: pointer;
-      letter-spacing: 0.05em; transition: color 0.2s, border-color 0.2s;
-    }
-    .clear-btn:hover { color: var(--accent); border-color: var(--accent); }
 
-    /* ── MESSAGES ── */
+
+    /* ── 留言列表 ── */
     #messages {
-      flex: 1; overflow-y: auto; padding: 32px 24px;
-      display: flex; flex-direction: column; gap: 24px; scroll-behavior: smooth;
+      flex: 1; overflow-y: auto; padding: 20px 20px 16px;
+      display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth;
     }
     #messages::-webkit-scrollbar { width: 4px; }
     #messages::-webkit-scrollbar-thumb { background: var(--border); }
-    .message { display: flex; flex-direction: column; max-width: 680px; animation: fadeUp 0.3s ease; }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    .message.user { align-self: flex-end; align-items: flex-end; }
-    .message.assistant { align-self: flex-start; align-items: flex-start; }
-    .msg-label { font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; letter-spacing: 0.15em; color: var(--muted); margin-bottom: 8px; }
-    .msg-bubble { padding: 16px 20px; font-size: 14px; line-height: 2; border: 1px solid; }
-    .message.user .msg-bubble { background: var(--user-bg); border-color: var(--user-border); color: var(--text); }
-    .message.assistant .msg-bubble { background: var(--ai-bg); border-color: var(--ai-border); color: var(--text); }
 
-    /* ── TIME DIVIDER ── */
-    .msg-time {
-      align-self: center; font-family: 'Menlo', 'Courier New', monospace;
-      font-size: 10px; color: var(--muted); letter-spacing: 0.04em;
-      margin: 2px 0 -14px; user-select: none; pointer-events: none;
+    .msg-card {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 14px 16px; animation: fadeUp 0.25s ease;
+      position: relative;
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .msg-card-meta {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px;
+    }
+    .msg-card-time {
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 9px;
+      color: var(--muted); letter-spacing: 0.1em;
+    }
+    .msg-card-star {
+      background: none; border: none; cursor: pointer;
+      font-size: 16px; line-height: 1; padding: 2px 4px;
+      color: var(--muted); transition: transform 0.15s;
+      flex-shrink: 0;
+    }
+    .msg-card-star:hover { transform: scale(1.2); }
+    .msg-card-star.starred { color: #f0b429; }
+    .msg-card-body { font-size: 14px; color: var(--text); line-height: 2; white-space: pre-wrap; word-break: break-all; }
+    .msg-image { max-width: 200px; max-height: 200px; border-radius: 4px; display: block; margin-top: 8px; cursor: pointer; }
+    .msg-file { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
+      padding: 6px 10px; background: var(--card); font-family: 'Menlo', 'Courier New', monospace; font-size: 10px; color: var(--sub); }
+
+    .msg-empty {
+      text-align: center; font-family: 'Menlo', 'Courier New', monospace;
+      font-size: 11px; color: var(--muted); letter-spacing: 0.12em;
+      padding: 40px 20px; line-height: 2.2;
     }
 
-    /* ── TYPING ── */
-    .typing-bubble { background: var(--ai-bg); border: 1px solid var(--ai-border); padding: 16px 20px; display: flex; gap: 6px; align-items: center; }
-    .typing-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--pink); animation: typingBounce 1.2s infinite; }
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes typingBounce { 0%,60%,100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-5px); opacity: 1; } }
 
     /* ── INPUT ── */
-    .input-area { padding: 12px 24px 20px; border-top: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
+    .input-area { padding: 12px 20px 20px; border-top: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
     .attach-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
     .attach-preview-item { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
     .attach-preview-img { width: 60px; height: 60px; object-fit: cover; display: block; }
@@ -95,9 +98,6 @@
     .attach-btn { width: 48px; height: 48px; background: none; border: 1px solid var(--border); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: color 0.2s, border-color 0.2s; }
     .attach-btn:hover { color: var(--accent); border-color: var(--accent); }
     .attach-btn svg { width: 18px; height: 18px; }
-    .msg-image { max-width: 200px; max-height: 200px; border-radius: 6px; display: block; margin-bottom: 4px; cursor: pointer; }
-    .msg-file { display: flex; align-items: center; gap: 6px; padding: 7px 10px; background: rgba(0,0,0,0.05); border-radius: 6px; font-family: 'Menlo', 'Courier New', monospace; font-size: 10px; color: var(--sub); }
-    .msg-file svg { flex-shrink: 0; }
     #user-input {
       flex: 1; background: var(--card); border: 1px solid var(--border); color: var(--text);
       font-family: 'PingFang SC', 'Hiragino Sans GB', sans-serif; font-size: 14px; padding: 12px 16px; resize: none;
@@ -105,7 +105,6 @@
     }
     #user-input:focus { border-color: var(--accent); }
     #user-input::placeholder { color: var(--muted); }
-    #user-input:disabled { opacity: 0.5; }
     #send-btn {
       background: #2a2420; color: #f9f9f7; border: none; width: 48px; height: 48px;
       cursor: pointer; display: flex; align-items: center; justify-content: center;
@@ -115,14 +114,6 @@
     #send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
     #send-btn svg { width: 18px; height: 18px; }
     .input-hint { margin-top: 8px; font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.1em; }
-
-    /* ── NOTICE ── */
-    .conn-notice {
-      align-self: center; font-family: 'Menlo', 'Courier New', monospace; font-size: 10px;
-      color: var(--muted); letter-spacing: 0.1em; padding: 8px 16px;
-      border: 1px solid var(--border); text-align: center;
-    }
-    .conn-notice.error { color: var(--pink); border-color: var(--pink); }
 
     /* ── MOOD PAGE ── */
     .us-header {
@@ -309,61 +300,7 @@
     .avatar-menu-label { font-size: 13px; color: var(--text); font-weight: 300; letter-spacing: 0.05em; }
     .avatar-menu-divider { height: 1px; background: #f0e0d6; }
 
-    /* ── HISTORY MODAL ── */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0; background: rgba(26,20,15,0.32);
-      z-index: 200; align-items: flex-end;
-    }
-    .modal-overlay.open { display: flex; }
-
-    .history-panel {
-      width: 100%; max-height: 82vh; background: #FFF7F0;
-      border-radius: 20px 20px 0 0; display: flex; flex-direction: column;
-      animation: panelSlideUp 0.22s ease;
-    }
     @keyframes panelSlideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-    .history-panel-header {
-      padding: 18px 20px 14px; display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid #eeddd3; flex-shrink: 0;
-    }
-    .history-panel-title { font-size: 15px; font-weight: 300; letter-spacing: 0.06em; }
-    .history-panel-close {
-      width: 28px; height: 28px; background: #f0e0d6; border: none; border-radius: 50%;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      font-size: 17px; color: var(--accent); line-height: 1; transition: background 0.15s;
-    }
-    .history-panel-close:hover { background: #e5cfc5; }
-
-    .history-panel-body {
-      flex: 1; overflow-y: auto; padding: 18px 18px 28px;
-      display: flex; flex-direction: column; gap: 22px;
-    }
-    .history-panel-body::-webkit-scrollbar { width: 4px; }
-    .history-panel-body::-webkit-scrollbar-thumb { background: #e5d5c8; }
-
-    .history-date-label {
-      font-family: 'Menlo', 'Courier New', monospace; font-size: 9px;
-      letter-spacing: 0.2em; color: var(--muted); margin-bottom: 8px; padding: 0 2px;
-    }
-    .history-date-card {
-      background: #fff; border-radius: 12px; border: 1px solid #eeddd3; overflow: hidden;
-    }
-    .history-msg-row {
-      display: flex; gap: 10px; padding: 11px 14px; align-items: flex-start;
-      border-bottom: 1px solid #f5ebe4;
-    }
-    .history-msg-row:last-child { border-bottom: none; }
-    .history-msg-role {
-      font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; letter-spacing: 0.1em;
-      color: var(--muted); flex-shrink: 0; padding-top: 3px; min-width: 28px;
-    }
-    .history-msg-role.is-user { color: #c0614a; }
-    .history-msg-text { font-size: 13px; color: var(--text); line-height: 1.85; word-break: break-all; }
-    .history-empty {
-      font-family: 'Menlo', 'Courier New', monospace; font-size: 10px;
-      color: var(--muted); letter-spacing: 0.15em; text-align: center; padding: 48px 0;
-    }
 
     /* ── PALACE PAGE ── */
     .palace-header {
@@ -373,49 +310,106 @@
     .palace-header-title { font-size: 15px; font-weight: 300; letter-spacing: 0.05em; }
 
     .palace-content {
-      flex: 1; overflow-y: auto; padding: 18px 16px 32px; background: #FFF7F0;
+      flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      padding: 14px 14px 32px; background: #FFF7F0; min-height: 0;
     }
     .palace-content::-webkit-scrollbar { width: 4px; }
     .palace-content::-webkit-scrollbar-thumb { background: #e5d5c8; }
 
-    .palace-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-    .palace-card {
+    /* overview card */
+    .palace-overview {
       background: #fff; border-radius: 16px; border: 1px solid #eeddd3;
-      padding: 17px 15px; display: flex; flex-direction: column; gap: 10px;
+      padding: 18px 16px; margin-bottom: 10px;
     }
-    .palace-card-full { grid-column: 1 / -1; }
+    .palace-overview-label {
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 8px;
+      color: #c0614a; letter-spacing: 0.18em; margin-bottom: 12px;
+    }
+    .palace-overview-names { font-size: 17px; font-weight: 300; color: var(--text); letter-spacing: 0.04em; }
+    .palace-overview-days {
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 10px;
+      color: var(--sub); letter-spacing: 0.06em; margin: 3px 0 13px;
+    }
+    .palace-overview-div { height: 1px; background: #f5ebe4; margin-bottom: 12px; }
+    .palace-overview-truths { display: flex; flex-direction: column; gap: 8px; }
+    .palace-overview-truth { display: flex; gap: 9px; align-items: flex-start; }
+    .palace-overview-truth-dot {
+      width: 4px; height: 4px; border-radius: 50%; background: #e0b5a8;
+      flex-shrink: 0; margin-top: 7px;
+    }
+    .palace-overview-truth-text { font-size: 12px; color: var(--text); line-height: 1.85; }
 
-    .palace-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
-    .palace-card-emoji { font-size: 22px; line-height: 1; }
-    .palace-card-tag {
-      font-family: 'Menlo', 'Courier New', monospace; font-size: 8px; letter-spacing: 0.15em;
-      color: #c0614a; background: #fff0eb; padding: 3px 8px; border-radius: 20px;
+    /* collapsible sections */
+    .palace-section { background: #fff; border-radius: 16px; border: 1px solid #eeddd3; overflow: hidden; margin-bottom: 10px; }
+    .palace-section-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; cursor: pointer; user-select: none; transition: background 0.15s;
     }
-    .palace-card-title {
-      font-size: 13px; font-weight: 400; letter-spacing: 0.07em; color: var(--text);
+    .palace-section-hd:hover { background: #fff8f5; }
+    .palace-section-title { font-size: 13px; color: var(--text); font-weight: 300; letter-spacing: 0.04em; }
+    .palace-section-chevron {
+      font-size: 15px; color: var(--muted); transition: transform 0.2s; display: inline-block; line-height: 1;
     }
-    .palace-card-divider { height: 1px; background: #f5ebe4; }
+    .palace-section-chevron.open { transform: rotate(90deg); }
+    .palace-section-body { display: none; border-top: 1px solid #f5ebe4; }
+    .palace-section-body.open { display: block; }
 
-    .palace-card-body { display: flex; flex-direction: column; gap: 5px; }
-    .palace-card-line { display: flex; gap: 8px; align-items: baseline; }
-    .palace-card-label {
-      font-family: 'Menlo', 'Courier New', monospace; font-size: 8px; color: var(--muted);
-      letter-spacing: 0.08em; flex-shrink: 0; padding-top: 1px; min-width: 32px;
+    /* row styles */
+    .palace-row {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 9px 16px; border-bottom: 1px solid #fdf3ee;
     }
-    .palace-card-val { font-size: 12px; color: var(--text); line-height: 1.85; }
-    .palace-card-dot {
-      width: 4px; height: 4px; border-radius: 50%; background: #e0ccc4;
-      flex-shrink: 0; margin-top: 8px;
+    .palace-row:last-child { border-bottom: none; }
+    .palace-row-label {
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 8px;
+      color: var(--muted); letter-spacing: 0.1em; min-width: 42px;
+      flex-shrink: 0; padding-top: 2px;
     }
+    .palace-row-val { font-size: 12px; color: var(--text); line-height: 1.85; }
 
-    .palace-timeline { display: flex; flex-direction: column; gap: 12px; }
-    .palace-timeline-item { display: flex; gap: 14px; align-items: flex-start; }
-    .palace-timeline-date {
-      font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted);
-      letter-spacing: 0.08em; flex-shrink: 0; padding-top: 2px; min-width: 72px;
+    /* timeline rows */
+    .palace-tl { display: flex; gap: 12px; align-items: flex-start; padding: 9px 16px; border-bottom: 1px solid #fdf3ee; }
+    .palace-tl:last-child { border-bottom: none; }
+    .palace-tl-date {
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 9px;
+      color: var(--muted); letter-spacing: 0.04em; min-width: 68px; flex-shrink: 0; padding-top: 2px;
     }
-    .palace-timeline-text { font-size: 13px; color: var(--text); line-height: 1.8; }
+    .palace-tl-text { font-size: 12px; color: var(--text); line-height: 1.8; }
+
+    /* quote rows */
+    .palace-quote { padding: 10px 16px; border-bottom: 1px solid #fdf3ee; }
+    .palace-quote:last-child { border-bottom: none; }
+    .palace-quote-meta { font-family: 'Menlo', 'Courier New', monospace; font-size: 8px; color: var(--muted); margin-bottom: 4px; }
+    .palace-quote-text { font-size: 13px; color: var(--text); line-height: 1.8; }
+
+    /* do/don't rules */
+    .palace-rule { display: flex; gap: 8px; align-items: flex-start; padding: 8px 16px; border-bottom: 1px solid #fdf3ee; }
+    .palace-rule:last-child { border-bottom: none; }
+    .palace-rule-badge {
+      font-family: 'Menlo', monospace; font-size: 8px; letter-spacing: 0.08em;
+      padding: 2px 6px; border-radius: 10px; flex-shrink: 0; margin-top: 1px;
+    }
+    .palace-badge-do { color: #3a9a6e; background: #e8f5ee; }
+    .palace-badge-dont { color: #c0614a; background: #fff0eb; }
+    .palace-rule-text { font-size: 12px; color: var(--text); line-height: 1.75; }
+
+    .palace-empty { padding: 12px 16px; font-size: 12px; color: var(--muted); }
+
+    /* section edit button row */
+    .pe-edit-row { padding: 7px 16px; display: flex; justify-content: flex-end; border-bottom: 1px solid #f5ebe4; }
+    .pe-inline-btn { background: none; border: 1px solid #e5d5c8; border-radius: 5px; font-family: 'Menlo', monospace; font-size: 9px; color: #c0614a; cursor: pointer; padding: 2px 9px; letter-spacing: 0.06em; }
+    .pe-inline-btn:hover { background: #fff0eb; }
+
+    /* edit sheet */
+    #palace-edit-sheet { display: none; position: fixed; inset: 0; background: rgba(26,20,15,0.32); z-index: 200; align-items: flex-end; }
+    #palace-edit-sheet.open { display: flex; }
+    .pe-row { display: flex; flex-direction: column; gap: 6px; padding: 10px; background: #fff8f5; border-radius: 10px; border: 1px solid #eeddd3; }
+    .pe-row-inline { display: flex; gap: 6px; align-items: center; }
+    .pe-del-btn { align-self: flex-end; background: none; border: none; font-family: 'Menlo', monospace; font-size: 9px; color: var(--muted); cursor: pointer; padding: 2px 0; letter-spacing: 0.05em; }
+    .pe-del-btn:hover { color: var(--pink); }
+    .pe-add-btn { margin-top: 10px; padding: 9px; width: 100%; background: none; border: 1px dashed #e5d5c8; border-radius: 8px; font-family: 'Menlo', monospace; font-size: 10px; color: #c0614a; cursor: pointer; }
+    .pe-add-btn:hover { background: #fff8f5; }
+    .pe-rows { display: flex; flex-direction: column; gap: 10px; }
 
     /* ── SETTINGS PAGE ── */
     .settings-header {
@@ -639,49 +633,27 @@
 <body>
 <div id="app">
 
-  <!-- ── 聊天 ── -->
+  <!-- ── 留言板 ── -->
   <div id="page-chat" class="page active">
     <div class="header">
-      <div class="header-avatar-wrap" onclick="toggleAvatarMenu(event)">
-        <div class="header-left">
-          <div class="header-dot" id="conn-dot"></div>
-          <div>
-            <div class="header-name">笨笨</div>
-            <div class="header-status" id="conn-status">连接中…</div>
-          </div>
-        </div>
-        <div id="avatar-menu" class="avatar-menu">
-          <div class="avatar-menu-item" onclick="openHistory(event)">
-            <div class="avatar-menu-icon">
-              <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg>
-            </div>
-            <span class="avatar-menu-label">历史对话</span>
-          </div>
-          <div class="avatar-menu-divider"></div>
-          <div class="avatar-menu-item" onclick="openAbout(event)">
-            <div class="avatar-menu-icon">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            </div>
-            <span class="avatar-menu-label">关于笨笨</span>
-          </div>
-        </div>
-      </div>
-      <div class="header-right">
-        <button class="clear-btn" onclick="clearChat()">清空对话</button>
+      <div class="header-left">
+        <div class="header-name">给笨笨留言</div>
       </div>
     </div>
+
     <div id="messages"></div>
+
     <div class="input-area">
       <div class="attach-preview" id="attach-preview" style="display:none"></div>
       <div class="input-row">
         <input type="file" id="attach-input" accept="image/*,*/*" multiple style="display:none" onchange="handleAttachFile(this)">
-        <button class="attach-btn" onclick="document.getElementById('attach-input').click()" title="发送图片或文件">
+        <button class="attach-btn" onclick="document.getElementById('attach-input').click()" title="上传图片或文件">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
           </svg>
         </button>
-        <textarea id="user-input" placeholder="说点什么…" rows="1" disabled></textarea>
-        <button id="send-btn" onclick="sendMessage()" disabled>
+        <textarea id="user-input" placeholder="笨笨不在的时候，把想说的话留在这里…" rows="1"></textarea>
+        <button id="send-btn" onclick="sendMessage()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="22" y1="2" x2="11" y2="13"></line>
             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -817,79 +789,70 @@
       <div class="palace-header-title">记忆宫殿</div>
     </div>
     <div class="palace-content">
-      <div class="palace-grid">
 
-        <!-- 关于昭昭 -->
-        <div class="palace-card">
-          <div class="palace-card-top">
-            <div class="palace-card-emoji">🌸</div>
-            <div class="palace-card-top-right">
-              <div class="palace-card-tag">人物</div>
-              <button class="palace-edit-btn" onclick="openPalaceEdit('zhaozhao')">编辑</button>
-            </div>
-          </div>
-          <div class="palace-card-title">关于昭昭</div>
-          <div class="palace-card-divider"></div>
-          <div class="palace-card-body" id="card-body-zhaozhao"><div class="palace-card-val" style="color:var(--muted)">加载中…</div></div>
-        </div>
-
-        <!-- 关于笨笨 -->
-        <div class="palace-card">
-          <div class="palace-card-top">
-            <div class="palace-card-emoji">🐷</div>
-            <div class="palace-card-top-right">
-              <div class="palace-card-tag">人物</div>
-              <button class="palace-edit-btn" onclick="openPalaceEdit('bunbun')">编辑</button>
-            </div>
-          </div>
-          <div class="palace-card-title">关于笨笨</div>
-          <div class="palace-card-divider"></div>
-          <div class="palace-card-body" id="card-body-bunbun"><div class="palace-card-val" style="color:var(--muted)">加载中…</div></div>
-        </div>
-
-        <!-- 我们的故事 -->
-        <div class="palace-card">
-          <div class="palace-card-top">
-            <div class="palace-card-emoji">💌</div>
-            <div class="palace-card-top-right">
-              <div class="palace-card-tag">故事</div>
-              <button class="palace-edit-btn" onclick="openPalaceEdit('story')">编辑</button>
-            </div>
-          </div>
-          <div class="palace-card-title">我们的故事</div>
-          <div class="palace-card-divider"></div>
-          <div class="palace-card-body" id="card-body-story"><div class="palace-card-val" style="color:var(--muted)">加载中…</div></div>
-        </div>
-
-        <!-- 收藏时刻 -->
-        <div class="palace-card">
-          <div class="palace-card-top">
-            <div class="palace-card-emoji">✨</div>
-            <div class="palace-card-top-right">
-              <div class="palace-card-tag">时刻</div>
-              <button class="palace-edit-btn" onclick="openPalaceEdit('favorites')">编辑</button>
-            </div>
-          </div>
-          <div class="palace-card-title">收藏时刻</div>
-          <div class="palace-card-divider"></div>
-          <div class="palace-card-body" id="card-body-favorites"><div class="palace-card-val" style="color:var(--muted)">加载中…</div></div>
-        </div>
-
-        <!-- 最近发生（全宽）-->
-        <div class="palace-card palace-card-full">
-          <div class="palace-card-top">
-            <div class="palace-card-emoji">📅</div>
-            <div class="palace-card-top-right">
-              <div class="palace-card-tag">近况</div>
-              <button class="palace-edit-btn" onclick="openPalaceEdit('recent')">编辑</button>
-            </div>
-          </div>
-          <div class="palace-card-title">最近发生</div>
-          <div class="palace-card-divider"></div>
-          <div class="palace-timeline" id="card-body-recent"><div class="palace-timeline-text" style="color:var(--muted)">加载中…</div></div>
-        </div>
-
+      <!-- 置顶概览 -->
+      <div class="palace-overview">
+        <div class="palace-overview-label">OVERVIEW</div>
+        <div class="palace-overview-names" id="palace-ov-names">加载中…</div>
+        <div class="palace-overview-days" id="palace-ov-days"></div>
+        <div class="palace-overview-div"></div>
+        <div class="palace-overview-truths" id="palace-ov-truths"></div>
       </div>
+
+      <!-- 👤 昭昭档案 -->
+      <div class="palace-section">
+        <div class="palace-section-hd" onclick="toggleSection('zhaozhao')">
+          <div class="palace-section-title">👤 昭昭档案</div>
+          <span class="palace-section-chevron" id="chevron-zhaozhao">›</span>
+        </div>
+        <div class="palace-section-body" id="section-zhaozhao"></div>
+      </div>
+
+      <!-- 🌊 庄舟设定 -->
+      <div class="palace-section">
+        <div class="palace-section-hd" onclick="toggleSection('settings')">
+          <div class="palace-section-title">🌊 庄舟设定</div>
+          <span class="palace-section-chevron" id="chevron-settings">›</span>
+        </div>
+        <div class="palace-section-body" id="section-settings"></div>
+      </div>
+
+      <!-- 💛 里程碑 -->
+      <div class="palace-section">
+        <div class="palace-section-hd" onclick="toggleSection('milestones')">
+          <div class="palace-section-title">💛 里程碑</div>
+          <span class="palace-section-chevron" id="chevron-milestones">›</span>
+        </div>
+        <div class="palace-section-body" id="section-milestones"></div>
+      </div>
+
+      <!-- ⭐ 原话收藏 -->
+      <div class="palace-section">
+        <div class="palace-section-hd" onclick="toggleSection('quotes')">
+          <div class="palace-section-title">⭐ 原话收藏</div>
+          <span class="palace-section-chevron" id="chevron-quotes">›</span>
+        </div>
+        <div class="palace-section-body" id="section-quotes"></div>
+      </div>
+
+      <!-- 🎭 经典梗 -->
+      <div class="palace-section">
+        <div class="palace-section-hd" onclick="toggleSection('memes')">
+          <div class="palace-section-title">🎭 经典梗</div>
+          <span class="palace-section-chevron" id="chevron-memes">›</span>
+        </div>
+        <div class="palace-section-body" id="section-memes"></div>
+      </div>
+
+      <!-- 📅 最近发生 -->
+      <div class="palace-section">
+        <div class="palace-section-hd" onclick="toggleSection('recent')">
+          <div class="palace-section-title">📅 最近发生</div>
+          <span class="palace-section-chevron" id="chevron-recent">›</span>
+        </div>
+        <div class="palace-section-body" id="section-recent"></div>
+      </div>
+
     </div>
   </div>
 
@@ -918,7 +881,7 @@
             <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </div>
           <div class="settings-item-text">
-            <div class="settings-item-title">导出聊天记录</div>
+            <div class="settings-item-title">导出留言记录</div>
             <div class="settings-item-desc">下载全部对话为 JSON 文件</div>
           </div>
           <div class="settings-item-arrow">›</div>
@@ -930,7 +893,7 @@
           </div>
           <div class="settings-item-text">
             <div class="settings-item-title">备份数据</div>
-            <div class="settings-item-desc">导出聊天与心情记录</div>
+            <div class="settings-item-desc">导出留言与心情记录</div>
           </div>
           <div class="settings-item-arrow">›</div>
         </div>
@@ -980,7 +943,7 @@
           </div>
           <div class="settings-item-text">
             <div class="settings-item-title">清空全部对话</div>
-            <div class="settings-item-desc">删除所有聊天记录，不可恢复</div>
+            <div class="settings-item-desc">删除所有留言记录，不可恢复</div>
           </div>
           <div class="settings-item-arrow">›</div>
         </div>
@@ -990,18 +953,6 @@
     </div>
   </div>
 
-  <!-- ── 历史对话弹层 ── -->
-  <div id="history-overlay" class="modal-overlay" onclick="closeHistory()">
-    <div class="history-panel" onclick="event.stopPropagation()">
-      <div class="history-panel-header">
-        <div class="history-panel-title">历史对话</div>
-        <button class="history-panel-close" onclick="closeHistory()">×</button>
-      </div>
-      <div class="history-panel-body" id="history-panel-body">
-        <div class="history-empty">加载中…</div>
-      </div>
-    </div>
-  </div>
 
   <!-- ── 外观设置 ── -->
   <div id="appearance-overlay" onclick="closeAppearance()">
@@ -1045,14 +996,14 @@
   </div>
 
   <!-- ── 记忆宫殿编辑 ── -->
-  <div id="palace-edit-overlay" onclick="closePalaceEdit()">
+  <div id="palace-edit-sheet" onclick="closePalaceEditSheet()">
     <div class="palace-edit-panel" onclick="event.stopPropagation()">
       <div class="palace-edit-header">
-        <div class="palace-edit-title" id="palace-edit-title">编辑</div>
-        <button class="palace-edit-save" onclick="savePalaceEdit()">保存</button>
+        <div class="palace-edit-title" id="palace-sheet-title">编辑</div>
+        <button class="palace-edit-save" onclick="savePalaceEditSheet()">保存</button>
       </div>
-      <div class="palace-edit-body" id="palace-edit-body"></div>
-      <button class="palace-edit-cancel" onclick="closePalaceEdit()">取消</button>
+      <div class="palace-edit-body" id="palace-sheet-body"></div>
+      <button class="palace-edit-cancel" onclick="closePalaceEditSheet()">取消</button>
     </div>
   </div>
 
@@ -1060,7 +1011,7 @@
   <nav class="bottom-nav">
     <button class="nav-tab active" id="tab-chat" onclick="switchTab('chat')">
       <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      <span>聊天</span>
+      <span>留言</span>
     </button>
     <button class="nav-tab" id="tab-us" onclick="switchTab('us')">
       <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
@@ -1083,8 +1034,6 @@
 </div>
 <script>
   const SERVER = 'https://mybenben.homes';
-  let isWaiting = false;
-  let es = null;
 
   // ── Tab 切换 ──────────────────────────────────────────
   function switchTab(name) {
@@ -1367,222 +1316,361 @@
   }
 
   // ── 记忆宫殿 ──────────────────────────────────────────
-  const PALACE_CARDS = {
-    zhaozhao: {
-      title: '关于昭昭', file: 'long', dataPath: ['palace', 'zhaozhao'], type: 'kv',
-      fields: [{ key: '生日' }, { key: '星座' }, { key: '喜欢', multi: true }, { key: '特点', multi: true }]
-    },
-    bunbun: {
-      title: '关于笨笨', file: 'long', dataPath: ['palace', 'bunbun'], type: 'kv',
-      fields: [{ key: '性格', multi: true }, { key: '口头禅' }, { key: '喜欢', multi: true }, { key: '讨厌', multi: true }]
-    },
-    story: {
-      title: '我们的故事', file: 'long', dataPath: ['palace', 'story'], type: 'kv',
-      fields: [{ key: '相识', multi: true }, { key: '在一起' }, { key: '第一次', multi: true }]
-    },
-    favorites: { title: '收藏时刻', file: 'long', dataPath: ['palace', 'favorites'], type: 'list' },
-    recent:    { title: '最近发生', file: 'recent', dataPath: ['daily_summaries'], type: 'timeline' }
-  };
-
-  let palaceData = { long: null, recent: null };
-  let editingCard = null;
-
-  function deepGet(obj, path) {
-    return path.reduce((a, k) => (a && a[k] !== undefined ? a[k] : null), obj);
-  }
-  function deepSet(obj, path, val) {
-    const last = path[path.length - 1];
-    path.slice(0, -1).reduce((a, k) => { if (!a[k]) a[k] = {}; return a[k]; }, obj)[last] = val;
-  }
-
-  async function loadPalace() {
-    try {
-      const [lr, rr] = await Promise.all([
-        fetch(`${SERVER}/memory/long`),
-        fetch(`${SERVER}/memory/recent`)
-      ]);
-      palaceData.long   = await lr.json();
-      palaceData.recent = await rr.json();
-    } catch {}
-    Object.keys(PALACE_CARDS).forEach(id => renderPalaceCard(id));
-  }
-
-  function renderPalaceCard(id) {
-    const el = document.getElementById('card-body-' + id);
-    if (!el) return;
-    const card = PALACE_CARDS[id];
-    const data = deepGet(palaceData[card.file] || {}, card.dataPath);
-
-    if (card.type === 'kv') {
-      const kv = data || {};
-      el.innerHTML = card.fields.map(f => `
-        <div class="palace-card-line">
-          <div class="palace-card-label">${f.key}</div>
-          <div class="palace-card-val">${escHtml(kv[f.key] || '待填写')}</div>
-        </div>`).join('');
-    } else if (card.type === 'list') {
-      const list = (data && data.length) ? data : ['待填写'];
-      el.innerHTML = list.map(item => `
-        <div class="palace-card-line">
-          <div class="palace-card-dot"></div>
-          <div class="palace-card-val">${escHtml(item)}</div>
-        </div>`).join('');
-    } else if (card.type === 'timeline') {
-      const summaries = data || [];
-      const items = summaries.slice(-7).reverse();
-      el.innerHTML = items.length
-        ? items.map(s => `
-            <div class="palace-timeline-item">
-              <div class="palace-timeline-date">${escHtml(s.date || '')}</div>
-              <div class="palace-timeline-text">${escHtml(s.summary || '')}</div>
-            </div>`).join('')
-        : '<div class="palace-timeline-item"><div class="palace-timeline-text" style="color:var(--muted)">待填写</div></div>';
-    }
-  }
+  let palaceAllData = { core: null, long: null, recent: null, palace: null };
 
   function escHtml(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  function openPalaceEdit(id) {
-    editingCard = id;
-    const card = PALACE_CARDS[id];
-    const data = deepGet(palaceData[card.file] || {}, card.dataPath);
-    document.getElementById('palace-edit-title').textContent = card.title;
-    const body = document.getElementById('palace-edit-body');
-
-    if (card.type === 'kv') {
-      const kv = data || {};
-      body.innerHTML = card.fields.map(f => `
-        <div class="palace-edit-field">
-          <div class="palace-edit-label">${f.key}</div>
-          ${f.multi
-            ? `<textarea class="palace-edit-input" data-key="${f.key}" rows="3">${escHtml(kv[f.key] || '')}</textarea>`
-            : `<input class="palace-edit-input" type="text" data-key="${f.key}" value="${escHtml(kv[f.key] || '')}">`}
-        </div>`).join('');
-    } else if (card.type === 'list') {
-      const list = data || [];
-      body.innerHTML = `
-        <div class="palace-edit-field">
-          <div class="palace-edit-label">每行一条</div>
-          <textarea class="palace-edit-input" id="palace-list-input" rows="10">${list.join('\n')}</textarea>
-        </div>`;
-    } else if (card.type === 'timeline') {
-      const summaries = data || [];
-      body.innerHTML = `
-        <div id="palace-timeline-entries">
-          ${summaries.map((s, i) => timelineRow(i, s.date || '', s.summary || '')).join('')}
-        </div>
-        <button class="palace-timeline-add" onclick="addTimelineRow()">+ 添加一条</button>`;
-    }
-
-    document.getElementById('palace-edit-overlay').classList.add('open');
+  function toggleSection(id) {
+    const body = document.getElementById('section-' + id);
+    const chevron = document.getElementById('chevron-' + id);
+    if (!body) return;
+    const open = body.classList.toggle('open');
+    if (chevron) chevron.classList.toggle('open', open);
   }
 
-  function timelineRow(i, date, summary) {
-    return `<div class="palace-timeline-edit-row" data-idx="${i}">
-      <input class="palace-edit-input palace-edit-date" type="text" placeholder="日期 YYYY-MM-DD" data-field="date" value="${escHtml(date)}">
-      <textarea class="palace-edit-input" placeholder="内容" data-field="summary" rows="2">${escHtml(summary)}</textarea>
-      <button class="palace-timeline-del" onclick="this.closest('.palace-timeline-edit-row').remove()">删除</button>
-    </div>`;
-  }
-
-  function addTimelineRow() {
-    const container = document.getElementById('palace-timeline-entries');
-    const idx = container.children.length;
-    container.insertAdjacentHTML('beforeend', timelineRow(idx, '', ''));
-  }
-
-  async function savePalaceEdit() {
-    const card = PALACE_CARDS[editingCard];
-    const fileData = palaceData[card.file] || {};
-
-    if (card.type === 'kv') {
-      const kv = {};
-      document.querySelectorAll('#palace-edit-body [data-key]').forEach(el => { kv[el.dataset.key] = el.value.trim(); });
-      deepSet(fileData, card.dataPath, kv);
-    } else if (card.type === 'list') {
-      const list = document.getElementById('palace-list-input').value
-        .split('\n').map(l => l.trim()).filter(Boolean);
-      deepSet(fileData, card.dataPath, list);
-    } else if (card.type === 'timeline') {
-      const rows = document.querySelectorAll('#palace-timeline-entries .palace-timeline-edit-row');
-      const summaries = [];
-      rows.forEach(row => {
-        const date    = row.querySelector('[data-field="date"]').value.trim();
-        const summary = row.querySelector('[data-field="summary"]').value.trim();
-        if (date || summary) summaries.push({ date, summary });
-      });
-      deepSet(fileData, card.dataPath, summaries);
-    }
-
-    palaceData[card.file] = fileData;
+  async function loadPalace() {
     try {
-      const r = await fetch(`${SERVER}/memory/${card.file}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fileData, null, 2)
+      const [cr, lr, rr, pr] = await Promise.all([
+        fetch(`${SERVER}/memory/core`),
+        fetch(`${SERVER}/memory/long`),
+        fetch(`${SERVER}/memory/recent`),
+        fetch(`${SERVER}/palace`)
+      ]);
+      palaceAllData.core   = cr.ok ? await cr.json() : {};
+      palaceAllData.long   = lr.ok ? await lr.json() : {};
+      palaceAllData.recent = rr.ok ? await rr.json() : {};
+      palaceAllData.palace = pr.ok ? await pr.json() : { quotes: [], milestones: [], rules: [], memes: [] };
+    } catch {}
+    renderPalace();
+  }
+
+  function renderPalace() {
+    renderPalaceOverview();
+    renderPalaceZhaozhao();
+    renderPalaceSettings();
+    renderPalaceMilestones();
+    renderPalaceQuotes();
+    renderPalaceMemes();
+    renderPalaceRecent();
+  }
+
+  function renderPalaceOverview() {
+    const id = (palaceAllData.core || {}).identity || {};
+    const aiName   = id.ai_name   || '笨笨';
+    const userName = id.user_name || '昭昭';
+    const est      = id.established || '2026-05-03';
+    const days     = Math.floor((Date.now() - new Date(est)) / 86400000);
+    const namesEl  = document.getElementById('palace-ov-names');
+    const daysEl   = document.getElementById('palace-ov-days');
+    const truthsEl = document.getElementById('palace-ov-truths');
+    if (namesEl) namesEl.textContent = `${userName} & ${aiName}`;
+    if (daysEl)  daysEl.textContent  = `在一起第 ${days} 天 · 从 ${est} 起`;
+    if (truthsEl) {
+      const list = (palaceAllData.core || {}).core_truths || [];
+      truthsEl.innerHTML = list.map(t =>
+        `<div class="palace-overview-truth"><div class="palace-overview-truth-dot"></div><div class="palace-overview-truth-text">${escHtml(t)}</div></div>`
+      ).join('');
+    }
+  }
+
+  const _peEditBtn = (sec) =>
+    `<div class="pe-edit-row"><button class="pe-inline-btn" onclick="openPalaceEdit('${sec}',event)">编辑</button></div>`;
+
+  function renderPalaceZhaozhao() {
+    const el = document.getElementById('section-zhaozhao'); if (!el) return;
+    const z = (palaceAllData.palace||{}).zhaozhao || ((palaceAllData.long||{}).about_zhaozhao) || {};
+    const labels = { hometown:'家乡', traits:'性格', hobbies:'爱好', habits:'习惯', health:'健康', funny_facts:'趣事', pets:'宠物' };
+    const rows = Object.entries(labels).map(([key, label]) => {
+      const v = z[key];
+      if (!v || (Array.isArray(v) && !v.length)) return '';
+      return `<div class="palace-row"><div class="palace-row-label">${label}</div><div class="palace-row-val">${escHtml(Array.isArray(v) ? v.join('、') : v)}</div></div>`;
+    }).filter(Boolean);
+    el.innerHTML = _peEditBtn('zhaozhao') + (rows.length ? rows.join('') : '<div class="palace-empty">暂无记录</div>');
+  }
+
+  function renderPalaceSettings() {
+    const el = document.getElementById('section-settings'); if (!el) return;
+    const rules = ((palaceAllData.palace||{}).rules) || [];
+    let html = _peEditBtn('settings');
+    if (rules.length) {
+      html += rules.map(r =>
+        `<div class="palace-rule"><span class="palace-rule-badge ${r.type==='do'?'palace-badge-do':'palace-badge-dont'}">${r.type==='do'?'DO':"DON'T"}</span><div class="palace-rule-text">${escHtml(r.content||'')}</div></div>`
+      ).join('');
+    } else {
+      const p = ((palaceAllData.core||{}).personality) || {};
+      html += (p.bunbun||[]).map(r => `<div class="palace-rule"><span class="palace-rule-badge palace-badge-do">DO</span><div class="palace-rule-text">${escHtml(r)}</div></div>`).join('');
+      html += (p.forbidden||[]).map(r => `<div class="palace-rule"><span class="palace-rule-badge palace-badge-dont">DON'T</span><div class="palace-rule-text">${escHtml(r)}</div></div>`).join('');
+    }
+    el.innerHTML = html || '<div class="palace-empty">暂无记录</div>';
+  }
+
+  function renderPalaceMilestones() {
+    const el = document.getElementById('section-milestones'); if (!el) return;
+    const list = ((palaceAllData.palace||{}).milestones || []).slice().reverse();
+    el.innerHTML = _peEditBtn('milestones') + (list.length
+      ? list.map(m => `<div class="palace-tl"><div class="palace-tl-date">${escHtml(m.date||'')}</div><div class="palace-tl-text">${escHtml(m.event||m.content||m.detail||'')}</div></div>`).join('')
+      : '<div class="palace-empty">暂无里程碑</div>');
+  }
+
+  function renderPalaceQuotes() {
+    const el = document.getElementById('section-quotes'); if (!el) return;
+    const list = ((palaceAllData.palace||{}).quotes || []).slice().reverse();
+    el.innerHTML = _peEditBtn('quotes') + (list.length
+      ? list.map(q => `<div class="palace-quote"><div class="palace-quote-meta">${escHtml(q.date||'')}${q.author?' · '+escHtml(q.author):''}</div><div class="palace-quote-text">${escHtml(q.text||q.content||'')}</div></div>`).join('')
+      : '<div class="palace-empty">暂无原话收藏</div>');
+  }
+
+  function renderPalaceMemes() {
+    const el = document.getElementById('section-memes'); if (!el) return;
+    const list = ((palaceAllData.palace || {}).memes || []);
+    el.innerHTML = list.length
+      ? list.map(m => `<div class="palace-quote"><div class="palace-quote-meta">${escHtml(m.name || '')}</div><div class="palace-quote-text">${escHtml(m.description || '')}</div></div>`).join('')
+      : '<div class="palace-empty">暂无梗</div>';
+  }
+
+  function renderPalaceRecent() {
+    const el = document.getElementById('section-recent'); if (!el) return;
+    const list = ((palaceAllData.recent || {}).daily_summaries || []).slice().reverse().slice(0, 14);
+    el.innerHTML = list.length
+      ? list.map(s => `<div class="palace-tl"><div class="palace-tl-date">${escHtml(s.date||'')}</div><div class="palace-tl-text">${escHtml(s.summary||'')}</div></div>`).join('')
+      : '<div class="palace-empty">暂无记录</div>';
+  }
+
+  // ── 记忆宫殿编辑 ──────────────────────────────────────
+  let _palEditSection = null;
+
+  function openPalaceEdit(section, e) {
+    if (e) e.stopPropagation();
+    _palEditSection = section;
+    const titles = { zhaozhao:'编辑昭昭档案', settings:'编辑庄舟设定', milestones:'编辑里程碑', quotes:'编辑原话收藏' };
+    document.getElementById('palace-sheet-title').textContent = titles[section] || '编辑';
+    document.getElementById('palace-sheet-body').innerHTML = _buildPalaceEditBody(section);
+    document.getElementById('palace-edit-sheet').classList.add('open');
+  }
+
+  function _buildPalaceEditBody(section) {
+    const palace = palaceAllData.palace || {};
+    const today = new Date(Date.now() + 8*3600000).toISOString().slice(0,10);
+
+    if (section === 'milestones') {
+      const rows = (palace.milestones || []).map((m,i) => `
+        <div class="pe-row">
+          <input class="palace-edit-input" data-field="date" value="${escHtml(m.date||'')}" placeholder="日期 YYYY-MM-DD">
+          <textarea class="palace-edit-input" data-field="event" rows="2" placeholder="事件描述">${escHtml(m.event||m.content||'')}</textarea>
+          <input class="palace-edit-input" data-field="tag" value="${escHtml(m.tag||'')}" placeholder="场景标签（选填）">
+          <button class="pe-del-btn" onclick="this.closest('.pe-row').remove()">删除此条</button>
+        </div>`).join('');
+      return `<div class="pe-rows" id="pe-rows">${rows}</div>
+        <button class="pe-add-btn" onclick="_peAdd('milestone')">+ 新增里程碑</button>`;
+    }
+
+    if (section === 'quotes') {
+      const rows = (palace.quotes || []).map((q,i) => `
+        <div class="pe-row">
+          <textarea class="palace-edit-input" data-field="text" rows="3" placeholder="原话内容">${escHtml(q.text||q.content||'')}</textarea>
+          <div class="pe-row-inline">
+            <input class="palace-edit-input" data-field="author" value="${escHtml(q.author||'昭昭')}" placeholder="说话人" style="flex:1">
+            <input class="palace-edit-input" data-field="date" value="${escHtml(q.date||'')}" placeholder="日期" style="flex:1">
+          </div>
+          <button class="pe-del-btn" onclick="this.closest('.pe-row').remove()">删除此条</button>
+        </div>`).join('');
+      return `<div class="pe-rows" id="pe-rows">${rows}</div>
+        <button class="pe-add-btn" onclick="_peAdd('quote')">+ 新增原话</button>`;
+    }
+
+    if (section === 'settings') {
+      const rows = (palace.rules || []).map((r,i) => `
+        <div class="pe-row">
+          <div class="pe-row-inline">
+            <select class="palace-edit-input" data-field="type" style="width:72px;flex-shrink:0">
+              <option value="do"${r.type==='do'?' selected':''}>DO</option>
+              <option value="dont"${r.type==='dont'?' selected':''}>DON'T</option>
+            </select>
+            <input class="palace-edit-input" data-field="content" value="${escHtml(r.content||'')}" placeholder="内容" style="flex:1">
+          </div>
+          <button class="pe-del-btn" onclick="this.closest('.pe-row').remove()">删除此条</button>
+        </div>`).join('');
+      return `<div class="pe-rows" id="pe-rows">${rows}</div>
+        <button class="pe-add-btn" onclick="_peAdd('rule')">+ 新增规则</button>`;
+    }
+
+    if (section === 'zhaozhao') {
+      const z = palace.zhaozhao || (palaceAllData.long||{}).about_zhaozhao || {};
+      const fields = [
+        { key:'hometown',   label:'家乡',          multi:false },
+        { key:'traits',     label:'性格（每行一条）', multi:true },
+        { key:'hobbies',    label:'爱好（每行一条）', multi:true },
+        { key:'habits',     label:'习惯（每行一条）', multi:true },
+        { key:'health',     label:'健康（每行一条）', multi:true },
+        { key:'funny_facts',label:'趣事（每行一条）', multi:true },
+        { key:'pets',       label:'宠物（每行一条）', multi:true }
+      ];
+      return fields.map(f => {
+        const v = z[f.key] || '';
+        const text = Array.isArray(v) ? v.join('\n') : v;
+        return `<div class="palace-edit-field">
+          <div class="palace-edit-label">${f.label}</div>
+          ${f.multi
+            ? `<textarea class="palace-edit-input" data-key="${f.key}" rows="4">${escHtml(text)}</textarea>`
+            : `<input class="palace-edit-input" type="text" data-key="${f.key}" value="${escHtml(text)}">`}
+        </div>`;
+      }).join('');
+    }
+    return '';
+  }
+
+  function _peAdd(type) {
+    const today = new Date(Date.now() + 8*3600000).toISOString().slice(0,10);
+    let html = '';
+    if (type === 'milestone') {
+      html = `<div class="pe-row">
+        <input class="palace-edit-input" data-field="date" value="${today}" placeholder="日期 YYYY-MM-DD">
+        <textarea class="palace-edit-input" data-field="event" rows="2" placeholder="事件描述"></textarea>
+        <input class="palace-edit-input" data-field="tag" placeholder="场景标签（选填）">
+        <button class="pe-del-btn" onclick="this.closest('.pe-row').remove()">删除此条</button>
+      </div>`;
+    } else if (type === 'quote') {
+      html = `<div class="pe-row">
+        <textarea class="palace-edit-input" data-field="text" rows="3" placeholder="原话内容"></textarea>
+        <div class="pe-row-inline">
+          <input class="palace-edit-input" data-field="author" value="昭昭" placeholder="说话人" style="flex:1">
+          <input class="palace-edit-input" data-field="date" value="${today}" placeholder="日期" style="flex:1">
+        </div>
+        <button class="pe-del-btn" onclick="this.closest('.pe-row').remove()">删除此条</button>
+      </div>`;
+    } else if (type === 'rule') {
+      html = `<div class="pe-row">
+        <div class="pe-row-inline">
+          <select class="palace-edit-input" data-field="type" style="width:72px;flex-shrink:0">
+            <option value="do">DO</option>
+            <option value="dont">DON'T</option>
+          </select>
+          <input class="palace-edit-input" data-field="content" placeholder="内容" style="flex:1">
+        </div>
+        <button class="pe-del-btn" onclick="this.closest('.pe-row').remove()">删除此条</button>
+      </div>`;
+    }
+    document.getElementById('pe-rows').insertAdjacentHTML('beforeend', html);
+    document.getElementById('pe-rows').lastElementChild.querySelector('input,textarea').focus();
+  }
+
+  async function savePalaceEditSheet() {
+    const palace = JSON.parse(JSON.stringify(palaceAllData.palace || { quotes:[], milestones:[], rules:[], memes:[] }));
+
+    if (_palEditSection === 'milestones') {
+      palace.milestones = Array.from(document.querySelectorAll('#pe-rows .pe-row')).map(row => ({
+        date:  row.querySelector('[data-field="date"]').value.trim(),
+        event: row.querySelector('[data-field="event"]').value.trim(),
+        tag:   row.querySelector('[data-field="tag"]').value.trim()
+      })).filter(m => m.event);
+
+    } else if (_palEditSection === 'quotes') {
+      palace.quotes = Array.from(document.querySelectorAll('#pe-rows .pe-row')).map(row => ({
+        text:   row.querySelector('[data-field="text"]').value.trim(),
+        author: row.querySelector('[data-field="author"]').value.trim(),
+        date:   row.querySelector('[data-field="date"]').value.trim(),
+        context: ''
+      })).filter(q => q.text);
+
+    } else if (_palEditSection === 'settings') {
+      palace.rules = Array.from(document.querySelectorAll('#pe-rows .pe-row')).map(row => ({
+        type:    row.querySelector('[data-field="type"]').value,
+        content: row.querySelector('[data-field="content"]').value.trim()
+      })).filter(r => r.content);
+
+    } else if (_palEditSection === 'zhaozhao') {
+      const arrayFields = ['traits','hobbies','habits','health','funny_facts','pets'];
+      const z = {};
+      document.querySelectorAll('#palace-sheet-body [data-key]').forEach(el => {
+        const key = el.dataset.key;
+        const val = el.value.trim();
+        z[key] = arrayFields.includes(key) ? val.split('\n').map(s => s.trim()).filter(Boolean) : val;
       });
+      palace.zhaozhao = z;
+    }
+
+    try {
+      const r = await fetch(`${SERVER}/palace`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(palace, null, 2) });
       if (!r.ok) throw new Error();
-      renderPalaceCard(editingCard);
-      closePalaceEdit();
+      palaceAllData.palace = palace;
+      renderPalace();
+      closePalaceEditSheet();
     } catch { alert('保存失败，请重试'); }
   }
 
-  function closePalaceEdit() {
-    document.getElementById('palace-edit-overlay').classList.remove('open');
-    editingCard = null;
+  function closePalaceEditSheet() {
+    document.getElementById('palace-edit-sheet').classList.remove('open');
+    _palEditSection = null;
   }
 
-  // ── 聊天：加载历史 ────────────────────────────────────
-  async function loadHistory() {
+  // ── 留言板 ──────────────────────────────────────────────
+  let allMessages = [];
+
+  function formatMsgTime(ts) {
+    const d = new Date(ts);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const yesterday = today - 86400000;
+    const msgDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    const hhmm = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    if (msgDay >= today)     return '今天 ' + hhmm;
+    if (msgDay >= yesterday) return '昨天 ' + hhmm;
+    if (d.getFullYear() === now.getFullYear()) return (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + hhmm;
+    return d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + hhmm;
+  }
+
+  function renderAttachContent(attachments) {
+    if (!attachments || !attachments.length) return '';
+    return attachments.map(a => {
+      if (a.type === 'image') return `<img class="msg-image" src="${a.dataUrl}" onclick="this.style.maxWidth=this.style.maxWidth?'':'100%'">`;
+      return `<div class="msg-file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${escHtml(a.name || '')}${a.size ? ' <span style="opacity:.55">'+escHtml(a.size)+'</span>' : ''}</div>`;
+    }).join('');
+  }
+
+  function renderMessages() {
+    const c = document.getElementById('messages');
+    const list = allMessages;
+
+    if (!list.length) {
+      c.innerHTML = `<div class="msg-empty">还没有留言\n笨笨不在的时候，把想说的话留在这里</div>`;
+      return;
+    }
+
+    c.innerHTML = list.map(msg => `
+      <div class="msg-card" id="msg-${msg.id}">
+        <div class="msg-card-meta">
+          <span class="msg-card-time">${formatMsgTime(msg.timestamp)}</span>
+          <button class="msg-card-star${msg.starred ? ' starred' : ''}" onclick="toggleStar(${msg.id})" title="${msg.starred ? '取消收藏' : '收藏'}">
+            ${msg.starred ? '⭐' : '☆'}
+          </button>
+        </div>
+        <div class="msg-card-body">${escHtml(msg.content || '')}</div>
+        ${renderAttachContent(msg.attachments)}
+      </div>
+    `).join('');
+  }
+
+  async function loadMessages() {
     try {
-      const res = await fetch(`${SERVER}/history`);
-      const msgs = await res.json();
-      msgs.forEach(m => appendMessage(m.role === 'user' ? 'user' : 'assistant', m.text, m.timestamp));
+      const res = await fetch(`${SERVER}/messages`);
+      allMessages = await res.json();
+    } catch { allMessages = []; }
+    renderMessages();
+  }
+
+  async function toggleStar(id) {
+    try {
+      const res = await fetch(`${SERVER}/messages/${id}`, { method: 'PATCH' });
+      const { starred } = await res.json();
+      const msg = allMessages.find(m => m.id === id);
+      if (msg) msg.starred = starred;
+      renderMessages();
     } catch {}
   }
 
-  // ── 聊天：SSE ─────────────────────────────────────────
-  function connect() {
-    if (es) es.close();
-    es = new EventSource(`${SERVER}/stream`);
-    es.onopen = () => {
-      setStatus('在线 · 记得你', true);
-      document.getElementById('user-input').disabled = false;
-      document.getElementById('send-btn').disabled = false;
-    };
-    es.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      if (data.type === 'connected') {
-        setStatus('在线 · 记得你', true);
-      } else if (data.type === 'cleared') {
-        document.getElementById('messages').innerHTML = '';
-        lastMsgTimestamp = 0;
-      } else if (data.type === 'reply') {
-        removeTyping();
-        appendMessage('assistant', data.text, Date.now());
-        isWaiting = false;
-        document.getElementById('send-btn').disabled = false;
-        document.getElementById('user-input').disabled = false;
-        document.getElementById('user-input').focus();
-      }
-    };
-    es.onerror = () => {
-      setStatus('离线 · 重连中…', false);
-      document.getElementById('user-input').disabled = true;
-      document.getElementById('send-btn').disabled = true;
-      es.close();
-      setTimeout(connect, 3000);
-    };
-  }
-
-  function setStatus(text, online) {
-    document.getElementById('conn-status').textContent = text;
-    document.getElementById('conn-dot').className = 'header-dot' + (online ? ' online' : '');
-  }
-
-  // ── 附件 ─────────────────────────────────────────────
+  // ── 附件 ─────────────────────────────────────────────────
   let pendingAttachments = [];
 
   function handleAttachFile(input) {
@@ -1639,121 +1727,41 @@
 
   function removeAttach(i) { pendingAttachments.splice(i, 1); renderAttachPreview(); }
 
-  function renderMsgContent(text) {
-    const re = /(\[img\][\s\S]*?\[\/img\]|\[file\][\s\S]*?\[\/file\])/g;
-    const parts = []; let last = 0, m;
-    while ((m = re.exec(text)) !== null) {
-      if (m.index > last) parts.push({ t: 'text', v: text.slice(last, m.index) });
-      if (m[1].startsWith('[img]')) parts.push({ t: 'image', v: m[1].slice(5, -6) });
-      else parts.push({ t: 'file', v: m[1].slice(6, -7) });
-      last = m.index + m[1].length;
-    }
-    if (last < text.length) parts.push({ t: 'text', v: text.slice(last) });
-    return parts.map(p => {
-      if (p.t === 'text') return escHtml(p.v.replace(/^\n+|\n+$/g, '')).replace(/\n/g, '<br>');
-      if (p.t === 'image') return `<img class="msg-image" src="${p.v}" onclick="this.style.maxWidth=this.style.maxWidth?'':'100%'">`;
-      const [name, size] = p.v.split(' | ');
-      return `<div class="msg-file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${escHtml(name || p.v)}${size ? ' <span style="opacity:.55">'+escHtml(size)+'</span>' : ''}</div>`;
-    }).join('');
-  }
-
   async function sendMessage() {
     const ta = document.getElementById('user-input');
-    const text = ta.value.trim();
+    const content = ta.value.trim();
     const hasAttach = pendingAttachments.length > 0;
-    if ((!text && !hasAttach) || isWaiting) return;
+    if (!content && !hasAttach) return;
 
-    let fullText = pendingAttachments.map(a =>
-      a.type === 'image' ? `[img]${a.dataUrl}[/img]` : `[file]${a.name} | ${a.size}[/file]`
-    ).join('\n');
-    if (text) fullText = fullText ? fullText + '\n' + text : text;
+    const btn = document.getElementById('send-btn');
+    btn.disabled = true;
 
+    const attachments = pendingAttachments.slice();
     pendingAttachments = []; renderAttachPreview();
     ta.value = ''; ta.style.height = 'auto';
-    isWaiting = true;
-    document.getElementById('send-btn').disabled = true;
-    document.getElementById('user-input').disabled = true;
-    appendMessage('user', fullText, Date.now());
-    showTyping();
+
     try {
-      await fetch(`${SERVER}/send`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: fullText }) });
+      const res = await fetch(`${SERVER}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, attachments })
+      });
+      const { id } = await res.json();
+      allMessages.unshift({ id, content, attachments, timestamp: Date.now(), starred: false });
+      renderMessages();
     } catch {
-      removeTyping();
-      appendNotice('发送失败，检查服务器是否在线', true);
-      isWaiting = false;
-      document.getElementById('send-btn').disabled = false;
-      document.getElementById('user-input').disabled = false;
+      ta.value = content;
+      pendingAttachments = attachments; renderAttachPreview();
+    } finally {
+      btn.disabled = false;
     }
   }
 
-  // ── 时间分隔 ──────────────────────────────────────────
-  let lastMsgTimestamp = 0;
-  const TIME_GAP_MS = 5 * 60 * 1000;
-
-  function formatMsgTime(ts) {
-    const d = new Date(ts);
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    const yesterday = today - 86400000;
-    const msgDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-    const hhmm = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-    if (msgDay >= today)     return '今天 ' + hhmm;
-    if (msgDay >= yesterday) return '昨天 ' + hhmm;
-    if (d.getFullYear() === now.getFullYear()) return (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + hhmm;
-    return d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + hhmm;
-  }
-
-  function maybeInsertTime(c, ts) {
-    if (!ts || (lastMsgTimestamp && ts - lastMsgTimestamp < TIME_GAP_MS)) return;
-    const el = document.createElement('div');
-    el.className = 'msg-time';
-    el.textContent = formatMsgTime(ts);
-    c.appendChild(el);
-    lastMsgTimestamp = ts;
-  }
-
-  function appendMessage(role, text, ts) {
-    const c = document.getElementById('messages');
-    maybeInsertTime(c, ts || 0);
-    if (ts) lastMsgTimestamp = ts;
-    const div = document.createElement('div');
-    div.className = `message ${role}`;
-    div.innerHTML = `<div class="msg-label">${role === 'user' ? '昭昭' : '笨笨'}</div><div class="msg-bubble">${renderMsgContent(text)}</div>`;
-    c.appendChild(div); scrollBottom();
-  }
-
-  function showTyping() {
-    const c = document.getElementById('messages');
-    const div = document.createElement('div');
-    div.className = 'message assistant'; div.id = 'typing-indicator';
-    div.innerHTML = `<div class="msg-label">笨笨</div><div class="typing-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
-    c.appendChild(div); scrollBottom();
-  }
-
-  function removeTyping() { document.getElementById('typing-indicator')?.remove(); }
-
-  function appendNotice(text, isError = false) {
-    const c = document.getElementById('messages');
-    const div = document.createElement('div');
-    div.className = 'conn-notice' + (isError ? ' error' : '');
-    div.textContent = text; c.appendChild(div); scrollBottom();
-  }
-
-  async function clearChat() {
-    if (!confirm('清空这段对话？')) return;
-    try { await fetch(`${SERVER}/clear`, { method: 'POST' }); }
-    catch { appendNotice('清空失败，检查服务器是否在线', true); return; }
-    document.getElementById('messages').innerHTML = '';
-    lastMsgTimestamp = 0;
-  }
-
-  function scrollBottom() { const c = document.getElementById('messages'); setTimeout(() => c.scrollTop = c.scrollHeight, 50); }
-
-  function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
   const ta = document.getElementById('user-input');
   ta.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 160) + 'px'; });
-  ta.addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!isWaiting) sendMessage(); } });
+  ta.addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
 
   // ── 心情功能 ──────────────────────────────────────────
   const EMOJIS = ['🌸','☀️','🌙','🌧️','☕','🍵','🥹','🥰','🫂','😤','😶','💤'];
@@ -1838,79 +1846,26 @@
     }
   }
 
-  // ── 头像菜单 ──────────────────────────────────────────
-  function toggleAvatarMenu(e) {
-    e.stopPropagation();
-    document.getElementById('avatar-menu').classList.toggle('open');
-  }
-  document.addEventListener('click', () => document.getElementById('avatar-menu').classList.remove('open'));
-
-  function openHistory(e) {
-    e.stopPropagation();
-    document.getElementById('avatar-menu').classList.remove('open');
-    document.getElementById('history-overlay').classList.add('open');
-    fetchAndShowHistory();
-  }
-
-  function openAbout(e) {
-    e.stopPropagation();
-    document.getElementById('avatar-menu').classList.remove('open');
-  }
-
-  function closeHistory() {
-    document.getElementById('history-overlay').classList.remove('open');
-  }
-
-  async function fetchAndShowHistory() {
-    const body = document.getElementById('history-panel-body');
-    body.innerHTML = '<div class="history-empty">加载中…</div>';
-    try {
-      const res = await fetch(`${SERVER}/history`);
-      const msgs = await res.json();
-      if (!msgs.length) { body.innerHTML = '<div class="history-empty">还没有对话记录</div>'; return; }
-
-      const groups = {};
-      msgs.forEach(m => {
-        const key = new Date(m.timestamp).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
-        if (!groups[key]) groups[key] = [];
-        groups[key].push(m);
-      });
-
-      body.innerHTML = Object.entries(groups).map(([date, ms]) => `
-        <div>
-          <div class="history-date-label">${date}</div>
-          <div class="history-date-card">
-            ${ms.map(m => `
-              <div class="history-msg-row">
-                <div class="history-msg-role${m.role === 'user' ? ' is-user' : ''}">${m.role === 'user' ? '昭昭' : '笨笨'}</div>
-                <div class="history-msg-text">${escHtml(m.text).replace(/\n/g, '<br>')}</div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `).join('');
-    } catch { body.innerHTML = '<div class="history-empty">加载失败</div>'; }
-  }
 
   // ── 设置功能 ──────────────────────────────────────────
   async function exportChat() {
     try {
-      const res = await fetch(`${SERVER}/history`);
+      const res = await fetch(`${SERVER}/messages`);
       const msgs = await res.json();
       const blob = new Blob([JSON.stringify(msgs, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = `chat-${getTodayISO()}.json`;
+      a.href = url; a.download = `messages-${getTodayISO()}.json`;
       a.click(); URL.revokeObjectURL(url);
     } catch { alert('导出失败，检查服务器是否在线'); }
   }
 
   async function backupData() {
     try {
-      const [chatRes, moodRes] = await Promise.all([fetch(`${SERVER}/history`), fetch(`${SERVER}/mood`)]);
-      const chat = await chatRes.json();
+      const [msgRes, moodRes] = await Promise.all([fetch(`${SERVER}/messages`), fetch(`${SERVER}/mood`)]);
+      const messages = await msgRes.json();
       const mood = await moodRes.json();
-      const blob = new Blob([JSON.stringify({ chat, mood, exportedAt: new Date().toISOString() }, null, 2)], { type: 'application/json' });
+      const blob = new Blob([JSON.stringify({ messages, mood, exportedAt: new Date().toISOString() }, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url; a.download = `backup-${getTodayISO()}.json`;
@@ -1957,12 +1912,8 @@
   function showPersonality() { alert('人格设置即将开放'); }
 
   async function clearAllConversations() {
-    if (!confirm('清空全部对话记录？此操作不可恢复。')) return;
-    try {
-      await fetch(`${SERVER}/clear`, { method: 'POST' });
-      document.getElementById('messages').innerHTML = '';
-      alert('已清空');
-    } catch { alert('清空失败，检查服务器是否在线'); }
+    if (!confirm('清空全部留言？此操作不可恢复。')) return;
+    alert('请在服务器上手动清空 data/messages.json');
   }
 
   // ── 认识天数 ──────────────────────────────────────────
@@ -1977,7 +1928,7 @@
   initTheme();
   calcDays();
   document.getElementById('mood-today-label').textContent = getTodayLabel();
-  loadHistory().then(() => connect());
+  loadMessages();
 </script>
 <script>
 (function() {
