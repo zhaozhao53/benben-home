@@ -1749,9 +1749,12 @@
 
   function renderPalaceRecent() {
     const el = document.getElementById('section-recent'); if (!el) return;
-    const list = ((palaceAllData.recent || {}).daily_summaries || []).slice().reverse().slice(0, 14);
+    const list = ((palaceAllData.palace || {}).recent || []).slice().reverse().slice(0, 20);
     el.innerHTML = list.length
-      ? list.map(s => `<div class="palace-tl"><div class="palace-tl-date">${escHtml(s.date||'')}</div><div class="palace-tl-text">${escHtml(s.summary||'')}</div></div>`).join('')
+      ? list.map(s => {
+          const date = s.timestamp ? s.timestamp.slice(0, 10) : '';
+          return `<div class="palace-tl"><div class="palace-tl-date">${escHtml(date)}</div><div class="palace-tl-text">${escHtml(s.content||'')}</div></div>`;
+        }).join('')
       : '<div class="palace-empty">暂无记录</div>';
   }
 
