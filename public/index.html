@@ -865,6 +865,59 @@
       color: var(--sub); cursor: pointer; margin-top: 16px; letter-spacing: 0.05em;
     }
     .mood-detail-close:hover { background: #fff0eb; }
+
+    /* ── 日记日历浮层 ── */
+    #diary-cal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(26,20,15,0.32); z-index: 200; align-items: flex-end;
+    }
+    #diary-cal-overlay.open { display: flex; }
+    .diary-cal-panel {
+      width: 100%; max-height: 88vh; background: #FFF7F0;
+      border-radius: 20px 20px 0 0; display: flex; flex-direction: column;
+      animation: panelSlideUp 0.22s ease; overflow: hidden;
+    }
+    .diary-cal-hd {
+      padding: 18px 20px 14px; display: flex; align-items: center;
+      justify-content: space-between; border-bottom: 1px solid #eeddd3; flex-shrink: 0;
+    }
+    .diary-cal-hd-title { font-size: 15px; font-weight: 300; letter-spacing: 0.06em; }
+    .diary-cal-hd-close {
+      background: none; border: none; font-size: 24px; color: var(--muted);
+      cursor: pointer; padding: 0 2px; line-height: 1;
+    }
+    .diary-cal-body { flex: 1; overflow-y: auto; padding: 14px 16px 32px; }
+    .diary-entry-back {
+      background: none; border: none; font-family: 'Menlo', monospace; font-size: 10px;
+      color: #c0614a; cursor: pointer; padding: 0; margin-bottom: 14px;
+      letter-spacing: 0.05em; display: block;
+    }
+    .diary-entry-back:hover { opacity: 0.7; }
+    .diary-entry-date-label {
+      font-family: 'Menlo', monospace; font-size: 10px; color: var(--muted);
+      letter-spacing: 0.12em; margin-bottom: 14px;
+    }
+    .diary-entry-text {
+      font-size: 14px; color: var(--text); line-height: 1.9; white-space: pre-wrap;
+    }
+    .diary-entry-edit-btn {
+      margin-top: 20px; width: 100%; padding: 11px; background: none;
+      border: 1px solid #e5d5c8; border-radius: 10px;
+      font-family: 'Menlo', monospace; font-size: 10px; color: #c0614a;
+      cursor: pointer; letter-spacing: 0.05em;
+    }
+    .diary-entry-edit-btn:hover { background: #fff0eb; }
+    /* 最新日记展示卡 */
+    .diary-latest-entry { padding: 12px 14px; }
+    .diary-latest-date {
+      font-family: 'Menlo', monospace; font-size: 9px; color: var(--muted);
+      letter-spacing: 0.12em; margin-bottom: 8px;
+    }
+    .diary-latest-text { font-size: 13px; color: var(--text); line-height: 1.85; white-space: pre-wrap; }
+    .diary-latest-edit {
+      margin-top: 10px; background: none; border: none; font-family: 'Menlo', monospace;
+      font-size: 9px; color: #c0614a; cursor: pointer; padding: 0; letter-spacing: 0.05em;
+    }
   </style>
 </head>
 <body>
@@ -1276,6 +1329,42 @@
     </div>
   </div>
 
+  <!-- ── 日记日历浮层 ── -->
+  <div id="diary-cal-overlay" onclick="closeDiaryCal()">
+    <div class="diary-cal-panel" onclick="event.stopPropagation()">
+      <div class="diary-cal-hd">
+        <span class="diary-cal-hd-title" id="diary-cal-hd-title">过往日记</span>
+        <button class="diary-cal-hd-close" onclick="closeDiaryCal()">×</button>
+      </div>
+      <div class="diary-cal-body">
+        <!-- 日历视图 -->
+        <div id="diary-cal-view">
+          <div class="mood-cal-nav">
+            <button class="mood-cal-nav-btn" onclick="diaryCalPrev()">‹</button>
+            <span class="mood-cal-title" id="diary-cal-month-title"></span>
+            <button class="mood-cal-nav-btn" onclick="diaryCalNext()">›</button>
+          </div>
+          <div class="mood-calendar">
+            <div class="mood-cal-weekdays">
+              <div class="mood-cal-wd">日</div><div class="mood-cal-wd">一</div>
+              <div class="mood-cal-wd">二</div><div class="mood-cal-wd">三</div>
+              <div class="mood-cal-wd">四</div><div class="mood-cal-wd">五</div>
+              <div class="mood-cal-wd">六</div>
+            </div>
+            <div id="diary-cal-grid" class="mood-cal-grid"></div>
+          </div>
+        </div>
+        <!-- 日记内容视图 -->
+        <div id="diary-entry-view" style="display:none">
+          <button class="diary-entry-back" onclick="showDiaryCalView()">← 返回日历</button>
+          <div class="diary-entry-date-label" id="diary-entry-date"></div>
+          <div class="diary-entry-text" id="diary-entry-content"></div>
+          <button class="diary-entry-edit-btn" onclick="editDiaryFromCal()">编辑这篇日记</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── 底部导航 ── -->
   <nav class="bottom-nav">
     <button class="nav-tab active" id="tab-chat" onclick="switchTab('chat')">
@@ -1491,14 +1580,105 @@
   // 日记
   function renderDiary() {
     const el = document.getElementById('us-diary-list'); if (!el) return;
-    const list = usData?.bunbun?.diary || [];
-    if (!list.length) { el.innerHTML = '<div style="padding:14px;text-align:center;color:var(--muted);font-size:12px">还没有日记</div>'; return; }
-    el.innerHTML = list.slice().reverse().map((d, ri) => {
-      const i = list.length - 1 - ri;
-      return `${ri?'<div class="us-milestone-divider"></div>':''}<div class="us-diary-entry" onclick="openUsEdit('diary',${i})">
-        <div class="us-diary-date">${d.date||''}</div>
-        <div class="us-diary-text">${escHtml((d.content||'').slice(0,80)+(((d.content||'').length>80)?'…':''))}</div></div>`;
-    }).join('');
+    const raw = usData?.bunbun?.diary || [];
+    if (!raw.length) {
+      el.innerHTML = '<div style="padding:14px;text-align:center;color:var(--muted);font-size:12px">还没有日记</div>';
+      return;
+    }
+    // 按日期降序排，取最新一篇
+    const sorted = raw.slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    const latest = sorted[0];
+    const latestIdx = raw.findIndex(d => d.date === latest.date);
+    const historyCount = sorted.length - 1;
+    el.innerHTML = `
+      <div class="diary-latest-entry">
+        <div class="diary-latest-date">${latest.date || ''}</div>
+        <div class="diary-latest-text">${escHtml(latest.content || '')}</div>
+        <button class="diary-latest-edit" onclick="openUsEdit('diary',${latestIdx})">编辑</button>
+      </div>
+      ${historyCount > 0
+        ? `<div style="border-top:1px solid #f5ebe4;padding:10px 14px">
+             <button class="us-add-btn" onclick="openDiaryCal()">过往日记（共 ${sorted.length} 篇）</button>
+           </div>`
+        : ''}
+    `;
+  }
+
+  // ── 日记日历 ──────────────────────────────────────────
+  let diaryCalYear  = new Date().getFullYear();
+  let diaryCalMonth = new Date().getMonth();
+  let _diaryCalDate = null;
+
+  function _diaryMap() {
+    const m = {};
+    (usData?.bunbun?.diary || []).forEach(d => { if (d.date) m[d.date] = d.content; });
+    return m;
+  }
+
+  function openDiaryCal() {
+    diaryCalYear  = new Date().getFullYear();
+    diaryCalMonth = new Date().getMonth();
+    showDiaryCalView();
+    renderDiaryCalendar();
+    document.getElementById('diary-cal-overlay').classList.add('open');
+  }
+
+  function closeDiaryCal() {
+    document.getElementById('diary-cal-overlay').classList.remove('open');
+  }
+
+  function showDiaryCalView() {
+    document.getElementById('diary-cal-view').style.display = 'block';
+    document.getElementById('diary-entry-view').style.display = 'none';
+  }
+
+  function renderDiaryCalendar() {
+    const titleEl = document.getElementById('diary-cal-month-title');
+    const grid    = document.getElementById('diary-cal-grid');
+    if (!titleEl || !grid) return;
+    titleEl.textContent = `${diaryCalYear}年${diaryCalMonth + 1}月`;
+    const map         = _diaryMap();
+    const firstDow    = new Date(diaryCalYear, diaryCalMonth, 1).getDay();
+    const daysInMonth = new Date(diaryCalYear, diaryCalMonth + 1, 0).getDate();
+    const today       = new Date().toISOString().slice(0, 10);
+    let html = '';
+    for (let i = 0; i < firstDow; i++) html += '<div class="mood-cal-cell mood-cal-empty"></div>';
+    for (let d = 1; d <= daysInMonth; d++) {
+      const ds  = `${diaryCalYear}-${String(diaryCalMonth + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const has = !!map[ds];
+      const cls = ['mood-cal-cell', ds === today ? 'mood-cal-today' : '', has ? '' : 'mood-cal-no-entry'].filter(Boolean).join(' ');
+      html += `<div class="${cls}"${has ? ` onclick="openDiaryEntry('${ds}')"` : ''}>
+        <span class="mood-cal-day">${d}</span>${has ? '<span class="mood-cal-dot"></span>' : ''}
+      </div>`;
+    }
+    grid.innerHTML = html;
+  }
+
+  function openDiaryEntry(date) {
+    _diaryCalDate = date;
+    const map = _diaryMap();
+    document.getElementById('diary-entry-date').textContent = date;
+    document.getElementById('diary-entry-content').textContent = map[date] || '';
+    document.getElementById('diary-cal-view').style.display = 'none';
+    document.getElementById('diary-entry-view').style.display = 'block';
+  }
+
+  function editDiaryFromCal() {
+    const date = _diaryCalDate; if (!date) return;
+    const idx = (usData?.bunbun?.diary || []).findIndex(d => d.date === date);
+    closeDiaryCal();
+    openUsEdit('diary', idx >= 0 ? idx : null);
+    if (idx < 0) setTimeout(() => { const el = document.getElementById('ue-date'); if (el) el.value = date; }, 50);
+  }
+
+  function diaryCalPrev() {
+    if (--diaryCalMonth < 0) { diaryCalMonth = 11; diaryCalYear--; }
+    renderDiaryCalendar();
+  }
+
+  function diaryCalNext() {
+    if (++diaryCalMonth > 11) { diaryCalMonth = 0; diaryCalYear++; }
+    renderDiaryCalendar();
   }
 
   // 保存想说的话
