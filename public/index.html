@@ -866,6 +866,52 @@
     }
     .mood-detail-close:hover { background: #fff0eb; }
 
+    /* ── 留言视图切换 ── */
+    .msg-view-toggle {
+      display: flex; gap: 2px; background: var(--card); border-radius: 6px; padding: 2px;
+    }
+    .msg-view-btn {
+      padding: 4px 10px; background: none; border: none; border-radius: 4px;
+      font-family: 'Menlo', monospace; font-size: 9px; color: var(--muted);
+      cursor: pointer; letter-spacing: 0.08em; transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .msg-view-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+
+    /* 留言日历视图 */
+    #msg-cal-view {
+      flex: 1; overflow-y: auto; padding: 14px 14px 32px;
+      background: #FFF7F0; min-height: 0; -webkit-overflow-scrolling: touch;
+    }
+    #msg-cal-view::-webkit-scrollbar { width: 4px; }
+    #msg-cal-view::-webkit-scrollbar-thumb { background: #e5d5c8; }
+    .msg-cal-legend {
+      display: flex; align-items: center; gap: 6px; margin-top: 12px; padding: 0 4px;
+      font-family: 'Menlo', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.08em;
+    }
+    .msg-cal-dot-zhao { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #e07070; flex-shrink: 0; }
+    .msg-cal-dot-bun  { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #7eadd4; flex-shrink: 0; }
+    .msg-cal-dots { display: flex; gap: 3px; margin-top: 2px; justify-content: center; }
+
+    /* 留言日当天详情 overlay */
+    #msg-day-overlay { display: none; position: fixed; inset: 0; background: rgba(26,20,15,0.32); z-index: 200; align-items: flex-end; }
+    #msg-day-overlay.open { display: flex; }
+    .msg-day-panel {
+      width: 100%; max-height: 88vh; background: var(--surface);
+      border-radius: 20px 20px 0 0; display: flex; flex-direction: column;
+      animation: panelSlideUp 0.22s ease;
+    }
+    .msg-day-hd {
+      padding: 18px 20px 14px; display: flex; align-items: center;
+      justify-content: space-between; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .msg-day-hd-date { font-family: 'Menlo', monospace; font-size: 12px; color: var(--text); letter-spacing: 0.08em; }
+    .msg-day-hd-close { background: none; border: none; font-size: 24px; color: var(--muted); cursor: pointer; padding: 0 2px; line-height: 1; }
+    .msg-day-messages {
+      flex: 1; overflow-y: auto; padding: 12px 16px 24px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+
     /* ── 日记日历浮层 ── */
     #diary-cal-overlay {
       display: none; position: fixed; inset: 0;
@@ -929,19 +975,25 @@
       <div class="header-left">
         <div class="header-name">留言板</div>
       </div>
+      <div class="header-right">
+        <div class="msg-view-toggle">
+          <button class="msg-view-btn active" id="msg-view-btn-list" onclick="switchMsgView('list')">列表</button>
+          <button class="msg-view-btn" id="msg-view-btn-cal" onclick="switchMsgView('cal')">日历</button>
+        </div>
+      </div>
     </div>
 
     <!-- 上半区：笨笨的留言（只读） -->
-    <div class="msg-section">
+    <div class="msg-section" id="msg-section-bun">
       <div class="msg-section-header">笨笨的留言</div>
       <div id="messages-bun" class="messages-pane"></div>
     </div>
 
     <!-- 分隔线 -->
-    <div class="msg-divider"></div>
+    <div class="msg-divider" id="msg-divider"></div>
 
     <!-- 下半区：给笨笨留言 -->
-    <div class="msg-section">
+    <div class="msg-section" id="msg-section-zhao">
       <div class="msg-section-header">给笨笨留言</div>
       <div id="messages-zhao" class="messages-pane"></div>
       <div class="input-area">
@@ -962,6 +1014,29 @@
           </button>
         </div>
         <div class="input-hint">Enter 发送 · Shift+Enter 换行</div>
+      </div>
+    </div>
+
+    <!-- 日历视图 -->
+    <div id="msg-cal-view" style="display:none">
+      <div class="mood-cal-nav">
+        <button class="mood-cal-nav-btn" onclick="msgCalPrev()">‹</button>
+        <span class="mood-cal-title" id="msg-cal-title"></span>
+        <button class="mood-cal-nav-btn" onclick="msgCalNext()">›</button>
+      </div>
+      <div class="mood-calendar">
+        <div class="mood-cal-weekdays">
+          <div class="mood-cal-wd">日</div><div class="mood-cal-wd">一</div>
+          <div class="mood-cal-wd">二</div><div class="mood-cal-wd">三</div>
+          <div class="mood-cal-wd">四</div><div class="mood-cal-wd">五</div>
+          <div class="mood-cal-wd">六</div>
+        </div>
+        <div id="msg-cal-grid" class="mood-cal-grid"></div>
+      </div>
+      <div class="msg-cal-legend">
+        <span class="msg-cal-dot-zhao"></span>昭昭
+        <span style="margin-left:8px"></span>
+        <span class="msg-cal-dot-bun"></span>笨笨
       </div>
     </div>
   </div>
@@ -1326,6 +1401,17 @@
       </div>
       <div class="palace-edit-body" id="palace-sheet-body"></div>
       <button class="palace-edit-cancel" onclick="closePalaceEditSheet()">取消</button>
+    </div>
+  </div>
+
+  <!-- ── 留言日历详情 ── -->
+  <div id="msg-day-overlay" onclick="closeMsgDay()">
+    <div class="msg-day-panel" onclick="event.stopPropagation()">
+      <div class="msg-day-hd">
+        <div class="msg-day-hd-date" id="msg-day-date"></div>
+        <button class="msg-day-hd-close" onclick="closeMsgDay()">×</button>
+      </div>
+      <div class="msg-day-messages" id="msg-day-messages"></div>
     </div>
   </div>
 
@@ -2243,6 +2329,77 @@
     </div>`;
   }
 
+  // ── 留言日历 ──────────────────────────────────────────
+  let msgView     = 'list';
+  let msgCalYear  = new Date().getFullYear();
+  let msgCalMonth = new Date().getMonth();
+
+  function buildMsgCalMap() {
+    const map = {};
+    allMessages.forEach(m => {
+      const d = new Date(m.timestamp).toISOString().slice(0, 10);
+      if (!map[d]) map[d] = { zhao: [], bun: [] };
+      if ((m.from || '昭昭') === '昭昭') map[d].zhao.push(m);
+      else map[d].bun.push(m);
+    });
+    return map;
+  }
+
+  function switchMsgView(mode) {
+    msgView = mode;
+    const isList = mode === 'list';
+    document.getElementById('msg-section-bun').style.display  = isList ? '' : 'none';
+    document.getElementById('msg-divider').style.display       = isList ? '' : 'none';
+    document.getElementById('msg-section-zhao').style.display = isList ? '' : 'none';
+    document.getElementById('msg-cal-view').style.display      = isList ? 'none' : 'block';
+    document.getElementById('msg-view-btn-list').classList.toggle('active',  isList);
+    document.getElementById('msg-view-btn-cal').classList.toggle('active',  !isList);
+    if (!isList) { msgCalYear = new Date().getFullYear(); msgCalMonth = new Date().getMonth(); renderMsgCalendar(); }
+  }
+
+  function renderMsgCalendar() {
+    const titleEl = document.getElementById('msg-cal-title');
+    const grid    = document.getElementById('msg-cal-grid');
+    if (!titleEl || !grid) return;
+    titleEl.textContent = `${msgCalYear}年${msgCalMonth + 1}月`;
+    const map         = buildMsgCalMap();
+    const firstDow    = new Date(msgCalYear, msgCalMonth, 1).getDay();
+    const daysInMonth = new Date(msgCalYear, msgCalMonth + 1, 0).getDate();
+    const today       = new Date().toISOString().slice(0, 10);
+    let html = '';
+    for (let i = 0; i < firstDow; i++) html += '<div class="mood-cal-cell mood-cal-empty"></div>';
+    for (let d = 1; d <= daysInMonth; d++) {
+      const ds      = `${msgCalYear}-${String(msgCalMonth + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const day     = map[ds];
+      const hasZhao = !!(day?.zhao?.length);
+      const hasBun  = !!(day?.bun?.length);
+      const hasAny  = hasZhao || hasBun;
+      const cls = ['mood-cal-cell', ds === today ? 'mood-cal-today' : '', !hasAny ? 'mood-cal-no-entry' : ''].filter(Boolean).join(' ');
+      let dots = '';
+      if (hasZhao) dots += '<span class="msg-cal-dot-zhao"></span>';
+      if (hasBun)  dots += '<span class="msg-cal-dot-bun"></span>';
+      html += `<div class="${cls}"${hasAny ? ` onclick="openMsgDay('${ds}')"` : ''}>
+        <span class="mood-cal-day">${d}</span>${dots ? `<div class="msg-cal-dots">${dots}</div>` : ''}
+      </div>`;
+    }
+    grid.innerHTML = html;
+  }
+
+  function msgCalPrev() { if (--msgCalMonth < 0)  { msgCalMonth = 11; msgCalYear--; } renderMsgCalendar(); }
+  function msgCalNext() { if (++msgCalMonth > 11) { msgCalMonth = 0;  msgCalYear++; } renderMsgCalendar(); }
+
+  function openMsgDay(dateStr) {
+    const map  = buildMsgCalMap();
+    const day  = map[dateStr] || { zhao: [], bun: [] };
+    const msgs = [...day.zhao, ...day.bun].sort((a, b) => a.timestamp - b.timestamp);
+    document.getElementById('msg-day-date').textContent = dateStr;
+    const el = document.getElementById('msg-day-messages');
+    el.innerHTML = msgs.length ? msgs.map(renderMsgRow).join('') : '<div class="msg-empty">这天没有留言</div>';
+    document.getElementById('msg-day-overlay').classList.add('open');
+  }
+
+  function closeMsgDay() { document.getElementById('msg-day-overlay').classList.remove('open'); }
+
   function renderMessages() {
     const bunPane  = document.getElementById('messages-bun');
     const zhaoPane = document.getElementById('messages-zhao');
@@ -2262,6 +2419,7 @@
         : '<div class="msg-empty">笨笨不在的时候，把想说的话留在这里…</div>';
       if (zhaoMsgs.length) zhaoPane.scrollTop = zhaoPane.scrollHeight;
     }
+    if (msgView === 'cal') renderMsgCalendar();
   }
 
   async function loadMessages() {
