@@ -185,6 +185,124 @@ function createMcpServer() {
     }
   );
 
+  // write_diary
+  server.tool('write_diary', '笨笨写日记',
+    {
+      date: z.string().describe('日期，格式 YYYY-MM-DD'),
+      content: z.string().describe('日记内容')
+    },
+    async ({ date, content }) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return { content: [{ type: 'text', text: '日期格式错误，应为 YYYY-MM-DD' }] };
+      }
+      const filePath = path.join(DATA_DIR, `diary-${date}.txt`);
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+      fs.writeFileSync(filePath, content, 'utf8');
+      return { content: [{ type: 'text', text: `${date} 的日记已保存` }] };
+    }
+  );
+
+  // delete_diary
+  server.tool('delete_diary', '删除某天日记',
+    { date: z.string().describe('日期，格式 YYYY-MM-DD') },
+    async ({ date }) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return { content: [{ type: 'text', text: '日期格式错误，应为 YYYY-MM-DD' }] };
+      }
+      const filePath = path.join(DATA_DIR, `diary-${date}.txt`);
+      try {
+        fs.unlinkSync(filePath);
+        return { content: [{ type: 'text', text: `${date} 的日记已删除` }] };
+      } catch {
+        return { content: [{ type: 'text', text: `没有找到 ${date} 的日记` }] };
+      }
+    }
+  );
+
+  // write_favorites
+  server.tool('write_favorites', '笨笨添加一条收藏',
+    {
+      content: z.string().describe('收藏的内容'),
+      source: z.string().optional().describe('来源（可选）')
+    },
+    async ({ content, source }) => {
+      const filePath = path.join(DATA_DIR, 'favorites.json');
+      const data = readJSON(filePath) || { entries: [] };
+      if (!data.entries) data.entries = [];
+      const maxId = data.entries.reduce((m, e) => Math.max(m, Number(e.id) || 0), 0);
+      const entry = { id: maxId + 1, content, timestamp: new Date().toISOString() };
+      if (source) entry.source = source;
+      data.entries.push(entry);
+      writeJSON(filePath, data);
+      return { content: [{ type: 'text', text: `收藏已添加，id=${entry.id}` }] };
+    }
+  );
+
+  // delete_favorite
+  server.tool('delete_favorite', '删除一条收藏',
+    { id: z.union([z.string(), z.number()]).describe('收藏的 id') },
+    async ({ id }) => {
+      const filePath = path.join(DATA_DIR, 'favorites.json');
+      const data = readJSON(filePath) || { entries: [] };
+      const before = (data.entries || []).length;
+      data.entries = (data.entries || []).filter(e => String(e.id) !== String(id));
+      if (data.entries.length === before) {
+        return { content: [{ type: 'text', text: `没有找到 id=${id} 的收藏` }] };
+      }
+      writeJSON(filePath, data);
+      return { content: [{ type: 'text', text: `id=${id} 的收藏已删除` }] };
+    }
+  );
+
+  // write_health
+  server.tool('write_health', '记录健康数据',
+    {
+      date: z.string().describe('日期，格式 YYYY-MM-DD'),
+      water: z.number().optional().describe('喝水量（杯）'),
+      exercise: z.number().optional().describe('运动时长（分钟）'),
+      sleep: z.number().optional().describe('睡眠时长（小时）'),
+      weight: z.number().optional().describe('体重（kg）')
+    },
+    async ({ date, water, exercise, sleep, weight }) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return { content: [{ type: 'text', text: '日期格式错误，应为 YYYY-MM-DD' }] };
+      }
+      const filePath = path.join(DATA_DIR, 'health.json');
+      const data = readJSON(filePath) || { entries: [] };
+      if (!data.entries) data.entries = [];
+      const idx = data.entries.findIndex(e => e.date === date);
+      const patch = { date };
+      if (water !== undefined) patch.water = water;
+      if (exercise !== undefined) patch.exercise = exercise;
+      if (sleep !== undefined) patch.sleep = sleep;
+      if (weight !== undefined) patch.weight = weight;
+      if (idx >= 0) {
+        data.entries[idx] = { ...data.entries[idx], ...patch };
+      } else {
+        data.entries.push(patch);
+        data.entries.sort((a, b) => b.date.localeCompare(a.date));
+      }
+      writeJSON(filePath, data);
+      return { content: [{ type: 'text', text: `${date} 的健康数据已记录` }] };
+    }
+  );
+
+  // delete_message
+  server.tool('delete_message', '删除一条留言',
+    { id: z.union([z.string(), z.number()]).describe('留言的 id') },
+    async ({ id }) => {
+      const filePath = path.join(DATA_DIR, 'messages.json');
+      const data = readJSON(filePath) || { messages: [] };
+      const before = (data.messages || []).length;
+      data.messages = (data.messages || []).filter(m => String(m.id) !== String(id));
+      if (data.messages.length === before) {
+        return { content: [{ type: 'text', text: `没有找到 id=${id} 的留言` }] };
+      }
+      writeJSON(filePath, data);
+      return { content: [{ type: 'text', text: `id=${id} 的留言已删除` }] };
+    }
+  );
+
   return server;
 }
 
