@@ -470,6 +470,9 @@
 
     .palace-empty { padding: 12px 16px; font-size: 12px; color: var(--muted); }
 
+    /* 防止 flex 压缩子元素，确保面板可滚动 */
+    .palace-panel > * { flex-shrink: 0; }
+
     /* section edit button row */
     .pe-edit-row { padding: 7px 16px; display: flex; justify-content: flex-end; border-bottom: 1px solid #f5ebe4; }
     .pe-inline-btn { background: none; border: 1px solid #e5d5c8; border-radius: 5px; font-family: 'Menlo', monospace; font-size: 9px; color: #c0614a; cursor: pointer; padding: 2px 9px; letter-spacing: 0.06em; }
@@ -671,6 +674,7 @@
     .us-words-area::placeholder { color: var(--muted); }
     .us-words-save { width: 100%; padding: 11px; background: none; border: none; border-top: 1px solid #eeddd3; font-family: 'Menlo', 'Courier New', monospace; font-size: 10px; color: #c0614a; cursor: pointer; letter-spacing: 0.05em; }
     .us-words-save:hover { background: #fff8f5; }
+    .us-words-updated { padding: 4px 14px 10px; font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.08em; }
     .us-diary-entry { padding: 12px 14px; cursor: pointer; }
     .us-diary-entry:hover { background: #fff8f5; }
     .us-diary-date { font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.12em; margin-bottom: 5px; }
@@ -996,6 +1000,7 @@
         <div class="us-white-card">
           <textarea class="us-words-area" id="us-zhao-words" placeholder="写什么都好…"></textarea>
           <button class="us-words-save" onclick="saveWords('zhaozhao')">保 存</button>
+          <div class="us-words-updated" id="us-zhao-words-ts" style="display:none"></div>
         </div>
       </div>
     </div>
@@ -1027,6 +1032,7 @@
         <div class="us-white-card">
           <textarea class="us-words-area" id="us-bun-words" placeholder="悄悄话…"></textarea>
           <button class="us-words-save" onclick="saveWords('bunbun')">保 存</button>
+          <div class="us-words-updated" id="us-bun-words-ts" style="display:none"></div>
         </div>
       </div>
     </div>
@@ -1334,6 +1340,12 @@
     const bw = document.getElementById('us-bun-words');
     if (zw) zw.value = usData.zhaozhao?.words || '';
     if (bw) bw.value = usData.bunbun?.words || '';
+    const zts = document.getElementById('us-zhao-words-ts');
+    const bts = document.getElementById('us-bun-words-ts');
+    const zAt = usData.zhaozhao?.words_updated_at;
+    const bAt = usData.bunbun?.words_updated_at;
+    if (zts && zAt) { zts.textContent = '最后更新：' + zAt; zts.style.display = 'block'; }
+    if (bts && bAt) { bts.textContent = '最后更新：' + bAt; bts.style.display = 'block'; }
   }
 
   async function saveUs() {
@@ -1486,10 +1498,25 @@
 
   // 保存想说的话
   async function saveWords(who) {
-    const id = who === 'zhaozhao' ? 'us-zhao-words' : 'us-bun-words';
+    const id   = who === 'zhaozhao' ? 'us-zhao-words'    : 'us-bun-words';
+    const tsId = who === 'zhaozhao' ? 'us-zhao-words-ts' : 'us-bun-words-ts';
     const text = document.getElementById(id)?.value || '';
-    if (who === 'zhaozhao') usData.zhaozhao.words = text; else usData.bunbun.words = text;
+    const now = new Date();
+    const ts = now.getFullYear() + '-' +
+      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+      String(now.getDate()).padStart(2, '0') + ' ' +
+      String(now.getHours()).padStart(2, '0') + ':' +
+      String(now.getMinutes()).padStart(2, '0');
+    if (who === 'zhaozhao') {
+      usData.zhaozhao.words = text;
+      usData.zhaozhao.words_updated_at = ts;
+    } else {
+      usData.bunbun.words = text;
+      usData.bunbun.words_updated_at = ts;
+    }
     await saveUs();
+    const tsEl = document.getElementById(tsId);
+    if (tsEl) { tsEl.textContent = '最后更新：' + ts; tsEl.style.display = 'block'; }
     const btn = document.querySelector(`[onclick="saveWords('${who}')"]`);
     if (btn) { const o = btn.textContent; btn.textContent = '已保存 ✓'; setTimeout(() => btn.textContent = o, 1500); }
   }
