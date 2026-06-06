@@ -64,7 +64,7 @@ function createMcpServer() {
   server.tool('read_diary_list', '列出所有日记文件名', async () => {
     let files = [];
     try {
-      files = fs.readdirSync(DATA_DIR)
+      files = fs.readdirSync(MEMORY_DIR)
         .filter(f => /^diary-\d{4}-\d{2}-\d{2}\.txt$/.test(f))
         .sort();
     } catch {}
@@ -78,7 +78,7 @@ function createMcpServer() {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
         return { content: [{ type: 'text', text: '日期格式错误，应为 YYYY-MM-DD' }] };
       }
-      const filePath = path.join(DATA_DIR, `diary-${date}.txt`);
+      const filePath = path.join(MEMORY_DIR, `diary-${date}.txt`);
       try {
         const text = fs.readFileSync(filePath, 'utf8');
         return { content: [{ type: 'text', text }] };
@@ -90,7 +90,7 @@ function createMcpServer() {
 
   // 5. read_favorites
   server.tool('read_favorites', '读取收藏的瞬间', async () => {
-    const data = readJSON(path.join(DATA_DIR, 'favorites.json')) || { entries: [] };
+    const data = readJSON(path.join(MEMORY_DIR, 'favorites.json')) || { entries: [] };
     return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
   });
 
@@ -151,7 +151,7 @@ function createMcpServer() {
 
   // 8. read_health
   server.tool('read_health', '读取健康记录', async () => {
-    const data = readJSON(path.join(DATA_DIR, 'health.json')) || { entries: [] };
+    const data = readJSON(path.join(HISTORY_DIR, 'health.json')) || { entries: [] };
     return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
   });
 
@@ -195,8 +195,8 @@ function createMcpServer() {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
         return { content: [{ type: 'text', text: '日期格式错误，应为 YYYY-MM-DD' }] };
       }
-      const filePath = path.join(DATA_DIR, `diary-${date}.txt`);
-      fs.mkdirSync(DATA_DIR, { recursive: true });
+      const filePath = path.join(MEMORY_DIR, `diary-${date}.txt`);
+      fs.mkdirSync(MEMORY_DIR, { recursive: true });
       fs.writeFileSync(filePath, content, 'utf8');
       return { content: [{ type: 'text', text: `${date} 的日记已保存` }] };
     }
@@ -209,7 +209,7 @@ function createMcpServer() {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
         return { content: [{ type: 'text', text: '日期格式错误，应为 YYYY-MM-DD' }] };
       }
-      const filePath = path.join(DATA_DIR, `diary-${date}.txt`);
+      const filePath = path.join(MEMORY_DIR, `diary-${date}.txt`);
       try {
         fs.unlinkSync(filePath);
         return { content: [{ type: 'text', text: `${date} 的日记已删除` }] };
@@ -226,7 +226,7 @@ function createMcpServer() {
       source: z.string().optional().describe('来源（可选）')
     },
     async ({ content, source }) => {
-      const filePath = path.join(DATA_DIR, 'favorites.json');
+      const filePath = path.join(MEMORY_DIR, 'favorites.json');
       const data = readJSON(filePath) || { entries: [] };
       if (!data.entries) data.entries = [];
       const maxId = data.entries.reduce((m, e) => Math.max(m, Number(e.id) || 0), 0);
@@ -242,7 +242,7 @@ function createMcpServer() {
   server.tool('delete_favorite', '删除一条收藏',
     { id: z.union([z.string(), z.number()]).describe('收藏的 id') },
     async ({ id }) => {
-      const filePath = path.join(DATA_DIR, 'favorites.json');
+      const filePath = path.join(MEMORY_DIR, 'favorites.json');
       const data = readJSON(filePath) || { entries: [] };
       const before = (data.entries || []).length;
       data.entries = (data.entries || []).filter(e => String(e.id) !== String(id));
@@ -267,7 +267,7 @@ function createMcpServer() {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
         return { content: [{ type: 'text', text: '日期格式错误，应为 YYYY-MM-DD' }] };
       }
-      const filePath = path.join(DATA_DIR, 'health.json');
+      const filePath = path.join(HISTORY_DIR, 'health.json');
       const data = readJSON(filePath) || { entries: [] };
       if (!data.entries) data.entries = [];
       const idx = data.entries.findIndex(e => e.date === date);
