@@ -1326,6 +1326,11 @@
       const r = await fetch(`${SERVER}/us`);
       usData = await r.json();
     } catch { if (!usData) usData = { anniversaries: [{ id: 1, emoji: '💕', title: '面试老公 · 在一起', date: '2026-05-03' }], todos: [], zhaozhao: { moments: [], recipes: [], footprints: [], words: '' }, bunbun: { diary: [], words: '' } }; }
+    if (!usData.bunbun) usData.bunbun = { diary: [], words: '' };
+    try {
+      const dr = await fetch(`${SERVER}/diaries`);
+      usData.bunbun.diary = (await dr.json()).map((d, i) => ({ id: i + 1, date: d.date, content: d.content }));
+    } catch { if (!usData.bunbun.diary) usData.bunbun.diary = []; }
     renderUsPage();
   }
 
@@ -1598,10 +1603,11 @@
     } else if (usEditType === 'diary') {
       const date    = document.getElementById('ue-date')?.value || new Date().toISOString().slice(0,10);
       const content = document.getElementById('ue-content')?.value.trim() || ''; if (!content) return;
-      const item = { id: usEditIdx!==null ? usData.bunbun.diary[usEditIdx].id : nextUsId(usData.bunbun.diary), date, content };
-      if (usEditIdx!==null) usData.bunbun.diary[usEditIdx] = item; else usData.bunbun.diary.push(item);
-      usData.bunbun.diary.sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-      renderDiary();
+      await fetch(`${SERVER}/diary/${date}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content }) });
+      try {
+        usData.bunbun.diary = (await (await fetch(`${SERVER}/diaries`)).json()).map((d, i) => ({ id: i + 1, date: d.date, content: d.content }));
+      } catch {}
+      renderDiary(); closeUsEdit(); return;
     } else if (usEditType === 'moment') {
       if (!ueImgDataUrl) { closeUsEdit(); return; }
       const note = document.getElementById('ue-note')?.value.trim() || '';
@@ -1615,15 +1621,21 @@
   async function deleteUsEditItem() {
     if (usEditIdx === null) return;
     if (!confirm('确定删除？')) return;
+    if (usEditType === 'diary') {
+      const date = usData.bunbun.diary[usEditIdx]?.date;
+      if (date) await fetch(`${SERVER}/diary/${date}`, { method: 'DELETE' });
+      try {
+        usData.bunbun.diary = (await (await fetch(`${SERVER}/diaries`)).json()).map((d, i) => ({ id: i + 1, date: d.date, content: d.content }));
+      } catch {}
+      renderDiary(); closeUsEdit(); return;
+    }
     if (usEditType === 'anniv')          usData.anniversaries.splice(usEditIdx,1);
     else if (usEditType === 'recipe')    usData.zhaozhao.recipes.splice(usEditIdx,1);
     else if (usEditType === 'footprint') usData.zhaozhao.footprints.splice(usEditIdx,1);
-    else if (usEditType === 'diary')     usData.bunbun.diary.splice(usEditIdx,1);
     await saveUs();
     if (usEditType === 'anniv')          renderAnniversaries();
     else if (usEditType === 'recipe')    renderRecipes();
     else if (usEditType === 'footprint') renderFootprints();
-    else if (usEditType === 'diary')     renderDiary();
     closeUsEdit();
   }
 

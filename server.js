@@ -78,7 +78,7 @@ function readBody(req) {
 
 const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
 
@@ -264,6 +264,46 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ ok: true }));
     } catch { res.writeHead(400); return res.end('invalid json'); }
+  }
+
+  // ── 日记 ─────────────────────────────────────────────────
+
+  if (req.method === 'GET' && pathname === '/diaries') {
+    const memDir = path.join(__dirname, 'memory');
+    try {
+      const files = fs.readdirSync(memDir)
+        .filter(f => /^diary-\d{4}-\d{2}-\d{2}\.txt$/.test(f))
+        .sort();
+      const diaries = files.map(f => ({
+        date: f.slice(6, 16),
+        content: fs.readFileSync(path.join(memDir, f), 'utf8')
+      }));
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify(diaries));
+    } catch {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end('[]');
+    }
+  }
+
+  const diaryMatch = pathname.match(/^\/diary\/(\d{4}-\d{2}-\d{2})$/);
+
+  if (req.method === 'POST' && diaryMatch) {
+    const date = diaryMatch[1];
+    const body = await readBody(req);
+    let content = '';
+    try { content = JSON.parse(body).content || ''; } catch { res.writeHead(400); return res.end('invalid json'); }
+    fs.mkdirSync(path.join(__dirname, 'memory'), { recursive: true });
+    fs.writeFileSync(path.join(__dirname, 'memory', `diary-${date}.txt`), content, 'utf8');
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ ok: true }));
+  }
+
+  if (req.method === 'DELETE' && diaryMatch) {
+    const date = diaryMatch[1];
+    try { fs.unlinkSync(path.join(__dirname, 'memory', `diary-${date}.txt`)); } catch {}
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ ok: true }));
   }
 
   // ── 头像 ─────────────────────────────────────────────────
