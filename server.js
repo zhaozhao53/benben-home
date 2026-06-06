@@ -228,6 +228,56 @@ const server = http.createServer(async (req, res) => {
     } catch { res.writeHead(400); return res.end('invalid json'); }
   }
 
+  // ── 健康 ─────────────────────────────────────────────────
+
+  if (req.method === 'GET' && pathname === '/health') {
+    const f = path.join(__dirname, 'history', 'health.json');
+    try {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(fs.readFileSync(f, 'utf8'));
+    } catch {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ goalWeight: null, entries: [] }));
+    }
+  }
+
+  if (req.method === 'POST' && pathname === '/health') {
+    const body = await readBody(req);
+    try {
+      JSON.parse(body);
+      const f = path.join(__dirname, 'history', 'health.json');
+      fs.mkdirSync(path.dirname(f), { recursive: true });
+      fs.writeFileSync(f, body);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: true }));
+    } catch { res.writeHead(400); return res.end('invalid json'); }
+  }
+
+  // ── 待办 ─────────────────────────────────────────────────
+
+  if (req.method === 'GET' && pathname === '/todos') {
+    const f = path.join(__dirname, 'data', 'todos.json');
+    try {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(fs.readFileSync(f, 'utf8'));
+    } catch {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ todos: [] }));
+    }
+  }
+
+  if (req.method === 'POST' && pathname === '/todos') {
+    const body = await readBody(req);
+    try {
+      JSON.parse(body);
+      const f = path.join(__dirname, 'data', 'todos.json');
+      fs.mkdirSync(path.dirname(f), { recursive: true });
+      fs.writeFileSync(f, body);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: true }));
+    } catch { res.writeHead(400); return res.end('invalid json'); }
+  }
+
   // ── 记忆宫殿 ─────────────────────────────────────────────
 
   if (req.method === 'GET' && pathname === '/palace') {

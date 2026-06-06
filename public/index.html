@@ -970,6 +970,53 @@
       margin-top: 10px; background: none; border: none; font-family: 'Menlo', monospace;
       font-size: 9px; color: #c0614a; cursor: pointer; padding: 0; letter-spacing: 0.05em;
     }
+
+    /* ── 健康记录 ── */
+    .health-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .health-metric-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+      padding: 14px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .health-metric-label { font-size: 11px; color: var(--muted); }
+    .health-metric-row { display: flex; align-items: center; gap: 6px; }
+    .health-counter-btn {
+      width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border);
+      background: none; cursor: pointer; font-size: 18px; line-height: 1; color: var(--text);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .health-counter-btn:hover { border-color: var(--pink); color: var(--pink); }
+    .health-counter-num { font-size: 22px; font-weight: 600; color: var(--text); min-width: 30px; text-align: center; }
+    .health-num-input {
+      width: 52px; font-size: 20px; font-weight: 600; color: var(--text);
+      border: none; border-bottom: 1.5px solid var(--border); background: none;
+      text-align: center; outline: none; padding: 2px 0;
+      font-family: 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+    }
+    .health-num-input:focus { border-bottom-color: var(--accent); }
+    .health-unit { font-size: 11px; color: var(--muted); }
+    .health-weight-goal { font-size: 10px; color: var(--muted); min-height: 14px; }
+    .health-weight-diff-plus { color: #e07070; }
+    .health-weight-diff-minus { color: #5aaa88; }
+    .health-goal-row {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px 16px;
+    }
+    .health-goal-label { font-size: 12px; color: var(--muted); flex: 1; }
+    .health-goal-input {
+      width: 52px; font-size: 15px; font-weight: 600; color: var(--text);
+      border: none; border-bottom: 1.5px solid var(--border); background: none;
+      text-align: center; outline: none; padding: 2px;
+      font-family: 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+    }
+    .health-goal-input:focus { border-bottom-color: var(--accent); }
+    .health-history-table { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .health-history-row { display: flex; font-size: 11px; padding: 9px 14px; border-bottom: 1px solid var(--border); align-items: center; gap: 4px; }
+    .health-history-row:last-child { border-bottom: none; }
+    .health-history-date { color: var(--muted); min-width: 78px; flex-shrink: 0; }
+    .health-history-cell { flex: 1; text-align: center; color: var(--text); }
+    .health-history-hd .health-history-date,
+    .health-history-hd .health-history-cell { font-size: 9px; color: var(--muted); letter-spacing: 0.08em; }
   </style>
 </head>
 <body>
@@ -1259,6 +1306,8 @@
     </div>
     <div class="us-tab-bar">
       <button class="us-tab active" id="play-tab-mood" onclick="switchPlayTab('mood')">💕 心情</button>
+      <button class="us-tab" id="play-tab-health" onclick="switchPlayTab('health')">🏃 健康</button>
+      <button class="us-tab" id="play-tab-todo" onclick="switchPlayTab('todo')">📋 待办</button>
     </div>
 
     <!-- 💕 心情 -->
@@ -1302,6 +1351,62 @@
           </div>
           <div id="mood-cal-grid" class="mood-cal-grid"></div>
         </div>
+      </div>
+    </div>
+
+    <!-- 🏃 健康 -->
+    <div class="us-content" id="play-panel-health" style="display:none">
+      <div class="us-section-label">今日记录</div>
+      <div class="health-grid">
+        <div class="health-metric-card">
+          <div class="health-metric-label">💧 喝水</div>
+          <div class="health-metric-row">
+            <button class="health-counter-btn" onclick="healthWater(-1)">−</button>
+            <span class="health-counter-num" id="health-water-num">0</span>
+            <button class="health-counter-btn" onclick="healthWater(1)">+</button>
+            <span class="health-unit">杯</span>
+          </div>
+        </div>
+        <div class="health-metric-card">
+          <div class="health-metric-label">🏃 运动</div>
+          <div class="health-metric-row">
+            <input class="health-num-input" id="health-exercise" type="number" min="0" placeholder="0">
+            <span class="health-unit">分钟</span>
+          </div>
+        </div>
+        <div class="health-metric-card">
+          <div class="health-metric-label">😴 睡眠</div>
+          <div class="health-metric-row">
+            <input class="health-num-input" id="health-sleep" type="number" min="0" step="0.5" placeholder="0">
+            <span class="health-unit">小时</span>
+          </div>
+        </div>
+        <div class="health-metric-card">
+          <div class="health-metric-label">⚖️ 体重</div>
+          <div class="health-metric-row">
+            <input class="health-num-input" id="health-weight" type="number" step="0.1" placeholder="0" oninput="updateWeightGoalDisplay()">
+            <span class="health-unit">kg</span>
+          </div>
+          <div class="health-weight-goal" id="health-weight-goal-display"></div>
+        </div>
+      </div>
+      <div class="health-goal-row">
+        <span class="health-goal-label">目标体重</span>
+        <input class="health-goal-input" id="health-goal-weight" type="number" step="0.1" placeholder="55" oninput="updateWeightGoalDisplay()">
+        <span class="health-unit">kg</span>
+      </div>
+      <button class="mood-save-btn" id="health-save-btn" onclick="saveHealth()">保存今天的记录</button>
+      <div class="us-section-label">最近记录</div>
+      <div id="health-history"></div>
+    </div>
+
+    <!-- 📋 待办 -->
+    <div class="us-content" id="play-panel-todo" style="display:none">
+      <div class="us-section-label">待办事项</div>
+      <div id="play-todo-list"></div>
+      <div class="us-todo-item" style="padding-top:14px;border-top:1px solid var(--border)">
+        <input id="play-todo-input" type="text" placeholder="新增待办…" class="us-todo-input-field" onkeydown="if(event.key==='Enter')addPlayTodo()">
+        <button class="us-todo-add-btn" onclick="addPlayTodo()">添加</button>
       </div>
     </div>
   </div>
@@ -1538,6 +1643,8 @@
 
   function loadPlayPage() {
     loadMoods();
+    renderEmojiPicker('zhaozhao');
+    renderEmojiPicker('bunbun');
   }
 
   function renderUsPage() {
@@ -1572,7 +1679,7 @@
   }
 
   function switchPlayTab(tab) {
-    ['mood'].forEach(t => {
+    ['mood', 'health', 'todo'].forEach(t => {
       document.getElementById('play-tab-' + t).classList.toggle('active', t === tab);
       const p = document.getElementById('play-panel-' + t);
       if (p) p.style.display = t === tab ? 'flex' : 'none';
@@ -1584,6 +1691,8 @@
         renderEmojiPicker('bunbun');
       }
     }
+    if (tab === 'health') loadHealth();
+    if (tab === 'todo') loadPlayTodos();
   }
 
   function switchPalaceTab(tab) {
@@ -2712,6 +2821,150 @@
     }
   }
 
+
+  // ── 健康记录 ──────────────────────────────────────────
+  let healthData = { goalWeight: null, entries: [] };
+  let healthWaterCount = 0;
+
+  async function loadHealth() {
+    try {
+      const r = await fetch(`${SERVER}/health`);
+      healthData = await r.json();
+    } catch { healthData = { goalWeight: null, entries: [] }; }
+    if (!healthData.entries) healthData.entries = [];
+
+    const today = getTodayISO();
+    const todayEntry = healthData.entries.find(e => e.date === today) || {};
+    healthWaterCount = todayEntry.water || 0;
+
+    const numEl = document.getElementById('health-water-num');
+    if (numEl) numEl.textContent = healthWaterCount;
+    const ex = document.getElementById('health-exercise');
+    const sl = document.getElementById('health-sleep');
+    const wt = document.getElementById('health-weight');
+    const gw = document.getElementById('health-goal-weight');
+    if (ex) ex.value = todayEntry.exercise != null ? todayEntry.exercise : '';
+    if (sl) sl.value = todayEntry.sleep     != null ? todayEntry.sleep    : '';
+    if (wt) wt.value = todayEntry.weight    != null ? todayEntry.weight   : '';
+    if (gw) gw.value = healthData.goalWeight != null ? healthData.goalWeight : '';
+    updateWeightGoalDisplay();
+    renderHealthHistory();
+  }
+
+  function healthWater(delta) {
+    healthWaterCount = Math.max(0, healthWaterCount + delta);
+    const el = document.getElementById('health-water-num');
+    if (el) el.textContent = healthWaterCount;
+  }
+
+  function updateWeightGoalDisplay() {
+    const wtEl   = document.getElementById('health-weight');
+    const gwEl   = document.getElementById('health-goal-weight');
+    const dispEl = document.getElementById('health-weight-goal-display');
+    if (!dispEl) return;
+    const wt = parseFloat(wtEl?.value);
+    const gw = parseFloat(gwEl?.value);
+    if (!isNaN(wt) && !isNaN(gw)) {
+      const diff = (wt - gw).toFixed(1);
+      const cls = parseFloat(diff) > 0 ? 'health-weight-diff-plus' : 'health-weight-diff-minus';
+      dispEl.innerHTML = `目标 ${gw}kg · <span class="${cls}">${parseFloat(diff) > 0 ? '+' : ''}${diff}kg</span>`;
+    } else if (!isNaN(gw)) {
+      dispEl.textContent = `目标 ${gw}kg`;
+    } else {
+      dispEl.textContent = '';
+    }
+  }
+
+  async function saveHealth() {
+    const today = getTodayISO();
+    const ex  = parseFloat(document.getElementById('health-exercise')?.value);
+    const sl  = parseFloat(document.getElementById('health-sleep')?.value);
+    const wt  = parseFloat(document.getElementById('health-weight')?.value);
+    const gw  = parseFloat(document.getElementById('health-goal-weight')?.value);
+    const entry = { date: today, water: healthWaterCount };
+    if (!isNaN(ex)) entry.exercise = ex;
+    if (!isNaN(sl)) entry.sleep    = sl;
+    if (!isNaN(wt)) entry.weight   = wt;
+    const idx = healthData.entries.findIndex(e => e.date === today);
+    if (idx >= 0) healthData.entries[idx] = { ...healthData.entries[idx], ...entry };
+    else { healthData.entries.push(entry); healthData.entries.sort((a, b) => b.date.localeCompare(a.date)); }
+    if (!isNaN(gw)) healthData.goalWeight = gw;
+    try {
+      await fetch(`${SERVER}/health`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(healthData, null, 2) });
+      const btn = document.getElementById('health-save-btn');
+      if (btn) { btn.textContent = '已保存 ✓'; btn.classList.add('saved'); setTimeout(() => { btn.textContent = '保存今天的记录'; btn.classList.remove('saved'); }, 2000); }
+      updateWeightGoalDisplay();
+      renderHealthHistory();
+    } catch { alert('保存失败，请重试'); }
+  }
+
+  function renderHealthHistory() {
+    const el = document.getElementById('health-history');
+    if (!el) return;
+    const entries = (healthData.entries || []).slice(0, 7);
+    if (!entries.length) { el.innerHTML = '<div style="padding:10px 0;text-align:center;color:var(--muted);font-size:12px">暂无记录</div>'; return; }
+    el.innerHTML = `<div class="health-history-table">
+      <div class="health-history-row health-history-hd">
+        <span class="health-history-date">日期</span>
+        <span class="health-history-cell">💧杯</span>
+        <span class="health-history-cell">🏃分</span>
+        <span class="health-history-cell">😴时</span>
+        <span class="health-history-cell">⚖️kg</span>
+      </div>
+      ${entries.map(e => `<div class="health-history-row">
+        <span class="health-history-date">${e.date}</span>
+        <span class="health-history-cell">${e.water ?? '—'}</span>
+        <span class="health-history-cell">${e.exercise ?? '—'}</span>
+        <span class="health-history-cell">${e.sleep ?? '—'}</span>
+        <span class="health-history-cell">${e.weight ?? '—'}</span>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  // ── 待办 ────────────────────────────────────────────
+  let playTodosData = { todos: [] };
+
+  async function loadPlayTodos() {
+    try {
+      const r = await fetch(`${SERVER}/todos`);
+      playTodosData = await r.json();
+    } catch { playTodosData = { todos: [] }; }
+    if (!playTodosData.todos) playTodosData.todos = [];
+    renderPlayTodos();
+  }
+
+  function renderPlayTodos() {
+    const el = document.getElementById('play-todo-list');
+    if (!el) return;
+    const list = playTodosData.todos;
+    if (!list.length) { el.innerHTML = '<div style="padding:14px 0;text-align:center;color:var(--muted);font-size:12px">还没有待办事项</div>'; return; }
+    el.innerHTML = list.map((t, i) =>
+      `${i ? '<div class="us-milestone-divider"></div>' : ''}<div class="us-todo-item">
+        <button class="us-todo-check${t.done ? ' done' : ''}" onclick="togglePlayTodo(${i})"></button>
+        <span class="us-todo-text${t.done ? ' done' : ''}">${escHtml(t.text || '')}</span>
+        <button class="us-todo-del" onclick="deletePlayTodo(${i})">×</button>
+      </div>`
+    ).join('');
+  }
+
+  async function savePlayTodos() {
+    try { await fetch(`${SERVER}/todos`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(playTodosData, null, 2) }); }
+    catch {}
+  }
+
+  function addPlayTodo() {
+    const inp = document.getElementById('play-todo-input');
+    const text = inp?.value.trim();
+    if (!text) return;
+    const maxId = playTodosData.todos.reduce((m, t) => Math.max(m, Number(t.id) || 0), 0);
+    playTodosData.todos.push({ id: maxId + 1, text, done: false });
+    inp.value = '';
+    renderPlayTodos();
+    savePlayTodos();
+  }
+
+  async function togglePlayTodo(i) { playTodosData.todos[i].done = !playTodosData.todos[i].done; renderPlayTodos(); await savePlayTodos(); }
+  async function deletePlayTodo(i) { playTodosData.todos.splice(i, 1); renderPlayTodos(); await savePlayTodos(); }
 
   // ── 设置功能 ──────────────────────────────────────────
   async function exportChat(rangeOnly) {
