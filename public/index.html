@@ -779,7 +779,7 @@
 
     /* ── 心情日历 ── */
     .mood-cal-nav {
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center; justify-content: center; gap: 20px;
       padding: 10px 14px; background: #fff; border-radius: 14px 14px 0 0;
       border: 1px solid #eeddd3; border-bottom: none;
     }
@@ -791,6 +791,12 @@
     .mood-cal-title {
       font-family: 'Menlo', 'Courier New', monospace; font-size: 12px;
       color: var(--text); letter-spacing: 0.06em;
+    }
+    .cal-nav-group { display: flex; align-items: center; gap: 2px; }
+    .cal-nav-label {
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 12px;
+      color: var(--text); letter-spacing: 0.04em;
+      min-width: 38px; text-align: center;
     }
     .mood-calendar {
       background: #fff; border-radius: 0 0 14px 14px;
@@ -1020,9 +1026,16 @@
     <!-- 日历视图 -->
     <div id="msg-cal-view" style="display:none">
       <div class="mood-cal-nav">
-        <button class="mood-cal-nav-btn" onclick="msgCalPrev()">‹</button>
-        <span class="mood-cal-title" id="msg-cal-title"></span>
-        <button class="mood-cal-nav-btn" onclick="msgCalNext()">›</button>
+        <div class="cal-nav-group">
+          <button class="mood-cal-nav-btn" onclick="msgCalYearPrev()">‹</button>
+          <span class="cal-nav-label" id="msg-cal-year"></span>
+          <button class="mood-cal-nav-btn" onclick="msgCalYearNext()">›</button>
+        </div>
+        <div class="cal-nav-group">
+          <button class="mood-cal-nav-btn" onclick="msgCalMonthPrev()">‹</button>
+          <span class="cal-nav-label" id="msg-cal-month"></span>
+          <button class="mood-cal-nav-btn" onclick="msgCalMonthNext()">›</button>
+        </div>
       </div>
       <div class="mood-calendar">
         <div class="mood-cal-weekdays">
@@ -1269,9 +1282,16 @@
       <!-- 日历 -->
       <div>
         <div class="mood-cal-nav">
-          <button class="mood-cal-nav-btn" onclick="moodCalPrev()">‹</button>
-          <span class="mood-cal-title" id="mood-cal-title"></span>
-          <button class="mood-cal-nav-btn" onclick="moodCalNext()">›</button>
+          <div class="cal-nav-group">
+            <button class="mood-cal-nav-btn" onclick="moodCalYearPrev()">‹</button>
+            <span class="cal-nav-label" id="mood-cal-year"></span>
+            <button class="mood-cal-nav-btn" onclick="moodCalYearNext()">›</button>
+          </div>
+          <div class="cal-nav-group">
+            <button class="mood-cal-nav-btn" onclick="moodCalMonthPrev()">‹</button>
+            <span class="cal-nav-label" id="mood-cal-month"></span>
+            <button class="mood-cal-nav-btn" onclick="moodCalMonthNext()">›</button>
+          </div>
         </div>
         <div class="mood-calendar">
           <div class="mood-cal-weekdays">
@@ -1426,9 +1446,16 @@
         <!-- 日历视图 -->
         <div id="diary-cal-view">
           <div class="mood-cal-nav">
-            <button class="mood-cal-nav-btn" onclick="diaryCalPrev()">‹</button>
-            <span class="mood-cal-title" id="diary-cal-month-title"></span>
-            <button class="mood-cal-nav-btn" onclick="diaryCalNext()">›</button>
+            <div class="cal-nav-group">
+              <button class="mood-cal-nav-btn" onclick="diaryCalYearPrev()">‹</button>
+              <span class="cal-nav-label" id="diary-cal-year"></span>
+              <button class="mood-cal-nav-btn" onclick="diaryCalYearNext()">›</button>
+            </div>
+            <div class="cal-nav-group">
+              <button class="mood-cal-nav-btn" onclick="diaryCalMonthPrev()">‹</button>
+              <span class="cal-nav-label" id="diary-cal-month"></span>
+              <button class="mood-cal-nav-btn" onclick="diaryCalMonthNext()">›</button>
+            </div>
           </div>
           <div class="mood-calendar">
             <div class="mood-cal-weekdays">
@@ -1719,10 +1746,12 @@
   }
 
   function renderDiaryCalendar() {
-    const titleEl = document.getElementById('diary-cal-month-title');
+    const yearEl  = document.getElementById('diary-cal-year');
+    const monthEl = document.getElementById('diary-cal-month');
     const grid    = document.getElementById('diary-cal-grid');
-    if (!titleEl || !grid) return;
-    titleEl.textContent = `${diaryCalYear}年${diaryCalMonth + 1}月`;
+    if (!grid) return;
+    if (yearEl)  yearEl.textContent  = `${diaryCalYear}`;
+    if (monthEl) monthEl.textContent = `${diaryCalMonth + 1}月`;
     const map         = _diaryMap();
     const firstDow    = new Date(diaryCalYear, diaryCalMonth, 1).getDay();
     const daysInMonth = new Date(diaryCalYear, diaryCalMonth + 1, 0).getDate();
@@ -1757,15 +1786,10 @@
     if (idx < 0) setTimeout(() => { const el = document.getElementById('ue-date'); if (el) el.value = date; }, 50);
   }
 
-  function diaryCalPrev() {
-    if (--diaryCalMonth < 0) { diaryCalMonth = 11; diaryCalYear--; }
-    renderDiaryCalendar();
-  }
-
-  function diaryCalNext() {
-    if (++diaryCalMonth > 11) { diaryCalMonth = 0; diaryCalYear++; }
-    renderDiaryCalendar();
-  }
+  function diaryCalYearPrev()  { diaryCalYear--;  renderDiaryCalendar(); }
+  function diaryCalYearNext()  { diaryCalYear++;  renderDiaryCalendar(); }
+  function diaryCalMonthPrev() { if (--diaryCalMonth < 0)  { diaryCalMonth = 11; diaryCalYear--; } renderDiaryCalendar(); }
+  function diaryCalMonthNext() { if (++diaryCalMonth > 11) { diaryCalMonth = 0;  diaryCalYear++; } renderDiaryCalendar(); }
 
   // 保存想说的话
   async function saveWords(who) {
@@ -2358,10 +2382,12 @@
   }
 
   function renderMsgCalendar() {
-    const titleEl = document.getElementById('msg-cal-title');
+    const yearEl  = document.getElementById('msg-cal-year');
+    const monthEl = document.getElementById('msg-cal-month');
     const grid    = document.getElementById('msg-cal-grid');
-    if (!titleEl || !grid) return;
-    titleEl.textContent = `${msgCalYear}年${msgCalMonth + 1}月`;
+    if (!grid) return;
+    if (yearEl)  yearEl.textContent  = `${msgCalYear}`;
+    if (monthEl) monthEl.textContent = `${msgCalMonth + 1}月`;
     const map         = buildMsgCalMap();
     const firstDow    = new Date(msgCalYear, msgCalMonth, 1).getDay();
     const daysInMonth = new Date(msgCalYear, msgCalMonth + 1, 0).getDate();
@@ -2385,8 +2411,10 @@
     grid.innerHTML = html;
   }
 
-  function msgCalPrev() { if (--msgCalMonth < 0)  { msgCalMonth = 11; msgCalYear--; } renderMsgCalendar(); }
-  function msgCalNext() { if (++msgCalMonth > 11) { msgCalMonth = 0;  msgCalYear++; } renderMsgCalendar(); }
+  function msgCalYearPrev()  { msgCalYear--;  renderMsgCalendar(); }
+  function msgCalYearNext()  { msgCalYear++;  renderMsgCalendar(); }
+  function msgCalMonthPrev() { if (--msgCalMonth < 0)  { msgCalMonth = 11; msgCalYear--; } renderMsgCalendar(); }
+  function msgCalMonthNext() { if (++msgCalMonth > 11) { msgCalMonth = 0;  msgCalYear++; } renderMsgCalendar(); }
 
   function openMsgDay(dateStr) {
     const map  = buildMsgCalMap();
@@ -2562,11 +2590,12 @@
   let moodEntriesMap = {};
 
   function renderMoodCalendar() {
-    const titleEl = document.getElementById('mood-cal-title');
+    const yearEl  = document.getElementById('mood-cal-year');
+    const monthEl = document.getElementById('mood-cal-month');
     const grid    = document.getElementById('mood-cal-grid');
-    if (!titleEl || !grid) return;
-
-    titleEl.textContent = `${moodCalYear}年${moodCalMonth + 1}月`;
+    if (!grid) return;
+    if (yearEl)  yearEl.textContent  = `${moodCalYear}`;
+    if (monthEl) monthEl.textContent = `${moodCalMonth + 1}月`;
 
     const firstDow    = new Date(moodCalYear, moodCalMonth, 1).getDay();
     const daysInMonth = new Date(moodCalYear, moodCalMonth + 1, 0).getDate();
@@ -2593,17 +2622,10 @@
     grid.innerHTML = html;
   }
 
-  function moodCalPrev() {
-    moodCalMonth--;
-    if (moodCalMonth < 0) { moodCalMonth = 11; moodCalYear--; }
-    renderMoodCalendar();
-  }
-
-  function moodCalNext() {
-    moodCalMonth++;
-    if (moodCalMonth > 11) { moodCalMonth = 0; moodCalYear++; }
-    renderMoodCalendar();
-  }
+  function moodCalYearPrev()  { moodCalYear--;  renderMoodCalendar(); }
+  function moodCalYearNext()  { moodCalYear++;  renderMoodCalendar(); }
+  function moodCalMonthPrev() { if (--moodCalMonth < 0)  { moodCalMonth = 11; moodCalYear--; } renderMoodCalendar(); }
+  function moodCalMonthNext() { if (++moodCalMonth > 11) { moodCalMonth = 0;  moodCalYear++; } renderMoodCalendar(); }
 
   function openMoodDetail(dateStr) {
     const entry = moodEntriesMap[dateStr];
