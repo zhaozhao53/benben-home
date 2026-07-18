@@ -54,6 +54,12 @@
       font-size: 9px; letter-spacing: 0.2em; color: var(--muted);
       background: var(--surface); border-bottom: 1px solid var(--border);
       flex-shrink: 0; text-transform: uppercase;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .msg-write-btn {
+      background: none; border: none; font-family: 'Menlo', 'Courier New', monospace;
+      font-size: 9px; color: #c0614a; cursor: pointer; padding: 0; letter-spacing: 0.08em;
+      text-transform: none;
     }
     .messages-pane {
       flex: 1; overflow-y: auto; padding: 12px 16px 10px;
@@ -380,9 +386,21 @@
     /* ── PALACE PAGE ── */
     .palace-header {
       padding: 16px 24px; border-bottom: 1px solid var(--border);
-      background: var(--surface); flex-shrink: 0; display: flex; align-items: center;
+      background: var(--surface); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
     }
     .palace-header-title { font-size: 15px; font-weight: 300; letter-spacing: 0.05em; }
+    .palace-import-btn {
+      font-family: 'Menlo', 'Courier New', monospace; font-size: 9px; letter-spacing: 0.1em;
+      color: var(--muted); background: none; border: 1px solid #e5d5c8; border-radius: 6px;
+      padding: 4px 10px; cursor: pointer; transition: color 0.15s, border-color 0.15s;
+    }
+    .palace-import-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .palace-import-toast {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+      background: rgba(60,40,30,0.88); color: #fff; font-size: 12px; border-radius: 20px;
+      padding: 8px 18px; z-index: 9999; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+    }
+    .palace-import-toast.show { opacity: 1; }
 
     .palace-content {
       flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
@@ -938,6 +956,30 @@
       background: none; border: none; font-size: 24px; color: var(--muted);
       cursor: pointer; padding: 0 2px; line-height: 1;
     }
+    .diary-cal-new-btn {
+      background: none; border: 1px solid #e5d5c8; border-radius: 6px;
+      font-family: 'Menlo', monospace; font-size: 9px; color: #c0614a;
+      cursor: pointer; padding: 4px 10px; letter-spacing: 0.06em;
+    }
+    .diary-cal-new-btn:hover { background: #fff0eb; }
+    /* 写来信弹层 */
+    #bun-write-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(26,20,15,0.32); z-index: 200; align-items: flex-end;
+    }
+    #bun-write-overlay.open { display: flex; }
+    .bun-write-textarea {
+      width: 100%; box-sizing: border-box; border: 1px solid #e5d5c8; border-radius: 10px;
+      padding: 12px; font-family: 'PingFang SC', sans-serif; font-size: 14px;
+      color: var(--text); background: var(--surface); resize: none; outline: none;
+      min-height: 130px; line-height: 1.8;
+    }
+    .bun-write-send {
+      margin-top: 12px; width: 100%; padding: 11px; background: #c0614a; border: none;
+      border-radius: 10px; font-family: 'Menlo', monospace; font-size: 10px;
+      color: #fff; cursor: pointer; letter-spacing: 0.08em;
+    }
+    .bun-write-send:hover { opacity: 0.88; }
     .diary-cal-body { flex: 1; overflow-y: auto; padding: 14px 16px 32px; }
     .diary-entry-back {
       background: none; border: none; font-family: 'Menlo', monospace; font-size: 10px;
@@ -1038,7 +1080,10 @@
 
     <!-- 上半区：笨笨的留言（只读） -->
     <div class="msg-section" id="msg-section-bun">
-      <div class="msg-section-header">笨笨的留言</div>
+      <div class="msg-section-header">
+        <span>笨笨的留言</span>
+        <button class="msg-write-btn" onclick="openBunWrite()">+ 写来信</button>
+      </div>
       <div id="messages-bun" class="messages-pane"></div>
     </div>
 
@@ -1132,16 +1177,6 @@
         </div>
       </div>
 
-      <div>
-        <div class="us-section-label">一起要办的事</div>
-        <div class="us-white-card">
-          <div id="us-todo-list"></div>
-          <div style="padding:10px 14px;display:flex;gap:8px;border-top:1px solid #f5ebe4">
-            <input id="us-todo-input" type="text" placeholder="写下想一起做的事…" class="us-todo-input-field" onkeydown="if(event.key==='Enter')addTodo()">
-            <button class="us-todo-add-btn" onclick="addTodo()">添加</button>
-          </div>
-        </div>
-      </div>
 
     </div>
 
@@ -1240,7 +1275,10 @@
   <div id="page-palace" class="page">
     <div class="palace-header">
       <div class="palace-header-title">记忆宫殿</div>
+      <button class="palace-import-btn" onclick="triggerMemoryImport()">导入</button>
     </div>
+    <input type="file" id="memory-import-file" accept=".md,.txt" style="display:none" onchange="handleMemoryImportFile(event)">
+    <div class="palace-import-toast" id="palace-import-toast"></div>
     <div class="palace-tab-bar">
       <button class="palace-tab active" id="palace-tab-overview" onclick="switchPalaceTab('overview')">概览</button>
       <button class="palace-tab" id="palace-tab-zhaozhao" onclick="switchPalaceTab('zhaozhao')">👤 昭昭</button>
@@ -1402,11 +1440,17 @@
 
     <!-- 📋 待办 -->
     <div class="us-content" id="play-panel-todo" style="display:none">
-      <div class="us-section-label">待办事项</div>
-      <div id="play-todo-list"></div>
+      <div class="us-section-label">CC 的任务</div>
+      <div id="play-todo-cc"></div>
       <div class="us-todo-item" style="padding-top:14px;border-top:1px solid var(--border)">
-        <input id="play-todo-input" type="text" placeholder="新增待办…" class="us-todo-input-field" onkeydown="if(event.key==='Enter')addPlayTodo()">
-        <button class="us-todo-add-btn" onclick="addPlayTodo()">添加</button>
+        <input id="play-todo-input-cc" type="text" placeholder="给 CC 的任务…" class="us-todo-input-field" onkeydown="if(event.key==='Enter')addPlayTodo('cc')">
+        <button class="us-todo-add-btn" onclick="addPlayTodo('cc')">添加</button>
+      </div>
+      <div class="us-section-label" style="margin-top:20px">笨笨的任务</div>
+      <div id="play-todo-benben"></div>
+      <div class="us-todo-item" style="padding-top:14px;border-top:1px solid var(--border)">
+        <input id="play-todo-input-benben" type="text" placeholder="给笨笨的任务…" class="us-todo-input-field" onkeydown="if(event.key==='Enter')addPlayTodo('benben')">
+        <button class="us-todo-add-btn" onclick="addPlayTodo('benben')">添加</button>
       </div>
     </div>
   </div>
@@ -1545,6 +1589,7 @@
     <div class="diary-cal-panel" onclick="event.stopPropagation()">
       <div class="diary-cal-hd">
         <span class="diary-cal-hd-title" id="diary-cal-hd-title">过往日记</span>
+        <button class="diary-cal-new-btn" onclick="closeDiaryCal(); openUsEdit('diary', null)">+ 写新日记</button>
         <button class="diary-cal-hd-close" onclick="closeDiaryCal()">×</button>
       </div>
       <div class="diary-cal-body">
@@ -1579,6 +1624,20 @@
           <div class="diary-entry-text" id="diary-entry-content"></div>
           <button class="diary-entry-edit-btn" onclick="editDiaryFromCal()">编辑这篇日记</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 写来信弹层 ── -->
+  <div id="bun-write-overlay" onclick="closeBunWrite()">
+    <div class="diary-cal-panel" onclick="event.stopPropagation()">
+      <div class="diary-cal-hd">
+        <span class="diary-cal-hd-title">笨笨来信</span>
+        <button class="diary-cal-hd-close" onclick="closeBunWrite()">×</button>
+      </div>
+      <div class="diary-cal-body">
+        <textarea id="bun-write-textarea" class="bun-write-textarea" placeholder="笨笨想说…"></textarea>
+        <button class="bun-write-send" onclick="submitBunWrite()">发 送</button>
       </div>
     </div>
   </div>
@@ -1649,7 +1708,7 @@
 
   function renderUsPage() {
     if (!usData) return;
-    renderAnniversaries(); renderTodos(); renderMoments(); renderRecipes(); renderFootprints(); renderDiary();
+    renderAnniversaries(); renderMoments(); renderRecipes(); renderFootprints(); renderDiary();
     const zw = document.getElementById('us-zhao-words');
     const bw = document.getElementById('us-bun-words');
     if (zw) zw.value = usData.zhaozhao?.words || '';
@@ -1724,27 +1783,6 @@
         <button class="palace-edit-btn" onclick="openUsEdit('anniv',${i})">编辑</button></div>`;
     }).join('');
   }
-
-  // 待办
-  function renderTodos() {
-    const el = document.getElementById('us-todo-list'); if (!el) return;
-    const list = usData?.todos || [];
-    el.innerHTML = list.map((t, i) =>
-      `${i?'<div class="us-milestone-divider"></div>':''}<div class="us-todo-item">
-        <button class="us-todo-check${t.done?' done':''}" onclick="toggleTodo(${i})"></button>
-        <span class="us-todo-text${t.done?' done':''}">${escHtml(t.text||'')}</span>
-        <button class="us-todo-del" onclick="deleteTodo(${i})">×</button></div>`
-    ).join('');
-  }
-  async function addTodo() {
-    const inp = document.getElementById('us-todo-input');
-    const text = (inp?.value||'').trim(); if (!text) return;
-    if (!usData.todos) usData.todos = [];
-    usData.todos.push({ id: nextUsId(usData.todos), text, done: false });
-    inp.value = ''; renderTodos(); await saveUs();
-  }
-  async function toggleTodo(i) { usData.todos[i].done = !usData.todos[i].done; renderTodos(); await saveUs(); }
-  async function deleteTodo(i) { usData.todos.splice(i,1); renderTodos(); await saveUs(); }
 
   // 有趣时刻
   function renderMoments() {
@@ -2082,6 +2120,41 @@
     renderPalaceQuotes();
     renderPalaceMemes();
     renderPalaceRecent();
+  }
+
+  function triggerMemoryImport() {
+    const input = document.getElementById('memory-import-file');
+    if (input) { input.value = ''; input.click(); }
+  }
+
+  function handleMemoryImportFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async function(ev) {
+      const content = ev.target.result;
+      try {
+        const r = await fetch(`${SERVER}/api/import-memory`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content })
+        });
+        const data = await r.json();
+        showImportToast(data.message || (r.ok ? '导入成功' : '导入失败'));
+        if (r.ok) await loadPalace();
+      } catch {
+        showImportToast('导入失败，请重试');
+      }
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  function showImportToast(msg) {
+    const el = document.getElementById('palace-import-toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 3000);
   }
 
   function renderPalaceOverview() {
@@ -2567,6 +2640,29 @@
     renderMessages();
   }
 
+  // ── 写来信（笨笨发信） ───────────────────────────────────
+  function openBunWrite() {
+    document.getElementById('bun-write-textarea').value = '';
+    document.getElementById('bun-write-overlay').classList.add('open');
+    setTimeout(() => document.getElementById('bun-write-textarea').focus(), 50);
+  }
+  function closeBunWrite() {
+    document.getElementById('bun-write-overlay').classList.remove('open');
+  }
+  async function submitBunWrite() {
+    const content = document.getElementById('bun-write-textarea').value.trim();
+    if (!content) return;
+    try {
+      await fetch(`${SERVER}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, from: '笨笨' })
+      });
+    } catch {}
+    closeBunWrite();
+    loadMessages();
+  }
+
   async function toggleStar(id) {
     try {
       const res = await fetch(`${SERVER}/messages/${id}`, { method: 'PATCH' });
@@ -2922,29 +3018,35 @@
   }
 
   // ── 待办 ────────────────────────────────────────────
-  let playTodosData = { todos: [] };
+  let playTodosData = { cc: [], benben: [] };
 
   async function loadPlayTodos() {
     try {
       const r = await fetch(`${SERVER}/todos`);
-      playTodosData = await r.json();
-    } catch { playTodosData = { todos: [] }; }
-    if (!playTodosData.todos) playTodosData.todos = [];
+      const d = await r.json();
+      playTodosData = (d.todos && !d.cc && !d.benben) ? { cc: [], benben: d.todos } : d;
+    } catch { playTodosData = { cc: [], benben: [] }; }
+    if (!playTodosData.cc) playTodosData.cc = [];
+    if (!playTodosData.benben) playTodosData.benben = [];
     renderPlayTodos();
   }
 
-  function renderPlayTodos() {
-    const el = document.getElementById('play-todo-list');
+  function renderTodoSection(elId, list, who) {
+    const el = document.getElementById(elId);
     if (!el) return;
-    const list = playTodosData.todos;
-    if (!list.length) { el.innerHTML = '<div style="padding:14px 0;text-align:center;color:var(--muted);font-size:12px">还没有待办事项</div>'; return; }
+    if (!list.length) { el.innerHTML = '<div style="padding:14px 0;text-align:center;color:var(--muted);font-size:12px">暂无任务</div>'; return; }
     el.innerHTML = list.map((t, i) =>
       `${i ? '<div class="us-milestone-divider"></div>' : ''}<div class="us-todo-item">
-        <button class="us-todo-check${t.done ? ' done' : ''}" onclick="togglePlayTodo(${i})"></button>
+        <button class="us-todo-check${t.done ? ' done' : ''}" onclick="togglePlayTodo('${who}',${i})"></button>
         <span class="us-todo-text${t.done ? ' done' : ''}">${escHtml(t.text || '')}</span>
-        <button class="us-todo-del" onclick="deletePlayTodo(${i})">×</button>
+        <button class="us-todo-del" onclick="deletePlayTodo('${who}',${i})">×</button>
       </div>`
     ).join('');
+  }
+
+  function renderPlayTodos() {
+    renderTodoSection('play-todo-cc', playTodosData.cc, 'cc');
+    renderTodoSection('play-todo-benben', playTodosData.benben, 'benben');
   }
 
   async function savePlayTodos() {
@@ -2952,19 +3054,20 @@
     catch {}
   }
 
-  function addPlayTodo() {
-    const inp = document.getElementById('play-todo-input');
+  function addPlayTodo(who) {
+    const inp = document.getElementById(`play-todo-input-${who}`);
     const text = inp?.value.trim();
     if (!text) return;
-    const maxId = playTodosData.todos.reduce((m, t) => Math.max(m, Number(t.id) || 0), 0);
-    playTodosData.todos.push({ id: maxId + 1, text, done: false });
+    const list = playTodosData[who];
+    const maxId = list.reduce((m, t) => Math.max(m, Number(t.id) || 0), 0);
+    list.push({ id: maxId + 1, text, done: false });
     inp.value = '';
     renderPlayTodos();
     savePlayTodos();
   }
 
-  async function togglePlayTodo(i) { playTodosData.todos[i].done = !playTodosData.todos[i].done; renderPlayTodos(); await savePlayTodos(); }
-  async function deletePlayTodo(i) { playTodosData.todos.splice(i, 1); renderPlayTodos(); await savePlayTodos(); }
+  async function togglePlayTodo(who, i) { playTodosData[who][i].done = !playTodosData[who][i].done; renderPlayTodos(); await savePlayTodos(); }
+  async function deletePlayTodo(who, i) { playTodosData[who].splice(i, 1); renderPlayTodos(); await savePlayTodos(); }
 
   // ── 设置功能 ──────────────────────────────────────────
   async function exportChat(rangeOnly) {

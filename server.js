@@ -37,6 +37,71 @@ function savePalaceData(data) {
   fs.writeFileSync(PALACE_FILE, JSON.stringify(data, null, 2));
 }
 
+function parseMemoryDoc(text) {
+  const result = { milestones: [], quotes: [], rules: [], memes: [], overview: null };
+  const lines = text.split('\n');
+  let section = null;
+  const overviewLines = [];
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
+    // section header detection
+    const headMatch = line.match(/^#{1,4}\s*(.*)/);
+    if (headMatch) {
+      const h = headMatch[1];
+      if (/概览|overview/i.test(h))       section = 'overview';
+      else if (/关键事件|milestone/i.test(h)) section = 'milestones';
+      else if (/原话|quote/i.test(h))      section = 'quotes';
+      else if (/行为规则|rule/i.test(h))   section = 'rules';
+      else if (/小游戏|梗|meme/i.test(h))  section = 'memes';
+      else section = null;
+      continue;
+    }
+
+    // bare 【...】 headers not prefixed with #
+    if (/^【关键事件】/.test(line)) { section = 'milestones'; continue; }
+    if (/^【原话】/.test(line))     { section = 'quotes';     continue; }
+    if (/^【行为规则】/.test(line)) { section = 'rules';      continue; }
+
+    if (!line) continue;
+
+    if (section === 'overview') {
+      overviewLines.push(line);
+    } else if (section === 'milestones') {
+      const m = line.match(/^[-*]\s+(.+)/);
+      if (m) {
+        const c = m[1];
+        const dm = c.match(/^(\d{4}-\d{2}-\d{2})\s+(.*)/);
+        result.milestones.push(dm
+          ? { date: dm[1], event: dm[2], tag: '' }
+          : { date: new Date().toISOString().slice(0, 10), event: c, tag: '' });
+      }
+    } else if (section === 'quotes') {
+      const m = line.match(/^[-*]\s+(.+)/);
+      if (m) {
+        const c = m[1];
+        const qm = c.match(/^["「](.+?)["」]\s*[—–-]\s*(.+?)(?:\s+(\d{4}-\d{2}-\d{2}))?$/);
+        result.quotes.push(qm
+          ? { text: qm[1], author: qm[2].trim(), date: qm[3] || '', context: '' }
+          : { text: c, author: '', date: '', context: '' });
+      }
+    } else if (section === 'rules') {
+      const doM   = line.match(/^[-*]?\s*do[：:]\s*(.+)/i);
+      const dontM = line.match(/^[-*]?\s*don'?t[：:]\s*(.+)/i);
+      if (doM)        result.rules.push({ type: 'do',   content: doM[1] });
+      else if (dontM) result.rules.push({ type: 'dont', content: dontM[1] });
+      else if (/^[-*]\s+/.test(line)) result.rules.push({ type: 'do', content: line.replace(/^[-*]\s+/, '') });
+    } else if (section === 'memes') {
+      const m = line.match(/^[-*]\s+(.+)/);
+      if (m) result.memes.push({ text: m[1], date: new Date().toISOString().slice(0, 10) });
+    }
+  }
+
+  if (overviewLines.length) result.overview = overviewLines.join('\n');
+  return result;
+}
+
 function loadMessages() {
   try {
     const raw = JSON.parse(fs.readFileSync(MESSAGES_FILE, 'utf8'));
@@ -258,11 +323,15 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && pathname === '/todos') {
     const f = path.join(__dirname, 'data', 'todos.json');
     try {
+      const raw = JSON.parse(fs.readFileSync(f, 'utf8'));
+      const result = (raw.todos && !raw.cc && !raw.benben)
+        ? { cc: [], benben: raw.todos }
+        : raw;
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      return res.end(fs.readFileSync(f, 'utf8'));
+      return res.end(JSON.stringify(result));
     } catch {
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ todos: [] }));
+      return res.end(JSON.stringify({ cc: [], benben: [] }));
     }
   }
 
@@ -292,6 +361,25 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ ok: true }));
     } catch { res.writeHead(400); return res.end('invalid json'); }
+  }
+
+  if (req.method === 'POST' && pathname === '/api/import-memory') {
+    const body = await readBody(req);
+    try {
+      const { content } = JSON.parse(body);
+      if (typeof content !== 'string') { res.writeHead(400); return res.end('missing content'); }
+      const parsed = parseMemoryDoc(content);
+      const existing = loadPalaceData();
+      let count = 0;
+      if (parsed.milestones.length) { existing.milestones = (existing.milestones || []).concat(parsed.milestones); count += parsed.milestones.length; }
+      if (parsed.quotes.length)     { existing.quotes     = (existing.quotes     || []).concat(parsed.quotes);     count += parsed.quotes.length; }
+      if (parsed.rules.length)      { existing.rules      = (existing.rules      || []).concat(parsed.rules);      count += parsed.rules.length; }
+      if (parsed.memes.length)      { existing.memes      = (existing.memes      || []).concat(parsed.memes);      count += parsed.memes.length; }
+      if (parsed.overview !== null) { existing.overview = parsed.overview; count += 1; }
+      savePalaceData(existing);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: true, message: `导入成功，共解析 ${count} 条记录`, count }));
+    } catch { res.writeHead(400); return res.end('invalid request'); }
   }
 
   // ── 记忆文件 ─────────────────────────────────────────────
